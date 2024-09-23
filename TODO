@@ -1,0 +1,16 @@
+[ ] Devel environment
+    [ ] Ngrok for tunneling to local development environment
+    [ ] Tests
+[ ] CI/CD with Github Actions
+[ ] Helm chart: deploy to Kubernetes
+    [ ] Tekton as dependency in helm charts ¿?
+[ ] Automatic semantic versioning
+[ ] Documentation (optional): Diferent tools that helps with the pipelines in your environment
+    [ ] Kyverno: can be use for installing dependencies for the future pipeline (e.g. secrets, configmaps, etc.)
+        from namespaces labels (https://github.com/kyverno/kyverno)
+    [ ] Crossplane: can be use for installing infrastructure dependencies in different cloud providers
+        (https://crossplane.io/)
+    [ ] MinIO: use for storing artifacts of the pipeline (https://min.io/docs/minio/kubernetes/upstream/index.html)
+    [ ] Vault: use for storing secrets (https://developer.hashicorp.com/vault/docs/platform/k8s)
+    [ ] ExternalSecrets: use for retrieving secrets using external services like AWS Secrets Manager, GCP Secret Manager,
+        etc. or even Vault and save them in Kubernetes secrets (https://external-secrets.io/latest/)

@@ -1,0 +1,15 @@
+* For README.development.md
+
+Development dependencies
+
+- Docker
+- kubectl
+- K3d/k3s
+- Tekton
+- Helm
+
+Starting development
+
+- Clone
+- make retrieve-kubeconfig
+- source set-kubeconfig.sh

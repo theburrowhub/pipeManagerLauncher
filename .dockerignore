@@ -1,0 +1,7 @@
+.gitignore
+.dockerignore
+Makefile
+bin
+build
+charts
+docs

@@ -1,0 +1,326 @@
+{
+  "push": {
+    "changes": [
+      {
+        "forced": false,
+        "old": {
+          "target": {
+            "hash": "80c4c8ec647a28073f06dd3cda61b6aefbb30c09",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/team_name/dummy-web/commit/80c4c8ec647a28073f06dd3cda61b6aefbb30c09"
+              },
+              "html": {
+                "href": "https://bitbucket.org/team_name/dummy-web/commits/80c4c8ec647a28073f06dd3cda61b6aefbb30c09"
+              }
+            },
+            "author": {
+              "raw": "Tony Stark <tstark@stark_industries.com>",
+              "type": "author",
+              "user": {
+                "username": "tony_stark",
+                "display_name": "Tony Stark",
+                "account_id": "557058:ac7a60df-87ca-4e52-aa36-76fa292e4ddf",
+                "links": {
+                  "self": {
+                    "href": "https://api.bitbucket.org/2.0/users/tony_stark"
+                  },
+                  "html": {
+                    "href": "https://bitbucket.org/tony_stark/"
+                  },
+                  "avatar": {
+                    "href": "https://bitbucket.org/account/tony_stark/avatar/"
+                  }
+                },
+                "type": "user",
+                "nickname": "tony_stark",
+                "uuid": "{967a34ee-4603-4642-b8cc-37764da12f5e}"
+              }
+            },
+            "summary": {
+              "raw": "README.md edited online with Bitbucket",
+              "markup": "markdown",
+              "html": "<p>README.md edited online with Bitbucket</p>",
+              "type": "rendered"
+            },
+            "parents": [
+              {
+                "type": "commit",
+                "hash": "39a9e6551c13a3e67df4991caeba5ef6063ddd16",
+                "links": {
+                  "self": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/team_name/dummy-web/commit/39a9e6551c13a3e67df4991caeba5ef6063ddd16"
+                  },
+                  "html": {
+                    "href": "https://bitbucket.org/team_name/dummy-web/commits/39a9e6551c13a3e67df4991caeba5ef6063ddd16"
+                  }
+                }
+              }
+            ],
+            "date": "2018-09-28T15:33:34+00:00",
+            "message": "README.md edited online with Bitbucket",
+            "type": "commit"
+          },
+          "links": {
+            "commits": {
+              "href": "https://api.bitbucket.org/2.0/repositories/team_name/dummy-web/commits/jenkins-test"
+            },
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/team_name/dummy-web/refs/branches/jenkins-test"
+            },
+            "html": {
+              "href": "https://bitbucket.org/team_name/dummy-web/branch/jenkins-test"
+            }
+          },
+          "default_merge_strategy": "merge_commit",
+          "merge_strategies": [
+            "merge_commit",
+            "squash",
+            "fast_forward"
+          ],
+          "type": "branch",
+          "name": "jenkins-test"
+        },
+        "links": {
+          "commits": {
+            "href": "https://api.bitbucket.org/2.0/repositories/team_name/dummy-web/commits?include=bc72f4f3198ca66d85d91f331a2804d748bc4a26&exclude=80c4c8ec647a28073f06dd3cda61b6aefbb30c09"
+          },
+          "html": {
+            "href": "https://bitbucket.org/team_name/dummy-web/branches/compare/bc72f4f3198ca66d85d91f331a2804d748bc4a26..80c4c8ec647a28073f06dd3cda61b6aefbb30c09"
+          },
+          "diff": {
+            "href": "https://api.bitbucket.org/2.0/repositories/team_name/dummy-web/diff/bc72f4f3198ca66d85d91f331a2804d748bc4a26..80c4c8ec647a28073f06dd3cda61b6aefbb30c09"
+          }
+        },
+        "truncated": false,
+        "commits": [
+          {
+            "hash": "bc72f4f3198ca66d85d91f331a2804d748bc4a26",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/team_name/dummy-web/commit/bc72f4f3198ca66d85d91f331a2804d748bc4a26"
+              },
+              "comments": {
+                "href": "https://api.bitbucket.org/2.0/repositories/team_name/dummy-web/commit/bc72f4f3198ca66d85d91f331a2804d748bc4a26/comments"
+              },
+              "patch": {
+                "href": "https://api.bitbucket.org/2.0/repositories/team_name/dummy-web/patch/bc72f4f3198ca66d85d91f331a2804d748bc4a26"
+              },
+              "html": {
+                "href": "https://bitbucket.org/team_name/dummy-web/commits/bc72f4f3198ca66d85d91f331a2804d748bc4a26"
+              },
+              "diff": {
+                "href": "https://api.bitbucket.org/2.0/repositories/team_name/dummy-web/diff/bc72f4f3198ca66d85d91f331a2804d748bc4a26"
+              },
+              "approve": {
+                "href": "https://api.bitbucket.org/2.0/repositories/team_name/dummy-web/commit/bc72f4f3198ca66d85d91f331a2804d748bc4a26/approve"
+              },
+              "statuses": {
+                "href": "https://api.bitbucket.org/2.0/repositories/team_name/dummy-web/commit/bc72f4f3198ca66d85d91f331a2804d748bc4a26/statuses"
+              }
+            },
+            "author": {
+              "raw": "Tony Stark <tstark@stark_industries.com>",
+              "type": "author",
+              "user": {
+                "username": "tony_stark",
+                "display_name": "Tony Stark",
+                "account_id": "557058:ac7a60df-87ca-4e52-aa36-76fa292e4ddf",
+                "links": {
+                  "self": {
+                    "href": "https://api.bitbucket.org/2.0/users/tony_stark"
+                  },
+                  "html": {
+                    "href": "https://bitbucket.org/tony_stark/"
+                  },
+                  "avatar": {
+                    "href": "https://bitbucket.org/account/tony_stark/avatar/"
+                  }
+                },
+                "type": "user",
+                "nickname": "tony_stark",
+                "uuid": "{967a34ee-4603-4642-b8cc-37764da12f5e}"
+              }
+            },
+            "summary": {
+              "raw": "README.md edited online with Bitbucket",
+              "markup": "markdown",
+              "html": "<p>README.md edited online with Bitbucket</p>",
+              "type": "rendered"
+            },
+            "parents": [
+              {
+                "type": "commit",
+                "hash": "80c4c8ec647a28073f06dd3cda61b6aefbb30c09",
+                "links": {
+                  "self": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/team_name/dummy-web/commit/80c4c8ec647a28073f06dd3cda61b6aefbb30c09"
+                  },
+                  "html": {
+                    "href": "https://bitbucket.org/team_name/dummy-web/commits/80c4c8ec647a28073f06dd3cda61b6aefbb30c09"
+                  }
+                }
+              }
+            ],
+            "date": "2018-11-26T14:23:00+00:00",
+            "message": "README.md edited online with Bitbucket",
+            "type": "commit"
+          }
+        ],
+        "created": false,
+        "closed": false,
+        "new": {
+          "target": {
+            "hash": "bc72f4f3198ca66d85d91f331a2804d748bc4a26",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/team_name/dummy-web/commit/bc72f4f3198ca66d85d91f331a2804d748bc4a26"
+              },
+              "html": {
+                "href": "https://bitbucket.org/team_name/dummy-web/commits/bc72f4f3198ca66d85d91f331a2804d748bc4a26"
+              }
+            },
+            "author": {
+              "raw": "Tony Stark <tstark@stark_industries.com>",
+              "type": "author",
+              "user": {
+                "username": "tony_stark",
+                "display_name": "Tony Stark",
+                "account_id": "557058:ac7a60df-87ca-4e52-aa36-76fa292e4ddf",
+                "links": {
+                  "self": {
+                    "href": "https://api.bitbucket.org/2.0/users/tony_stark"
+                  },
+                  "html": {
+                    "href": "https://bitbucket.org/tony_stark/"
+                  },
+                  "avatar": {
+                    "href": "https://bitbucket.org/account/tony_stark/avatar/"
+                  }
+                },
+                "type": "user",
+                "nickname": "tony_stark",
+                "uuid": "{967a34ee-4603-4642-b8cc-37764da12f5e}"
+              }
+            },
+            "summary": {
+              "raw": "README.md edited online with Bitbucket",
+              "markup": "markdown",
+              "html": "<p>README.md edited online with Bitbucket</p>",
+              "type": "rendered"
+            },
+            "parents": [
+              {
+                "type": "commit",
+                "hash": "80c4c8ec647a28073f06dd3cda61b6aefbb30c09",
+                "links": {
+                  "self": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/team_name/dummy-web/commit/80c4c8ec647a28073f06dd3cda61b6aefbb30c09"
+                  },
+                  "html": {
+                    "href": "https://bitbucket.org/team_name/dummy-web/commits/80c4c8ec647a28073f06dd3cda61b6aefbb30c09"
+                  }
+                }
+              }
+            ],
+            "date": "2018-11-26T14:23:00+00:00",
+            "message": "README.md edited online with Bitbucket",
+            "type": "commit"
+          },
+          "links": {
+            "commits": {
+              "href": "https://api.bitbucket.org/2.0/repositories/team_name/dummy-web/commits/jenkins-test"
+            },
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/team_name/dummy-web/refs/branches/jenkins-test"
+            },
+            "html": {
+              "href": "https://bitbucket.org/team_name/dummy-web/branch/jenkins-test"
+            }
+          },
+          "default_merge_strategy": "merge_commit",
+          "merge_strategies": [
+            "merge_commit",
+            "squash",
+            "fast_forward"
+          ],
+          "type": "branch",
+          "name": "jenkins-test"
+        }
+      }
+    ]
+  },
+  "repository": {
+    "scm": "git",
+    "website": "",
+    "name": "dummy-web",
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/repositories/team_name/dummy-web"
+      },
+      "html": {
+        "href": "https://bitbucket.org/team_name/dummy-web"
+      },
+      "avatar": {
+        "href": "https://bytebucket.org/ravatar/%7Be9279c61-5707-4165-94e1-c412852f0df8%7D?ts=js"
+      }
+    },
+    "project": {
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/teams/team_name/projects/DEVops"
+        },
+        "html": {
+          "href": "https://bitbucket.org/account/user/team_name/projects/DEVops"
+        },
+        "avatar": {
+          "href": "https://bitbucket.org/account/user/team_name/projects/DEVops/avatar/32"
+        }
+      },
+      "type": "project",
+      "uuid": "{2a270224-b458-4b29-8a37-ccc24dbe3318}",
+      "key": "DEVops",
+      "name": "DevOps"
+    },
+    "full_name": "team_name/dummy-web",
+    "owner": {
+      "username": "team_name",
+      "type": "team",
+      "display_name": "Team display name",
+      "uuid": "{3c5cb632-765d-4f90-b91b-7186f027622f}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/teams/team_name"
+        },
+        "html": {
+          "href": "https://bitbucket.org/team_name/"
+        },
+        "avatar": {
+          "href": "https://bitbucket.org/account/team_name/avatar/"
+        }
+      }
+    },
+    "type": "repository",
+    "is_private": true,
+    "uuid": "{e9279c61-5707-4165-94e1-c412852f0df8}"
+  },
+  "actor": {
+    "username": "tony_stark",
+    "display_name": "Tony Stark",
+    "account_id": "557058:ac7a60df-87ca-4e52-aa36-76fa292e4ddf",
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/users/tony_stark"
+      },
+      "html": {
+        "href": "https://bitbucket.org/tony_stark/"
+      },
+      "avatar": {
+        "href": "https://bitbucket.org/account/tony_stark/avatar/"
+      }
+    },
+    "type": "user",
+    "nickname": "tony_stark",
+    "uuid": "{967a34ee-4603-4642-b8cc-37764da12f5e}"
+  }
+}

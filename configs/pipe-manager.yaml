@@ -1,0 +1,121 @@
+#
+# Configuration for Webhook Server
+#
+webhook:
+  workers: 8    # Number of concurrent workers processing incoming webhook requests.
+                # Adjust this number based on your server's CPU cores and expected load.
+                # For example, set to the number of CPU cores for optimal performance.
+
+  log:
+      level: "debug"
+      #level: "info"     # Logging level for the webhook server.
+                        # Common levels:
+                        # - "debug": Detailed information, typically used for diagnosing problems.
+                        # - "info": Confirmation that things are working as expected.
+                        # - "warning": An indication that something unexpected happened, or indicative of some problem.
+                        # - "error": A more serious problem, preventing some function from performing.
+                        # - "critical": A severe error, indicating that the program itself may be unable to continue running.
+                        #
+                        # Example:
+                        # - Set to "debug" for verbose logging during development or troubleshooting.
+                        # - Set to "info" or "warning" for production environments to reduce log verbosity.
+
+      file: "stdout"    # Destination for log output.
+                        # Options:
+                        # - "stdout": Logs are printed to the standard output (useful for containerized environments).
+                        # - "stderr": Logs are printed to the standard error.
+                        # - File path (e.g., "/var/log/webhook.log"): Logs are written to the specified file.
+                        #
+                        # Example:
+                        # - Use "stdout" if your deployment environment captures and manages logs.
+                        # - Specify a file path to persist logs on the server.
+
+      #format: "json"
+      format: "text"    # Format of the log messages.
+                        # Options:
+                        # - "text": Plain text logs, human-readable.
+                        # - "json": Logs are formatted as JSON objects, useful for structured logging and integration with logging systems.
+                        #
+                        # Example:
+                        # - Choose "text" for simplicity and ease of reading during development.
+                        # - Choose "json" if you are using log aggregators or need structured logs for analysis.
+
+  # This section defines the routes that the webhook server will listen to and how to handle incoming webhook payloads.
+  # CEL (Common Expression Language) expressions are used to extract and evaluate data from the JSON payload of webhooks.
+  # Ensure that the expressions are correctly formatted based on your webhook payload structure.
+  routes:
+    # Example route configuration for GitHub webhooks
+    - name: github
+      path: /github  # The endpoint path where GitHub will send webhook payloads. Ensure this path is accessible
+                     # and correctly configured in your GitHub repository settings.
+      eventType: "data.headers['X-Github-Event'][0]"  # CEL expression to retrieve the event.
+
+      events:
+        # Handler for push events (branches and tags)
+        - type: push
+          repository: "data.body.payload.repository.ssh_url"  # (Mandatory) CEL expression to extract the repository name from the payload.
+          commit: "data.body.payload.head_commit.id"  # (Optional) CEL expression to extract the full commit SHA.
+          variables: # Additional custom variables to be passed to the pipeline.
+            ref: "data.body.payload.ref.replace('refs/heads/', '').replace('refs/tags/', '')" # CEL expression to extract the branch or tag name.
+            tag: "data.body.payload.ref.startsWith('refs/tags/')"  # CEL expression to determine if the push includes a tag (true/false).
+            shortCommit: "data.body.payload.head_commit.id.substring(0,7)"  # CEL expression to get the first 7 characters of the commit SHA.
+            email: "data.body.payload.head_commit.author.email"  # CEL expression to extract the author's email from the commit.
+            author: "data.body.payload.head_commit.author.name"  # CEL expression to extract the author's name from the commit.
+            user: "data.body.payload.pusher.name"  # CEL expression to extract the pusher's username.
+            custom: "'MY_CUSTOM_VALUE'"  # Custom value to be passed to the pipeline. Literal values must be enclosed in single quotes.
+
+        # Handler for pull request events
+        - type: pullRequest
+          repository: "data.body.pull_request.base.repo.ssh_url"  # (Mandatory) CEL expression to extract the repository name from the payload.
+          commit: "data.body.pull_request.base.sha"  # (Optional) CEL expression to get the commit SHA of the PR.
+          variables: # Additional custom variables to be passed to the pipeline.
+            ref: "data.body.pull_request.base.ref"  # CEL expression to extract the branch reference of the PR.
+            tag: "data.body.pull_request.merge_commit_sha != null"  # CEL expression to determine if the PR has been merged with a commit SHA.
+            shortCommit: "data.body.pull_request.base.sha.substring(0, 7)"  # CEL expression for the abbreviated commit SHA.
+            user: "data.body.pull_request.user.login"  # CEL expression to get the PR creator's GitHub username.
+
+        # Instructions for Developers:
+        # 1. **Replace CEL Expressions as Needed:**
+        #    - The provided CEL expressions are examples based on GitHub's typical webhook payload structure.
+        #    - Verify the structure of your webhook payload and adjust the CEL expressions accordingly.
+        #    - Refer to GitHub's [Webhook Payloads](https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads) documentation for detailed payload structures.
+        #
+        # 2. **Define Additional Routes or Events:**
+        #    - You can add more routes for different services or additional event handlers by following the existing structure.
+
+        # Notes:
+        # - **CEL Syntax:** Ensure that your CEL expressions are syntactically correct. Refer to the [CEL Language Specification](https://github.com/google/cel-spec) for guidance.
+        # - **Payload Validation:** It's crucial to validate that the CEL expressions accurately reflect the structure of your incoming webhook payloads to avoid misconfigurations.
+        # - **Dynamic Values:** CEL expressions can include functions and operators to manipulate and evaluate payload data dynamically.
+        # - **Documentation:** Always refer to your webhook provider's latest documentation to understand the payload structure and available fields for accurate CEL expression crafting.
+
+    # Example of route configuration for custom webhooks
+    - name: custom
+      path: /custom
+      eventType: "data.body.type"
+      events:
+        - type: customEvent
+          repository: "data.body.repository_name"
+          # This case does not include a commit field, but you can add it if needed.
+          #commit: "'HEAD'"  # Example of a static value for the commit field. This case is using the string 'HEAD' to reach the latest commit.
+          variables:
+            ref: "data.body.branch"
+            custom: "'MY_CUSTOM_VALUE'"  # Custom value to be passed to the pipeline. Literal values must be enclosed in single quotes.
+
+
+#
+# Configuration for Pipeline Launcher
+#
+# TODO: Documentation
+launcher:
+  imageName: "alpine"
+  pullPolicy: "IfNotPresent"
+  tag: "latest"
+
+  namespace: ""                       # Namespace where the pipeline will be executed. Leave empty for the default namespace. (Current namespace?)
+  jobNamePrefix: "pipeline-launcher"  # Prefix for the job name created for each webhook event. The job name will be appended
+                                      # with a unique identifier. (e.g., pipeline-launcher-<unique-id>).
+                                      # Ensure that the prefix does not exceed 25 characters to avoid Kubernetes naming restrictions of 63 characters.
+
+  timeout: 600  # Timeout in seconds for the pipeline job to complete. If the job exceeds this duration, it will be terminated.
+                # Adjust this value based on the expected duration of your pipeline jobs.

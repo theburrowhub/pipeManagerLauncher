@@ -1,0 +1,6 @@
+{
+  "name": "customWebhook",
+  "type": "customEvent",
+  "repository_name": "example-repo",
+  "branch": "main"
+}

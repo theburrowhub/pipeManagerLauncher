@@ -1,0 +1,16 @@
+# Common
+.DS_Store
+*.swp
+
+# IDE
+.idea/
+
+# Kubeconfig
+kubeconfig
+set-kubeconfig.sh
+
+# Binaries
+bin/
+
+# Vendor
+vendor/
