@@ -50,7 +50,7 @@ deploy: ## Deploy applications to devel k8s cluster
 $(APPS):
 	@echo "Building $(basename $@)"
 	go build \
-		-ldflags "-X main.version=$(shell cz version -p)" \
+		-ldflags "-X ${PROJECT_NAME}/internal/pkg/version.Version=$(shell cz version -p)" \
 		-o bin/$(basename $@) cmd/$(basename $@)/main.go
 
 # Build docker image

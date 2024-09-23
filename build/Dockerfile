@@ -25,7 +25,7 @@ RUN go mod download
 
 RUN go build \
       -a -installsuffix cgo \
-      -ldflags "-X main.version=${APP_VERSION}" \
+      -ldflags "-X github.com/$USER_NAME/$REPORT_NAME/internal/pkg/version.Version=${APP_VERSION}" \
       -o ${APP_NAME} \
       cmd/${APP_NAME}/main.go
 

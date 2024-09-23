@@ -17,6 +17,7 @@ import (
 	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/databuilder"
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
+	"github.com/sergiotejon/pipeManager/internal/pkg/version"
 )
 
 // LaunchJob creates a new Kubernetes Job with the given request ID and pipeline data
@@ -66,7 +67,7 @@ func LaunchJob(requestID string, pipelineData *databuilder.PipelineData) error {
 			Name: jobName,
 			Labels: map[string]string{
 				"handleBy":               "pipeManager",
-				"pipe-manager/Version":   "v1", // TODO: Get the version from the build
+				"pipe-manager/Version":   version.GetVersion(),
 				"pipe-manager/RequestID": requestID,
 				"pipe-manager/Route":     pipelineData.Name,
 				"pipe-manager/Event":     pipelineData.Event,

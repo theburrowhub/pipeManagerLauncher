@@ -10,6 +10,7 @@ import (
 	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/httpServer"
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
+	"github.com/sergiotejon/pipeManager/internal/pkg/version"
 )
 
 var (
@@ -17,7 +18,6 @@ var (
 	defaultListenPort = 80                       // defaultListenPort is the default port to listen on
 	configFile        string                     // configFile is the path to the configuration file
 	listenPort        int                        // listenPort is the port to listen on
-	version           = "dev"                    // version is the version of the application
 	showVersion       bool                       // showVersion is a flag to show the version
 )
 
@@ -30,7 +30,7 @@ func main() {
 		Run: func(cmd *cobra.Command, args []string) {
 			// Show version
 			if showVersion {
-				fmt.Println(version)
+				fmt.Println(version.GetVersion())
 				os.Exit(0)
 			}
 
