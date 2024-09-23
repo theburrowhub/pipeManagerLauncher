@@ -106,16 +106,29 @@ webhook:
 #
 # Configuration for Pipeline Launcher
 #
-# TODO: Documentation
 launcher:
-  imageName: "alpine"
-  pullPolicy: "IfNotPresent"
-  tag: "latest"
+  imageName: "alpine"         # Docker image to use for launching pipeline jobs.
+  pullPolicy: "IfNotPresent"  # Image pull policy for the pipeline job.
+                              # Options:
+                              # - "Always": Always pull the image, even if it exists locally.
+                              # - "IfNotPresent": Pull the image only if it does not exist locally.
+                              # - "Never": Never pull the image, only use it if it exists locally.
+                              #
+                              # Example:
+                              # - Set to "IfNotPresent" to avoid pulling the image repeatedly if it is already available locally.
+  tag: "latest"               # Tag of the Docker image to use for launching pipeline jobs.
 
-  namespace: ""                       # Namespace where the pipeline will be executed. Leave empty for the default namespace. (Current namespace?)
+  namespace: ""                       # Namespace where the pipeline will be launched. Leave empty for the default namespace.
   jobNamePrefix: "pipeline-launcher"  # Prefix for the job name created for each webhook event. The job name will be appended
                                       # with a unique identifier. (e.g., pipeline-launcher-<unique-id>).
                                       # Ensure that the prefix does not exceed 25 characters to avoid Kubernetes naming restrictions of 63 characters.
 
   timeout: 600  # Timeout in seconds for the pipeline job to complete. If the job exceeds this duration, it will be terminated.
                 # Adjust this value based on the expected duration of your pipeline jobs.
+
+  gitSecret: "webhook-git-secret"  # Name of the Kubernetes secret containing the Git credentials for cloning the repository.
+                                   # Ensure that the secret is created in the same namespace where the pipeline will be launched.
+                                   # The secret must contain the following keys:
+                                   # - "username": Git username.
+                                   # - "password": Git password or personal access token.
+                                   # - "sshPrivateKey": SSH private key for Git authentication (optional).
