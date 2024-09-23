@@ -3,11 +3,14 @@ APPS := dashboard.bin pipeline-converter.bin webhook-listener.bin cleaner.bin
 IMAGES := dashboard.image pipeline-converter.image webhook-listener.image cleaner.image
 
 # Local Container Registry
-REGISTRY_NAME=localhost:50601
+REGISTRY_NAME=localhost:57925
 
 # K3s cluster configuration
 K3S_CLUSTER_NAME=k3s-default
 KUBECONFIG=$(PWD)/kubeconfig
+
+# Project name
+PROJECT_NAME=github.com/sergiotejon/pipeManager
 
 # TODO: add deploy targets
 
@@ -46,15 +49,18 @@ deploy: ## Deploy applications to devel k8s cluster
 # Build go application
 $(APPS):
 	@echo "Building $(basename $@)"
-	go build -o bin/$(basename $@) cmd/$(basename $@)/main.go
+	go build \
+		-ldflags "-X main.version=$(shell cz version -p)" \
+		-o bin/$(basename $@) cmd/$(basename $@)/main.go
 
 # Build docker image
 $(IMAGES):
 	docker build \
 		-f build/Dockerfile \
 		--build-arg APP_NAME=$(basename $@) \
-		-t ${REGISTRY_NAME}/$(basename $@):latest .
-	docker push ${REGISTRY_NAME}/$(basename $@):latest
+		--build-arg APP_VERSION=$(shell cz version -p) \
+		-t ${REGISTRY_NAME}/$(basename $@):$(shell cz version -p) .
+	docker push ${REGISTRY_NAME}/$(basename $@):$(shell cz version -p)
 
 clean: ## Clean up
 	@echo "Cleaning up"

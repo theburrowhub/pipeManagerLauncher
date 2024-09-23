@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"log"
+	"os"
 
 	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/httpServer"
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
@@ -16,6 +17,8 @@ var (
 	defaultListenPort = 80                       // defaultListenPort is the default port to listen on
 	configFile        string                     // configFile is the path to the configuration file
 	listenPort        int                        // listenPort is the port to listen on
+	version           = "dev"                    // version is the version of the application
+	showVersion       bool                       // showVersion is a flag to show the version
 )
 
 // main is the entrypoint for the application
@@ -25,6 +28,12 @@ func main() {
 		Use:   "pipe-manager",
 		Short: "Pipe Manager CLI",
 		Run: func(cmd *cobra.Command, args []string) {
+			// Show version
+			if showVersion {
+				fmt.Println(version)
+				os.Exit(0)
+			}
+
 			// Run the application
 			app()
 		},
@@ -32,6 +41,7 @@ func main() {
 
 	rootCmd.Flags().StringVarP(&configFile, "config", "c", defaultConfigFile, "Path to the config file")
 	rootCmd.Flags().IntVarP(&listenPort, "listen", "l", defaultListenPort, "Listener port")
+	rootCmd.Flags().BoolVarP(&showVersion, "version", "v", false, "Print the version")
 
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatalf("Error executing command: %v", err)
