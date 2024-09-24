@@ -1,0 +1,19 @@
+apiVersion: v2
+name: webhook-listener
+description: |
+  This Helm Chart deploys pipeManager, a Go-based application designed to automate pipeline management 
+  using Tekton CI/CD. The deployment includes:
+  
+  1. Webhook Service: Captures webhook events that trigger the creation and execution of Kubernetes jobs. 
+     These jobs prepare a pipeline that will be managed and executed by Tekton.
+  2. Cleanup Service: Responsible for deleting Kubernetes jobs and other resources generated during the 
+     event processing, ensuring a clean and efficient environment.
+  
+  This chart is ideal for automating pipelines in a Kubernetes environment, maintaining control over the creation 
+  and cleanup of related resources.
+
+type: application
+
+version: 0.1.0
+
+appVersion: 0.0.2

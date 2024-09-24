@@ -1,0 +1,2 @@
+image:
+  repository: k3d-registry:5111/webhook-listener
