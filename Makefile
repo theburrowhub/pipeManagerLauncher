@@ -73,7 +73,7 @@ $(APPS):
 # Build docker image
 $(IMAGES):
 	docker build \
-		-f build/Dockerfile \
+		-f Dockerfile \
 		--build-arg APP_NAME=$(basename $@) \
 		--build-arg APP_VERSION=$(shell cz version -p) \
 		-t ${K3D_REGISTRY_NAME}:${K3D_REGISTRY_PORT}/$(basename $@):$(shell cz version -p) .

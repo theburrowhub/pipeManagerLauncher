@@ -30,7 +30,7 @@ RUN go build \
       cmd/${APP_NAME}/main.go
 
 # Final stage
-FROM alpine:latest
+FROM alpine:3.20.3
 
 # Build arguments
 ARG APP_NAME=app

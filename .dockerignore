@@ -2,6 +2,6 @@
 .dockerignore
 Makefile
 bin
-build
+Dockerfile
 deploy/charts
 docs
