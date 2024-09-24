@@ -59,6 +59,10 @@ func HttpServer(listenPort int) error {
 		http.HandleFunc(fmt.Sprintf("POST %s", route.Path), webhookHandler)
 	}
 
+	// TODO:
+	// Add route to health check endpoint
+	// Move webhookHandler to a separate file
+
 	// Capture termination signals
 	done := make(chan struct{})
 	sigChan := make(chan os.Signal, 1)
