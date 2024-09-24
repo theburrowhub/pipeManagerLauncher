@@ -4,6 +4,10 @@
     "tag_format": "$version",
     "version_scheme": "semver",
     "version": "0.0.2",
+    "version_files": [
+      "charts/webhook-listener/Chart.yaml:version",
+      "charts/webhook-listener/Chart.yaml:appVersion"
+    ],
     "update_changelog_on_bump": true,
     "major_version_zero": true
   }
