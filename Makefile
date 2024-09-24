@@ -60,8 +60,8 @@ deploy: ## Deploy applications to devel k8s cluster
 	@echo "Deploying applications to devel k8s cluster..."
 	helm upgrade --install --wait --timeout 300s \
 		--create-namespace --namespace pipe-manager \
-		-f env/devel/values.yaml \
-		webhook-listener ./charts/webhook-listener
+		-f deploy/env/devel/values.yaml \
+		webhook-listener ./deploy/charts/webhook-listener
 
 # Build go application
 $(APPS):

@@ -3,5 +3,5 @@
 Makefile
 bin
 build
-charts
+deploy/charts
 docs
