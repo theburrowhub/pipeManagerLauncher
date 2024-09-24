@@ -17,8 +17,11 @@ import (
 	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/databuilder"
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
-	"github.com/sergiotejon/pipeManager/internal/pkg/version"
 )
+
+const containerName = "launcher"
+
+var jobCommand = []string{"sh", "-c", "export && sleep 60"}
 
 // LaunchJob creates a new Kubernetes Job with the given request ID and pipeline data
 // It returns an error if the job cannot be created
@@ -64,36 +67,22 @@ func LaunchJob(requestID string, pipelineData *databuilder.PipelineData) error {
 	// Job definition
 	job := &batchv1.Job{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: jobName,
-			Labels: map[string]string{
-				"handleBy":               "pipeManager",
-				"pipe-manager/Version":   version.GetVersion(),
-				"pipe-manager/RequestID": requestID,
-				"pipe-manager/Route":     pipelineData.Name,
-				"pipe-manager/Event":     pipelineData.Event,
-			},
+			Name:   jobName,
+			Labels: getLabels(requestID, pipelineData),
 		},
 		Spec: batchv1.JobSpec{
 			ActiveDeadlineSeconds: &jobTimeout,
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Labels: map[string]string{
-						"handleBy":               "pipeManager",
-						"pipe-manager/Version":   "v1", // TODO: Get the version from the build
-						"pipe-manager/RequestID": requestID,
-						"pipe-manager/Route":     pipelineData.Name,
-						"pipe-manager/Event":     pipelineData.Event,
-					},
+					Labels: getLabels(requestID, pipelineData),
 				},
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{
 						{
-							Name:  "alpine",
-							Image: "alpine",
-							Command: []string{
-								"sh", "-c", "export && sleep 60",
-							},
-							Env: env, // Environment variables with the pipeline data
+							Name:    containerName,
+							Image:   GetLauncherImage(),
+							Command: jobCommand,
+							Env:     env, // Environment variables with the pipeline data
 						},
 					},
 					RestartPolicy: corev1.RestartPolicyNever,

@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/pipeline"
 	"github.com/spf13/cobra"
 	"log"
 	"os"
@@ -76,7 +77,8 @@ func app() {
 		"listenPort", listenPort,
 		"logLevel", config.Webhook.Data.Log.Level,
 		"logFormat", config.Webhook.Data.Log.Format,
-		"logFile", config.Webhook.Data.Log.File)
+		"logFile", config.Webhook.Data.Log.File,
+		"launcherImage", pipeline.GetLauncherImage())
 
 	// Launch web server
 	err = httpServer.HttpServer(listenPort)

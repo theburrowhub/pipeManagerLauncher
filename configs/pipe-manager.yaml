@@ -116,7 +116,8 @@ launcher:
                               #
                               # Example:
                               # - Set to "IfNotPresent" to avoid pulling the image repeatedly if it is already available locally.
-  tag: "latest"               # Tag of the Docker image to use for launching pipeline jobs.
+  tag: ""                     # Tag of the Docker image to use for launching pipeline jobs.
+                              # Leave empty to use the current version of pipeManager.
 
   namespace: ""                       # Namespace where the pipeline will be launched. Leave empty for the default namespace.
   jobNamePrefix: "pipeline-launcher"  # Prefix for the job name created for each webhook event. The job name will be appended
