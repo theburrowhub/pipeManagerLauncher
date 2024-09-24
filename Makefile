@@ -2,10 +2,9 @@
 APPS := dashboard.bin pipeline-converter.bin webhook-listener.bin cleaner.bin
 IMAGES := dashboard.image pipeline-converter.image webhook-listener.image cleaner.image
 
-# Local Container Registry
-REGISTRY_NAME=localhost:57925
-
-# K3s cluster configuration
+# Local Development Environment
+K3D_REGISTRY_NAME=k3d-registry
+K3D_REGISTRY_PORT=5111
 K3S_CLUSTER_NAME=k3s-default
 KUBECONFIG=$(PWD)/kubeconfig
 
@@ -19,6 +18,8 @@ help: ## Display this help
 	@echo ""
 	@echo "Common targets:"
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@echo ""
+	@echo "*** Run \033[36mmake setup\033[0m to set up local development environment. ***"
 	@echo ""
 	@echo "To build go applications:"
 	@for app in $(APPS); do \
@@ -61,6 +62,18 @@ $(IMAGES):
 		--build-arg APP_VERSION=$(shell cz version -p) \
 		-t ${REGISTRY_NAME}/$(basename $@):$(shell cz version -p) .
 	docker push ${REGISTRY_NAME}/$(basename $@):$(shell cz version -p)
+
+setup: ## Set up local development environment
+	@echo "Setting up local development environment..."
+	k3d registry create registry -p ${K3D_REGISTRY_PORT}
+	k3d cluster create --registry-use ${K3D_REGISTRY_NAME}:${K3D_REGISTRY_PORT} -a 3
+	@echo "Local development environment set up"
+
+remove: ## Remove local development environment
+	@echo "Removing local development environment..."
+	k3d cluster delete ${K3S_CLUSTER_NAME}
+	k3d registry delete ${K3D_REGISTRY_NAME}
+	@echo "Local development environment removed"
 
 clean: ## Clean up
 	@echo "Cleaning up"
