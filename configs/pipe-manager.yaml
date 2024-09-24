@@ -107,7 +107,7 @@ webhook:
 # Configuration for Pipeline Launcher
 #
 launcher:
-  imageName: "alpine"         # Docker image to use for launching pipeline jobs.
+  imageName: "k3d-registry:5111/launcher"  # Docker image to use for launching pipeline jobs.
   pullPolicy: "IfNotPresent"  # Image pull policy for the pipeline job.
                               # Options:
                               # - "Always": Always pull the image, even if it exists locally.
@@ -116,8 +116,8 @@ launcher:
                               #
                               # Example:
                               # - Set to "IfNotPresent" to avoid pulling the image repeatedly if it is already available locally.
-  tag: ""                     # Tag of the Docker image to use for launching pipeline jobs.
-                              # Leave empty to use the current version of pipeManager.
+  tag: ""  # Tag of the Docker image to use for launching pipeline jobs.
+           # Leave empty to use the current version of pipeManager.
 
   namespace: ""                       # Namespace where the pipeline will be launched. Leave empty for the default namespace.
   jobNamePrefix: "pipeline-launcher"  # Prefix for the job name created for each webhook event. The job name will be appended
