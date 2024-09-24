@@ -3,12 +3,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/pipeline"
-	"github.com/spf13/cobra"
 	"log"
 	"os"
 
+	"github.com/spf13/cobra"
+
 	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/httpServer"
+	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/pipeline"
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
 	"github.com/sergiotejon/pipeManager/internal/pkg/version"
