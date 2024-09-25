@@ -7,8 +7,7 @@ webhook:
                 # For example, set to the number of CPU cores for optimal performance.
 
   log:
-      level: "debug"
-      #level: "info"     # Logging level for the webhook server.
+      level: "info"     # Logging level for the webhook server.
                         # Common levels:
                         # - "debug": Detailed information, typically used for diagnosing problems.
                         # - "info": Confirmation that things are working as expected.
@@ -30,8 +29,7 @@ webhook:
                         # - Use "stdout" if your deployment environment captures and manages logs.
                         # - Specify a file path to persist logs on the server.
 
-      #format: "json"
-      format: "text"    # Format of the log messages.
+      format: "json"    # Format of the log messages.
                         # Options:
                         # - "text": Plain text logs, human-readable.
                         # - "json": Logs are formatted as JSON objects, useful for structured logging and integration with logging systems.
@@ -119,7 +117,7 @@ launcher:
   tag: ""  # Tag of the Docker image to use for launching pipeline jobs.
            # Leave empty to use the current version of pipeManager.
 
-  namespace: ""                       # Namespace where the pipeline will be launched. Leave empty for the default namespace.
+  namespace: ""                       # Namespace where the pipeline will be launched. Leave empty for the namespace where the webhook server is deployed.
   jobNamePrefix: "pipeline-launcher"  # Prefix for the job name created for each webhook event. The job name will be appended
                                       # with a unique identifier. (e.g., pipeline-launcher-<unique-id>).
                                       # Ensure that the prefix does not exceed 25 characters to avoid Kubernetes naming restrictions of 63 characters.
