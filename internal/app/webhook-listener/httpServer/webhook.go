@@ -12,6 +12,7 @@ import (
 // webhookHandler is the function that handles incoming webhook requests
 // It reads the request body and headers, creates a job, and sends it to the worker pool
 func webhookHandler(w http.ResponseWriter, r *http.Request) {
+	// Defer closing the request body to prevent resource leaks
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
