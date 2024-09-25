@@ -63,6 +63,11 @@ deploy: ## Deploy applications to devel k8s cluster
 		-f deploy/env/devel/values.yaml \
 		webhook-listener ./deploy/charts/webhook-listener
 
+release: ## Release applications to prod k8s cluster
+	@echo "TODO: Release applications"
+	@echo goreleaser build --snapshot
+	@echo goreleaser release --snapshot
+
 # Build go application
 $(APPS):
 	@echo "Building $(basename $@)"
