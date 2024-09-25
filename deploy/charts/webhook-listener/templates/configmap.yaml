@@ -1,1 +1,23 @@
-# TODO
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "webhook-listener.fullname" . }}
+  labels:
+    {{- include "webhook-listener.labels" . | nindent 4 }}
+data:
+  config.yaml: |-
+    webhook:
+      workers: {{ .Values.webhook.workers }}
+      log:
+        level: {{ .Values.webhook.log.level | quote }}
+        file: {{ .Values.webhook.log.file | quote }}
+        format: {{ .Values.webhook.log.format | quote }}
+      routes: {{ .Values.webhook.routes | toYaml | nindent 8 }}
+    launcher:
+      imageName: {{ .Values.launcher.imageName | quote }}
+      pullPolicy: {{ .Values.launcher.pullPolicy | quote }}
+      tag: {{ .Values.launcher.tag | quote }}
+      namespace: {{ .Values.launcher.namespace | quote }}
+      jobNamePrefix: {{ .Values.launcher.jobNamePrefix | quote }}
+      timeout: {{ .Values.launcher.timeout }}
+      gitSecret: {{ .Values.launcher.gitSecret | quote }}
