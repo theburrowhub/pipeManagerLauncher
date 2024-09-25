@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "webhook-listener.fullname" . }}
+  labels:
+    {{- include "webhook-listener.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "webhook-listener.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ include "webhook-listener.fullname" . }}-job
+  apiGroup: rbac.authorization.k8s.io
