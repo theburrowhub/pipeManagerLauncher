@@ -1,3 +1,5 @@
+.PHONY: deploy release clean
+
 # Local variables
 APPS := dashboard.bin pipeline-converter.bin webhook-listener.bin cleaner.bin
 IMAGES := dashboard.image pipeline-converter.image webhook-listener.image cleaner.image
@@ -11,7 +13,7 @@ KUBECONFIG=$(PWD)/kubeconfig
 # Project name
 PROJECT_NAME=github.com/sergiotejon/pipeManager
 
-# TODO: add deploy targets
+# TODO: add devbox... y commitlint
 
 help: ## Display this help
 	@echo "Usage: make [target]"
@@ -31,7 +33,7 @@ help: ## Display this help
 		echo "  \033[36mmake $$image\033[0m"; \
 	done
 
-setup: ## Set up local development environment
+setup-cluster: ## Set up local development environment
 	@echo "Setting up local development environment..."
 	k3d registry create registry -p ${K3D_REGISTRY_PORT}
 	k3d cluster create --registry-use ${K3D_REGISTRY_NAME}:${K3D_REGISTRY_PORT} -a 3
@@ -40,11 +42,12 @@ setup: ## Set up local development environment
 retrieve-kubeconfig: ## Retrieve kubeconfig for local development environment
 	@echo "Retrieving kubeconfig for local development environment"
 	@k3d kubeconfig get ${K3S_CLUSTER_NAME} > ${KUBECONFIG}
+	@chmod 600 ${KUBECONFIG}
 	@echo "export KUBECONFIG=${KUBECONFIG}" > set-kubeconfig.sh
 	@echo "Kubeconfig retrieved"
 	@echo "Run 'source set-kubeconfig.sh' to set the kubeconfig environment variable for the current shell"
 
-remove: ## Remove local development environment
+remove-cluster: ## Remove local development environment
 	@echo "Removing local development environment..."
 	k3d cluster delete ${K3S_CLUSTER_NAME}
 	k3d registry delete ${K3D_REGISTRY_NAME}
@@ -59,9 +62,14 @@ images: $(IMAGES) ## Build all docker images
 deploy: ## Deploy applications to devel k8s cluster
 	@echo "Deploying applications to devel k8s cluster..."
 	helm upgrade --install --wait --timeout 300s \
-		--create-namespace --namespace pipe-manager \
-		-f deploy/env/devel/values.yaml \
+		--kubeconfig ${KUBECONFIG} --create-namespace --namespace pipe-manager \
+		-f configs/devel/values.yaml \
+		-f configs/devel/config.yaml \
 		webhook-listener ./deploy/charts/webhook-listener
+
+delete: ## Delete applications from devel k8s cluster
+	@echo "Deleting applications from devel k8s cluster..."
+	helm delete --kubeconfig ${KUBECONFIG} --namespace pipe-manager webhook-listener
 
 release: ## Release applications to prod k8s cluster
 	@echo "TODO: Release applications"
