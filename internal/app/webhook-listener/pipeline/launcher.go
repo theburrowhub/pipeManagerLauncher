@@ -3,16 +3,8 @@ package pipeline
 
 import (
 	"context"
-	"fmt"
-	"os"
-	"path/filepath"
-	"strings"
 
-	batchv1 "k8s.io/api/batch/v1"
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/databuilder"
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
@@ -32,72 +24,27 @@ func LaunchJob(requestID string, pipelineData *databuilder.PipelineData) error {
 	namespace := config.Launcher.Data.Namespace
 	jobTimeout := config.Launcher.Data.Timeout
 
-	// Load kubeconfig
-	configPath := filepath.Join(os.Getenv("HOME"), ".kube", "config")
-	cfg, err := clientcmd.BuildConfigFromFlags("", configPath)
-	if err != nil {
-		return err
-	}
-
-	// Client object for interacting with Kubernetes API
-	client, err := kubernetes.NewForConfig(cfg)
+	// Get the Kubernetes client
+	client, err := getKubernetesClient()
 	if err != nil {
 		return err
 	}
 
 	// Convert the environment variables map into an array of corev1.EnvVar objects
-	var env []corev1.EnvVar
-	for key, value := range pipelineData.Variables {
-		env = append(env, corev1.EnvVar{
-			Name:  fmt.Sprintf("PIPELINE_VARIABLE_%s", strings.ToUpper(key)),
-			Value: value,
-		})
-	}
+	env := getEnvVarsFromPipelineData(pipelineData)
 
-	// Add the pipeline data to the environment variables (commit and repository)
-	env = append(env, corev1.EnvVar{
-		Name:  "PIPELINE_COMMIT",
-		Value: pipelineData.Commit,
-	})
-	env = append(env, corev1.EnvVar{
-		Name:  "PIPELINE_REPOSITORY",
-		Value: pipelineData.Repository,
-	})
-
-	// Job definition
-	job := &batchv1.Job{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:   jobName,
-			Labels: getLabels(requestID, pipelineData),
-		},
-		Spec: batchv1.JobSpec{
-			ActiveDeadlineSeconds: &jobTimeout,
-			Template: corev1.PodTemplateSpec{
-				ObjectMeta: metav1.ObjectMeta{
-					Labels: getLabels(requestID, pipelineData),
-				},
-				Spec: corev1.PodSpec{
-					Containers: []corev1.Container{
-						{
-							Name:    containerName,
-							Image:   GetLauncherImage(),
-							Command: jobCommand,
-							Env:     env, // Environment variables with the pipeline data
-						},
-					},
-					RestartPolicy: corev1.RestartPolicyNever,
-				},
-			},
-		},
-	}
-
-	// Build the Job
+	// Get the current namespace if not provided. "default" if not found
 	if namespace == "" {
-		namespace = "default"
-		if ns, err := client.CoreV1().Namespaces().Get(context.TODO(), "default", metav1.GetOptions{}); err == nil && ns != nil {
-			namespace = ns.Name
+		namespace, err = getCurrentNamespace()
+		if err != nil {
+			logging.Logger.Warn("Error getting current namespace", "error", err, "defaultNamespace", namespace)
 		}
 	}
+
+	// Job definition
+	job := createJobObject(jobName, requestID, pipelineData, namespace, jobTimeout, containerName, jobCommand, env)
+
+	// Build the Job
 	jobClient := client.BatchV1().Jobs(namespace)
 	result, err := jobClient.Create(context.TODO(), job, metav1.CreateOptions{})
 	if err != nil {
