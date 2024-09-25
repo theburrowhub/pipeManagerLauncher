@@ -21,16 +21,16 @@ help: ## Display this help
 	@echo "Common targets:"
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 	@echo ""
-	@echo -e "*** Run \033[36mmake setup\033[0m to set up local development environment. ***"
+	@echo "*** Run \033[36mmake setup\033[0m to set up local development environment. ***"
 	@echo ""
 	@echo "To build go applications:"
 	@for app in $(APPS); do \
-		echo -e "  \033[36mmake $$app\033[0m"; \
+		echo "  \033[36mmake $$app\033[0m"; \
 	done
 	@echo ""
 	@echo "and docker images:"
 	@for image in $(IMAGES); do \
-		echo -e "  \033[36mmake $$image\033[0m"; \
+		echo "  \033[36mmake $$image\033[0m"; \
 	done
 
 setup-cluster: ## Set up local development environment
@@ -39,7 +39,7 @@ setup-cluster: ## Set up local development environment
 	k3d cluster create --registry-use ${K3D_REGISTRY_NAME}:${K3D_REGISTRY_PORT} -a 3
 	@echo "Local development environment set up"
 
-retrieve-kubeconfig: ## Retrieve kubeconfig for local development environment
+get-kubeconfig: ## Retrieve kubeconfig for local development environment
 	@echo "Retrieving kubeconfig for local development environment"
 	@k3d kubeconfig get ${K3S_CLUSTER_NAME} > ${KUBECONFIG}
 	@chmod 600 ${KUBECONFIG}
@@ -70,7 +70,7 @@ deploy: ## Deploy applications to devel k8s cluster
 		-f configs/devel/config.yaml \
 		webhook-listener ./deploy/charts/webhook-listener
 
-delete: ## Delete applications from devel k8s cluster
+uninstall: ## Delete applications from devel k8s cluster
 	@echo "Deleting applications from devel k8s cluster..."
 	helm delete --kubeconfig ${KUBECONFIG} --namespace pipe-manager webhook-listener
 
