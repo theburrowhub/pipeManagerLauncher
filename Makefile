@@ -1,4 +1,4 @@
-.PHONY: deploy release clean
+.PHONY: deploy release clean shell
 
 # Local variables
 APPS := dashboard.bin pipeline-converter.bin webhook-listener.bin cleaner.bin
@@ -13,7 +13,7 @@ KUBECONFIG=$(PWD)/kubeconfig
 # Project name
 PROJECT_NAME=github.com/sergiotejon/pipeManager
 
-# TODO: add devbox... y commitlint
+# TODO: add commitlint
 
 help: ## Display this help
 	@echo "Usage: make [target]"
@@ -21,16 +21,16 @@ help: ## Display this help
 	@echo "Common targets:"
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 	@echo ""
-	@echo "*** Run \033[36mmake setup\033[0m to set up local development environment. ***"
+	@echo -e "*** Run \033[36mmake setup\033[0m to set up local development environment. ***"
 	@echo ""
 	@echo "To build go applications:"
 	@for app in $(APPS); do \
-		echo "  \033[36mmake $$app\033[0m"; \
+		echo -e "  \033[36mmake $$app\033[0m"; \
 	done
 	@echo ""
 	@echo "and docker images:"
 	@for image in $(IMAGES); do \
-		echo "  \033[36mmake $$image\033[0m"; \
+		echo -e "  \033[36mmake $$image\033[0m"; \
 	done
 
 setup-cluster: ## Set up local development environment
@@ -52,6 +52,9 @@ remove-cluster: ## Remove local development environment
 	k3d cluster delete ${K3S_CLUSTER_NAME}
 	k3d registry delete ${K3D_REGISTRY_NAME}
 	@echo "Local development environment removed"
+
+shell: ## Open a shell in the devbox
+	devbox shell
 
 all: $(APPS) $(IMAGES) ## Build all go applications and docker images
 
