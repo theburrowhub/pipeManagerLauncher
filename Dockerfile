@@ -50,4 +50,4 @@ WORKDIR /app
 COPY --from=builder /go/src/github.com/${USER_NAME}/${REPORT_NAME}/${APP_NAME} ./app
 
 ENTRYPOINT ["./app"]
-CMD ["-c", "./config/pipe-manager.conf", "-l", "80"]
+CMD ["-c", "/etc/pipe-manager/config.yaml", "-l", "80"]
