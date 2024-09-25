@@ -75,7 +75,7 @@ delete: ## Delete applications from devel k8s cluster
 	helm delete --kubeconfig ${KUBECONFIG} --namespace pipe-manager webhook-listener
 
 release: ## Release applications to prod k8s cluster
-	@echo "TODO: Release applications"
+	@echo "TODO: Release applications and helm charts"
 	@echo goreleaser build --snapshot
 	@echo goreleaser release --snapshot
 
@@ -100,6 +100,8 @@ clean: ## Clean up
 	rm -rf ${KUBECONFIG}
 	rm -rf set-kubeconfig.sh
 	rm -rf bin/*
+	rm -rf dist/*
+	rm -rf vendor/*
 	for image in $(IMAGES); do \
 		docker rmi -f ${REGISTRY_NAME}/$${image%.image}:latest || true; \
 	done
