@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"os/signal"
@@ -16,8 +15,6 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/databuilder"
-	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/pipeline"
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
 )
@@ -54,16 +51,10 @@ func HttpServer(listenPort int) error {
 	maxWorkers := config.Webhook.Data.Workers
 	jobQueue = make(chan Job, maxWorkers)
 
-	// Each allowed route from config file
-	for _, route := range config.Webhook.Data.Routes {
-		http.HandleFunc(fmt.Sprintf("POST %s", route.Path), webhookHandler)
-	}
+	// Register routes
+	routes()
 
-	// TODO:
-	// Add route to health check endpoint
-	// Move webhookHandler to a separate file
-
-	// Capture termination signals
+	// Setup termination signals
 	done := make(chan struct{})
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGTERM, syscall.SIGINT)
@@ -104,60 +95,17 @@ func HttpServer(listenPort int) error {
 	return nil
 }
 
-// webhookHandler is the function that handles incoming webhook requests
-// It reads the request body and headers, creates a job, and sends it to the worker pool
-func webhookHandler(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
+// routes registers the allowed routes for the HTTP server
+func routes() {
+	// Health check endpoint
+	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("OK"))
+	})
 
-	// Read the body as a json.RawMessage
-	bodyBytes, err := io.ReadAll(r.Body)
-	if err != nil {
-		logging.Logger.Error("Error reading request body", "error", fmt.Sprintf("%v", err))
-		http.Error(w, "Error reading request body", http.StatusInternalServerError)
-		return
-	}
-	var jsonCheck interface{}
-	err = json.Unmarshal(bodyBytes, &jsonCheck)
-	if err != nil {
-		logging.Logger.Info("Error validating body as JSON", "error", fmt.Sprintf("%v", err))
-		http.Error(w, "Invalid JSON body", http.StatusBadRequest)
-		return
-	}
-
-	// Read headers as a map
-	headers := make(map[string][]string)
-	for name, values := range r.Header {
-		headers[name] = values
-	}
-
-	// TODO: Add additional validation here if needed
-	// Optional: Verify the HMAC of the webhook for added security.
-	// token := "my_webhook_secret"
-	// sig := r.Header.Get("X-Hub-Signature-256")
-	// if !verifySignature(body, sig, token) {
-	//     http.Error(w, "Invalid signature", http.StatusUnauthorized)
-	//     return
-	// }
-
-	// Create a job
-	resultChan := make(chan JobResult)
-	job := Job{
-		RequestURL: r.URL.String(),
-		Method:     r.Method,
-		Path:       r.URL.Path,
-		Args:       r.URL.Query(),
-		Headers:    headers,
-		Body:       json.RawMessage(bodyBytes),
-		ResultChan: resultChan,
-	}
-	jobQueue <- job // Send the job to the worker queue
-
-	// Send a response
-	result := <-resultChan
-	w.WriteHeader(result.StatusCode)
-	_, err = w.Write([]byte(result.Message))
-	if err != nil {
-		logging.Logger.Error("Error writing response", "error", fmt.Sprintf("%v", err))
+	// Each allowed route from config file
+	for _, route := range config.Webhook.Data.Routes {
+		http.HandleFunc(fmt.Sprintf("POST %s", route.Path), webhookHandler)
 	}
 }
 
@@ -195,35 +143,4 @@ func worker(wg *sync.WaitGroup, id int, done <-chan struct{}) {
 			logging.RemoveAttribute("requestID")
 		}
 	}
-}
-
-// processJob is the function that processes the incoming HTTP request
-// It creates a PipelineData object and launches a job
-// It returns an error if the job fails to launch
-func processJob(job Job) error {
-	var err error
-
-	logging.Logger.Info("Request received", "method", job.Method, "path", job.Path)
-	logging.Logger.Debug("Payload", "job", job)
-
-	var jsonData []byte
-	jsonData, err = json.MarshalIndent(job, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	var pipelineData *databuilder.PipelineData
-	pipelineData, err = databuilder.Run(jsonData, job.Path, config.Webhook.Data.Routes)
-	if err != nil {
-		return err
-	}
-
-	logging.Logger.Debug("Pipeline", "data", pipelineData)
-
-	err = pipeline.LaunchJob(job.RequestID, pipelineData)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
