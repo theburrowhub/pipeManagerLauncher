@@ -14,3 +14,4 @@
     [ ] Vault: use for storing secrets (https://developer.hashicorp.com/vault/docs/platform/k8s)
     [ ] ExternalSecrets: use for retrieving secrets using external services like AWS Secrets Manager, GCP Secret Manager,
         etc. or even Vault and save them in Kubernetes secrets (https://external-secrets.io/latest/)
+[ ] Custom Kubernetes Controller to manage launching of tekton pipelines instead of using kubernetes jobs.
