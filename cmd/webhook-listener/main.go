@@ -56,6 +56,11 @@ func app() {
 	var err error
 
 	// Load configuration
+	err = config.LoadCommonConfig(configFile)
+	if err != nil {
+		log.Fatalf("Error loading common config: %v", err)
+	}
+
 	err = config.LoadWebhookConfig(configFile)
 	if err != nil {
 		log.Fatalf("Error loading webhook config: %v", err)
@@ -67,7 +72,7 @@ func app() {
 	}
 
 	// Setup Logger
-	err = logging.SetupLogger(config.Webhook.Data.Log.Level, config.Webhook.Data.Log.Format, config.Webhook.Data.Log.File)
+	err = logging.SetupLogger(config.Common.Data.Log.Level, config.Common.Data.Log.Format, config.Common.Data.Log.File)
 	if err != nil {
 		log.Fatalf("Error configuring the logger: %v", err)
 	}
@@ -76,9 +81,9 @@ func app() {
 	logging.Logger.Info("Setup", "configFile", configFile,
 		"workers", config.Webhook.Data.Workers,
 		"listenPort", listenPort,
-		"logLevel", config.Webhook.Data.Log.Level,
-		"logFormat", config.Webhook.Data.Log.Format,
-		"logFile", config.Webhook.Data.Log.File,
+		"logLevel", config.Common.Data.Log.Level,
+		"logFormat", config.Common.Data.Log.Format,
+		"logFile", config.Common.Data.Log.File,
 		"launcherImage", pipeline.GetLauncherImage())
 
 	// Launch web server

@@ -1,11 +1,16 @@
 #
+# Common configuration for the applications of pipeManager.
+#
+common:
+  log:
+    level: "debug"
+    format: "text"
+
+
+#
 # Configuration for Webhook Server
 #
 webhook:
-  log:
-      level: "debug"
-      format: "text"
-
   routes:
     # Example route configuration for GitHub webhooks
     - name: github

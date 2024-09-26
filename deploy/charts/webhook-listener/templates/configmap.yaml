@@ -6,12 +6,13 @@ metadata:
     {{- include "webhook-listener.labels" . | nindent 4 }}
 data:
   config.yaml: |-
+    common:
+      log:
+        level: {{ .Values.log.level | quote }}
+        file: {{ .Values.log.file | quote }}
+        format: {{ .Values.log.format | quote }}
     webhook:
       workers: {{ .Values.webhook.workers }}
-      log:
-        level: {{ .Values.webhook.log.level | quote }}
-        file: {{ .Values.webhook.log.file | quote }}
-        format: {{ .Values.webhook.log.format | quote }}
       routes: {{ .Values.webhook.routes | toYaml | nindent 8 }}
     launcher:
       imageName: {{ .Values.launcher.imageName | quote }}
