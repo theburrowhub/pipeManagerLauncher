@@ -27,10 +27,11 @@ type Route struct {
 // Event represents a single event handler within a route.
 // It captures the event type, repository, commit, and variables.
 type Event struct {
-	Type       string            `yaml:"type"`                // Type of the event (e.g., "push")
-	Repository string            `yaml:"repository"`          // Repository name
-	Commit     string            `yaml:"commit,omitempty"`    // Commit hash
-	Variables  map[string]string `yaml:"variables,omitempty"` // Variables to be used in the event handler with its associated CEL expression
+	Type       string            `yaml:"type"`                 // Type of the event (e.g., "push")
+	Repository string            `yaml:"repository"`           // Repository name
+	Commit     string            `yaml:"commit,omitempty"`     // Commit hash (optional)
+	DiffCommit string            `yaml:"diffCommit,omitempty"` // Commit hash to compare with the current commit (optional)
+	Variables  map[string]string `yaml:"variables,omitempty"`  // Variables to be used in the event handler with its associated CEL expression (optional)
 }
 
 // WebhookStruct defines the webhook configuration.
