@@ -100,8 +100,8 @@ clean: ## Clean up
 	rm -rf ${KUBECONFIG}
 	rm -rf set-kubeconfig.sh
 	rm -rf bin/*
-	rm -rf dist/*
-	rm -rf vendor/*
+	rm -rf dist
+	rm -rf vendor
 	for image in $(IMAGES); do \
 		docker rmi -f ${REGISTRY_NAME}/$${image%.image}:latest || true; \
 	done
