@@ -2,45 +2,10 @@
 # Configuration for Webhook Server
 #
 webhook:
-  workers: 8    # Number of concurrent workers processing incoming webhook requests.
-                # Adjust this number based on your server's CPU cores and expected load.
-                # For example, set to the number of CPU cores for optimal performance.
-
   log:
-      level: "info"     # Logging level for the webhook server.
-                        # Common levels:
-                        # - "debug": Detailed information, typically used for diagnosing problems.
-                        # - "info": Confirmation that things are working as expected.
-                        # - "warning": An indication that something unexpected happened, or indicative of some problem.
-                        # - "error": A more serious problem, preventing some function from performing.
-                        # - "critical": A severe error, indicating that the program itself may be unable to continue running.
-                        #
-                        # Example:
-                        # - Set to "debug" for verbose logging during development or troubleshooting.
-                        # - Set to "info" or "warning" for production environments to reduce log verbosity.
+      level: "debel"
+      format: "text"
 
-      file: "stdout"    # Destination for log output.
-                        # Options:
-                        # - "stdout": Logs are printed to the standard output (useful for containerized environments).
-                        # - "stderr": Logs are printed to the standard error.
-                        # - File path (e.g., "/var/log/webhook.log"): Logs are written to the specified file.
-                        #
-                        # Example:
-                        # - Use "stdout" if your deployment environment captures and manages logs.
-                        # - Specify a file path to persist logs on the server.
-
-      format: "json"    # Format of the log messages.
-                        # Options:
-                        # - "text": Plain text logs, human-readable.
-                        # - "json": Logs are formatted as JSON objects, useful for structured logging and integration with logging systems.
-                        #
-                        # Example:
-                        # - Choose "text" for simplicity and ease of reading during development.
-                        # - Choose "json" if you are using log aggregators or need structured logs for analysis.
-
-  # This section defines the routes that the webhook server will listen to and how to handle incoming webhook payloads.
-  # CEL (Common Expression Language) expressions are used to extract and evaluate data from the JSON payload of webhooks.
-  # Ensure that the expressions are correctly formatted based on your webhook payload structure.
   routes:
     # Example route configuration for GitHub webhooks
     - name: github
@@ -52,7 +17,8 @@ webhook:
         # Handler for push events (branches and tags)
         - type: push
           repository: "data.body.payload.repository.ssh_url"  # (Mandatory) CEL expression to extract the repository name from the payload.
-          commit: "data.body.payload.head_commit.id"  # (Optional) CEL expression to extract the full commit SHA.
+          commit: "data.body.payload.after"  # (Optional) CEL expression to extract the full commit SHA.
+          diffCommit: "data.body.payload.before"  # (Optional) CEL expression to extract the previous commit SHA.
           variables: # Additional custom variables to be passed to the pipeline.
             ref: "data.body.payload.ref.replace('refs/heads/', '').replace('refs/tags/', '')" # CEL expression to extract the branch or tag name.
             tag: "data.body.payload.ref.startsWith('refs/tags/')"  # CEL expression to determine if the push includes a tag (true/false).
@@ -65,7 +31,8 @@ webhook:
         # Handler for pull request events
         - type: pullRequest
           repository: "data.body.pull_request.base.repo.ssh_url"  # (Mandatory) CEL expression to extract the repository name from the payload.
-          commit: "data.body.pull_request.base.sha"  # (Optional) CEL expression to get the commit SHA of the PR.
+          commit: "data.body.pull_request.head.sha"  # (Optional) CEL expression to get the commit SHA of the PR.
+          diffCommit: "data.body.pull_request.base.sha" # (Optional) CEL expression to get the base commit SHA of the PR.
           variables: # Additional custom variables to be passed to the pipeline.
             ref: "data.body.pull_request.base.ref"  # CEL expression to extract the branch reference of the PR.
             tag: "data.body.pull_request.merge_commit_sha != null"  # CEL expression to determine if the PR has been merged with a commit SHA.
@@ -96,6 +63,7 @@ webhook:
           repository: "data.body.repository_name"
           # This case does not include a commit field, but you can add it if needed.
           #commit: "'HEAD'"  # Example of a static value for the commit field. This case is using the string 'HEAD' to reach the latest commit.
+          #diffCommit: "'HEAD~1'"  # Example of a static value for the diffCommit field. This case is using the string 'HEAD~1' to reach the previous commit.
           variables:
             ref: "data.body.branch"
             custom: "'MY_CUSTOM_VALUE'"  # Custom value to be passed to the pipeline. Literal values must be enclosed in single quotes.
@@ -105,29 +73,10 @@ webhook:
 # Configuration for Pipeline Launcher
 #
 launcher:
-  imageName: "k3d-registry:5111/launcher"  # Docker image to use for launching pipeline jobs.
-  pullPolicy: "IfNotPresent"  # Image pull policy for the pipeline job.
-                              # Options:
-                              # - "Always": Always pull the image, even if it exists locally.
-                              # - "IfNotPresent": Pull the image only if it does not exist locally.
-                              # - "Never": Never pull the image, only use it if it exists locally.
-                              #
-                              # Example:
-                              # - Set to "IfNotPresent" to avoid pulling the image repeatedly if it is already available locally.
-  tag: ""  # Tag of the Docker image to use for launching pipeline jobs.
-           # Leave empty to use the current version of pipeManager.
+  imageName: "k3d-registry:5111/launcher"
+  pullPolicy: "Always"
+  tag: "0.2.0"
 
-  namespace: ""                       # Namespace where the pipeline will be launched. Leave empty for the namespace where the webhook server is deployed.
-  jobNamePrefix: "pipeline-launcher"  # Prefix for the job name created for each webhook event. The job name will be appended
-                                      # with a unique identifier. (e.g., pipeline-launcher-<unique-id>).
-                                      # Ensure that the prefix does not exceed 25 characters to avoid Kubernetes naming restrictions of 63 characters.
-
-  timeout: 600  # Timeout in seconds for the pipeline job to complete. If the job exceeds this duration, it will be terminated.
-                # Adjust this value based on the expected duration of your pipeline jobs.
-
-  gitSecret: "webhook-git-secret"  # Name of the Kubernetes secret containing the Git credentials for cloning the repository.
-                                   # Ensure that the secret is created in the same namespace where the pipeline will be launched.
-                                   # The secret must contain the following keys:
-                                   # - "username": Git username.
-                                   # - "password": Git password or personal access token.
-                                   # - "sshPrivateKey": SSH private key for Git authentication (optional).
+  gitSecret: [
+    "webhook-git-secret"
+  ]
