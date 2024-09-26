@@ -25,7 +25,12 @@ func getKubernetesClient() (*kubernetes.Clientset, error) {
 	if err != nil {
 		logging.Logger.Warn("Failed to get in-cluster config, trying local config", "error", err)
 		// Fallback to local kubeconfig
-		configPath := filepath.Join(os.Getenv("HOME"), ".kube", "config")
+		var configPath string
+		if os.Getenv("KUBECONFIG") != "" { // Get the kubeconfig path from the KUBECONFIG environment variable
+			configPath = os.Getenv("KUBECONFIG")
+		} else { // If not set, use the default path ~/.kube/config
+			configPath = filepath.Join(os.Getenv("HOME"), ".kube", "config")
+		}
 		cfg, err = clientcmd.BuildConfigFromFlags("", configPath)
 		if err != nil {
 			return nil, err
