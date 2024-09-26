@@ -1,36 +1,48 @@
 # Default values for webhook-listener.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
 
+# -- Configuration for the number of replicas to run.
 replicaCount: 1
 
+# -- Image configuration for the webhook listener.
 image:
-  repository: k3d-registry:5111/webhook-listener  # TODO: change this to the final image name
+  # -- Docker image to use for the webhook listener.
+  # TODO: change this to the final image name
+  repository: k3d-registry:5111/webhook-listener
+  # -- Image Pull Policy for the webhook listener image.
   pullPolicy: IfNotPresent
+  # -- Tag of the Docker image to use for the webhook listener.
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
+# -- Image Pull Secrets for the webhook listener.
 imagePullSecrets: []
+# -- Name to override the default resource name.
 nameOverride: ""
+# -- Full name to override the default resource fullname.
 fullnameOverride: ""
 
+# -- Configuration for the service account.
 serviceAccount:
-  # Specifies whether a service account should be created
+  # -- Specifies whether a service account should be created
   create: true
-  # Automatically mount a ServiceAccount's API credentials?
+  # -- Automatically mount a ServiceAccount's API credentials?
   automount: true
-  # Annotations to add to the service account
+  # -- Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
+  # -- The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+# -- Configuration for the pod. Annotations.
 podAnnotations: {}
+# -- Configuration for the pod. Labels.
 podLabels: {}
 
+# -- Configuration for the pod. Security Context.
 podSecurityContext: {}
   # fsGroup: 2000
 
+# -- Configuration for the container. Security Context.
 securityContext: {}
   # capabilities:
   #   drop:
@@ -39,26 +51,36 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+# -- Configuration for the service
 service:
+  # -- Type of service to create
   type: ClusterIP
+  # -- Port to expose the service on
   port: 80
 
+# -- Configuration for the ingress
 ingress:
+  # -- Enable Ingress
   enabled: false
+  # -- Ingress class to use
   className: ""
+  # -- Annotations to add to the ingress
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
+  # -- Host configuration for the ingress
   hosts:
     - host: chart-example.local
       paths:
         - path: /
           pathType: ImplementationSpecific
+  # -- TLS configuration for the ingress
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
 
+# -- Configuration for the resources
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -71,135 +93,155 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
+# -- Configuration for the liveness probes.
 livenessProbe:
   httpGet:
     path: /healthz
     port: http
+# -- Configuration for the readiness probes.
 readinessProbe:
   httpGet:
     path: /healthz
     port: http
 
+# -- Configuration for the auto-scaling.
 autoscaling:
+  # -- Enable auto-scaling
   enabled: false
+  # -- Minimum number of pods to run
   minReplicas: 1
+  # -- Maximum number of pods to run
   maxReplicas: 100
+  # -- Target CPU utilization percentage
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
-# Additional volumes on the output Deployment definition.
+# -- Additional volumes on the output Deployment definition.
 volumes: []
 # - name: foo
 #   secret:
 #     secretName: mysecret
 #     optional: false
 
-# Additional volumeMounts on the output Deployment definition.
+# -- Additional volumeMounts on the output Deployment definition.
 volumeMounts: []
 # - name: foo
 #   mountPath: "/etc/foo"
 #   readOnly: true
 
+# -- Configuration for the node selector.
 nodeSelector: {}
 
+# -- Configuration for the tolerations.
 tolerations: []
 
+# -- Configuration for the affinity.
 affinity: {}
 
-# --- Default configuration
-# TODO: Mejorar la ubicación de este configmap
+#
+# Default configuration
+#
 
-#
-# Configuration for Webhook Server
-#
+# -- Configuration for Webhook Server
 webhook:
-  workers: 8    # Number of concurrent workers processing incoming webhook requests.
-                # Adjust this number based on your server's CPU cores and expected load.
-                # For example, set to the number of CPU cores for optimal performance.
+  # -- Number of concurrent workers processing incoming webhook requests.
+  # Adjust this number based on your server's CPU cores and expected load.
+  workers: 8
 
+  # -- Logging configuration for the webhook server.
   log:
+    # -- Logging level for the webhook server.
+    # Common levels:
+    # - "debug": Detailed information, typically used for diagnosing problems.
+    # - "info": Confirmation that things are working as expected.
+    # - "warning": An indication that something unexpected happened, or indicative of some problem.
+    # - "error": A more serious problem, preventing some function from performing.
+    # - "critical": A severe error, indicating that the program itself may be unable to continue running.
+    #
+    # Example:
+    # - Set to "debug" for verbose logging during development or troubleshooting.
+    # - Set to "info" or "warning" for production environments to reduce log verbosity.
     level: "info"
-      # Common levels:
-      # - "debug": Detailed information, typically used for diagnosing problems.
-      # - "info": Confirmation that things are working as expected.
-      # - "warning": An indication that something unexpected happened, or indicative of some problem.
-      # - "error": A more serious problem, preventing some function from performing.
-      # - "critical": A severe error, indicating that the program itself may be unable to continue running.
-      #
-      # Example:
-      # - Set to "debug" for verbose logging during development or troubleshooting.
-      # - Set to "info" or "warning" for production environments to reduce log verbosity.
 
-    file: "stdout"    # Destination for log output.
-      # Options:
-      # - "stdout": Logs are printed to the standard output (useful for containerized environments).
-      # - "stderr": Logs are printed to the standard error.
-      # - File path (e.g., "/var/log/webhook.log"): Logs are written to the specified file.
-      #
-      # Example:
-      # - Use "stdout" if your deployment environment captures and manages logs.
+    # -- Destination for log output.
+    # Options:
+    # - "stdout": Logs are printed to the standard output (useful for containerized environments).
+    # - "stderr": Logs are printed to the standard error.
+    # - File path (e.g., "/var/log/webhook.log"): Logs are written to the specified file.
+    #
+    # Example:
+    # - Use "stdout" if your deployment environment captures and manages logs.
     # - Specify a file path to persist logs on the server.
+    file: "stdout"
 
-    format: "json"    # Format of the log messages.
-      # Options:
-      # - "text": Plain text logs, human-readable.
-      # - "json": Logs are formatted as JSON objects, useful for structured logging and integration with logging systems.
-      #
-      # Example:
-      # - Choose "text" for simplicity and ease of reading during development.
+    # -- Format of the log messages.
+    # Options:
+    # - "text": Plain text logs, human-readable.
+    # - "json": Logs are formatted as JSON objects, useful for structured logging and integration with logging systems.
+    #
+    # Example:
+    # - Choose "text" for simplicity and ease of reading during development.
     # - Choose "json" if you are using log aggregators or need structured logs for analysis.
+    format: "json"
 
+  # -- Routes configuration for the webhook server.
   # This section defines the routes that the webhook server will listen to and how to handle incoming webhook payloads.
   # CEL (Common Expression Language) expressions are used to extract and evaluate data from the JSON payload of webhooks.
   # Ensure that the expressions are correctly formatted based on your webhook payload structure.
+  # Example route configuration for GitHub webhooks
+  #    - name: github
+  #      path: /github  # The endpoint path where GitHub will send webhook payloads. Ensure this path is accessible
+  #      # and correctly configured in your GitHub repository settings.
+  #      eventType: "data.headers['X-Github-Event'][0]"  # CEL expression to retrieve the event.
+  #
+  #      events:
+  #        # Handler for push events (branches and tags)
+  #        - type: push
+  #          repository: "data.body.payload.repository.ssh_url"  # (Mandatory) CEL expression to extract the repository name from the payload.
+  #          commit: "data.body.payload.head_commit.id"  # (Optional) CEL expression to extract the full commit SHA.
+  #          variables: # Additional custom variables to be passed to the pipeline.
+  #            ref: "data.body.payload.ref.replace('refs/heads/', '').replace('refs/tags/', '')" # CEL expression to extract the branch or tag name.
+  #            tag: "data.body.payload.ref.startsWith('refs/tags/')"  # CEL expression to determine if the push includes a tag (true/false).
+  #            shortCommit: "data.body.payload.head_commit.id.substring(0,7)"  # CEL expression to get the first 7 characters of the commit SHA.
+  #            email: "data.body.payload.head_commit.author.email"  # CEL expression to extract the author's email from the commit.
+  #            author: "data.body.payload.head_commit.author.name"  # CEL expression to extract the author's name from the commit.
+  #            user: "data.body.payload.pusher.name"  # CEL expression to extract the pusher's username.
+  #            custom: "'MY_CUSTOM_VALUE'"  # Custom value to be passed to the pipeline. Literal values must be enclosed in single quotes.
   routes: []
-# Example route configuration for GitHub webhooks
-#    - name: github
-#      path: /github  # The endpoint path where GitHub will send webhook payloads. Ensure this path is accessible
-#      # and correctly configured in your GitHub repository settings.
-#      eventType: "data.headers['X-Github-Event'][0]"  # CEL expression to retrieve the event.
-#
-#      events:
-#        # Handler for push events (branches and tags)
-#        - type: push
-#          repository: "data.body.payload.repository.ssh_url"  # (Mandatory) CEL expression to extract the repository name from the payload.
-#          commit: "data.body.payload.head_commit.id"  # (Optional) CEL expression to extract the full commit SHA.
-#          variables: # Additional custom variables to be passed to the pipeline.
-#            ref: "data.body.payload.ref.replace('refs/heads/', '').replace('refs/tags/', '')" # CEL expression to extract the branch or tag name.
-#            tag: "data.body.payload.ref.startsWith('refs/tags/')"  # CEL expression to determine if the push includes a tag (true/false).
-#            shortCommit: "data.body.payload.head_commit.id.substring(0,7)"  # CEL expression to get the first 7 characters of the commit SHA.
-#            email: "data.body.payload.head_commit.author.email"  # CEL expression to extract the author's email from the commit.
-#            author: "data.body.payload.head_commit.author.name"  # CEL expression to extract the author's name from the commit.
-#            user: "data.body.payload.pusher.name"  # CEL expression to extract the pusher's username.
-#            custom: "'MY_CUSTOM_VALUE'"  # Custom value to be passed to the pipeline. Literal values must be enclosed in single quotes.
 
-#
-# Configuration for Pipeline Launcher
-#
+# -- Configuration for Pipeline Launcher
 launcher:
-  imageName: "k3d-registry:5111/launcher"  # Docker image to use for launching pipeline jobs.
-  pullPolicy: "IfNotPresent"  # Image pull policy for the pipeline job.
-    # Options:
-    # - "Always": Always pull the image, even if it exists locally.
-    # - "IfNotPresent": Pull the image only if it does not exist locally.
-    # - "Never": Never pull the image, only use it if it exists locally.
-    #
-    # Example:
-    # - Set to "IfNotPresent" to avoid pulling the image repeatedly if it is already available locally.
-  tag: ""  # Tag of the Docker image to use for launching pipeline jobs.
-           # Leave empty to use the current version of pipeManager.
+  # -- Docker image to use for launching pipeline jobs.
+  imageName: "k3d-registry:5111/launcher"
+  # -- Image pull policy for the pipeline job.
+  # Options:
+  # - "Always": Always pull the image, even if it exists locally.
+  # - "IfNotPresent": Pull the image only if it does not exist locally.
+  # - "Never": Never pull the image, only use it if it exists locally.
+  #
+  # Example:
+  # - Set to "IfNotPresent" to avoid pulling the image repeatedly if it is already available locally.
+  pullPolicy: "IfNotPresent"
+  # -- Tag of the Docker image to use for launching pipeline jobs.
+  # Leave empty to use the current version of pipeManager.
+  tag: ""
 
-  namespace: ""   # Namespace where the pipeline will be launched. Leave empty for the default namespace.
-  jobNamePrefix: "pipeline-launcher"  # Prefix for the job name created for each webhook event. The job name will be appended
-    # with a unique identifier. (e.g., pipeline-launcher-<unique-id>).
-    # Ensure that the prefix does not exceed 25 characters to avoid Kubernetes naming restrictions of 63 characters.
+  # -- Namespace where the pipeline will be launched. Leave empty to use the current namespace where the webhook server is deployed.
+  namespace: ""
+  # -- Prefix for the job name created for each webhook event. The job name will be appended with a unique identifier.
+  # (e.g., pipeline-launcher-<unique-id>).
+  # Ensure that the prefix does not exceed 25 characters to avoid Kubernetes naming restrictions of 63 characters.
+  jobNamePrefix: "pipeline-launcher"
 
-  timeout: 600  # Timeout in seconds for the pipeline job to complete. If the job exceeds this duration, it will be terminated.
+  # -- Timeout in seconds for the pipeline job to complete. If the job exceeds this duration, it will be terminated.
   # Adjust this value based on the expected duration of your pipeline jobs.
+  timeout: 600
 
-  gitSecret: ""  # Name of the Kubernetes secret containing the Git credentials for cloning the repository.
-    # Ensure that the secret is created in the same namespace where the pipeline will be launched.
-    # The secret must contain the following keys:
-    # - "username": Git username.
-    # - "password": Git password or personal access token.
-    # - "sshPrivateKey": SSH private key for Git authentication (optional).
+  # -- Configuration for Git credentials to access private repositories.
+  # This is the list of names of the Kubernetes secret that contains the Git credentials.
+  # Ensure that every secret is created in the same namespace where the pipeline will be launched.
+  # The secrets must contain every ssh key that will be used to access the repositories.
+  # For example, if you have multiple repositories with different ssh keys, you must include the keys in the secrets
+  # and add all of them to this list. The fingerprint of the ssh keys must be added to include them in the
+  # known_hosts file later, also.
+  gitSecret: []
