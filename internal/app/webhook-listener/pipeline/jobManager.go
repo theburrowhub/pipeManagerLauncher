@@ -77,6 +77,10 @@ func getEnvVarsFromPipelineData(pipelineData *databuilder.PipelineData) []corev1
 		Value: pipelineData.Commit,
 	})
 	env = append(env, corev1.EnvVar{
+		Name:  "PIPELINE_DIFF_COMMIT",
+		Value: pipelineData.DiffCommit,
+	})
+	env = append(env, corev1.EnvVar{
 		Name:  "PIPELINE_REPOSITORY",
 		Value: pipelineData.Repository,
 	})

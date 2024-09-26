@@ -1,0 +1,54 @@
+webhook:
+  workers: 8
+
+  log:
+    level: "debug"
+    file: "stdout"
+    format: "json"
+
+  routes:
+    - name: github
+      path: /github
+      eventType: "data.headers['X-Github-Event'][0]"  # CEL expression to retrieve the event.
+      events:
+        - type: push
+          repository: "data.body.payload.repository.ssh_url"
+          commit: "data.body.payload.after"
+          diffCommit: "data.body.payload.before"
+          variables:
+            ref: "data.body.payload.ref.replace('refs/heads/', '').replace('refs/tags/', '')"
+            tag: "data.body.payload.ref.startsWith('refs/tags/')"
+            shortCommit: "data.body.payload.head_commit.id.substring(0,7)"
+            email: "data.body.payload.head_commit.author.email"
+            author: "data.body.payload.head_commit.author.name"
+            user: "data.body.payload.pusher.name"
+            custom: "'MY_CUSTOM_VALUE'"
+        - type: pullRequest
+          repository: "data.body.pull_request.base.repo.ssh_url"
+          commit: "data.body.pull_request.head.sha"
+          diffCommit: "data.body.pull_request.base.sha"
+          variables:
+            ref: "data.body.pull_request.base.ref"
+            tag: "data.body.pull_request.merge_commit_sha != null"
+            shortCommit: "data.body.pull_request.base.sha.substring(0, 7)"
+            user: "data.body.pull_request.user.login"
+    - name: custom
+      path: /custom
+      eventType: "data.body.type"
+      events:
+        - type: customEvent
+          repository: "data.body.repository_name"
+          variables:
+            ref: "data.body.branch"
+            custom: "'MY_CUSTOM_VALUE'"
+
+launcher:
+  imageName: "k3d-registry:5111/launcher"
+  pullPolicy: "IfNotPresent"
+  tag: ""
+
+  namespace: ""
+  jobNamePrefix: "pipeline-launcher"
+  timeout: 600
+
+  gitSecret: []

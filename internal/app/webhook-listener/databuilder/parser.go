@@ -18,6 +18,7 @@ type PipelineData struct {
 	Event      string
 	Repository string
 	Commit     string
+	DiffCommit string
 	Variables  map[string]string
 }
 
@@ -65,10 +66,17 @@ func Run(payload json.RawMessage, path string, routes []config.Route) (*Pipeline
 		return nil, err
 	}
 
-	// Evaluate the commit from the event route. If the commit is not defined, it will be an empty string
+	// Evaluate the commits from the event route. If the commit is not defined, it will be an empty string
 	commit := ""
 	if event.Commit != "" {
 		commit, err = evaluateCELExpression(event.Commit, jsonData)
+		if err != nil {
+			return nil, err
+		}
+	}
+	diffCommit := ""
+	if event.DiffCommit != "" {
+		diffCommit, err = evaluateCELExpression(event.DiffCommit, jsonData)
 		if err != nil {
 			return nil, err
 		}
@@ -83,6 +91,7 @@ func Run(payload json.RawMessage, path string, routes []config.Route) (*Pipeline
 		Event:      eventType,
 		Repository: repository,
 		Commit:     commit,
+		DiffCommit: diffCommit,
 		Variables:  make(map[string]string),
 	}
 

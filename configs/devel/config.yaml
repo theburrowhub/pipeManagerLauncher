@@ -3,7 +3,7 @@
 #
 webhook:
   log:
-      level: "debel"
+      level: "debug"
       format: "text"
 
   routes:
