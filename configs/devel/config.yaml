@@ -76,7 +76,3 @@ launcher:
   imageName: "k3d-registry:5111/launcher"
   pullPolicy: "Always"
   tag: "0.0.2"
-
-  gitSecret: [
-    "webhook-git-secret"
-  ]

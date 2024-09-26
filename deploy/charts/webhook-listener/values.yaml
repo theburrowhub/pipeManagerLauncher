@@ -238,10 +238,7 @@ launcher:
   timeout: 600
 
   # -- Configuration for Git credentials to access private repositories.
-  # This is the list of names of the Kubernetes secret that contains the Git credentials.
-  # Ensure that every secret is created in the same namespace where the pipeline will be launched.
-  # The secrets must contain every ssh key that will be used to access the repositories.
-  # For example, if you have multiple repositories with different ssh keys, you must include the keys in the secrets
-  # and add all of them to this list. The fingerprint of the ssh keys must be added to include them in the
-  # known_hosts file later, also.
-  gitSecret: []
+  # This section defines the path to the files that contains the Git credentials.
+  # Ensure that the files are mounted from secrets in the pipeline job and the fingerprint of the ssh keys are
+  # added to the known_hosts file.
+  gitSecretPath: "/etc/pipeManager/git-credentials"
