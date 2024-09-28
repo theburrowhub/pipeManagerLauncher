@@ -18,6 +18,21 @@ import (
 	"github.com/sergiotejon/pipeManager/internal/pkg/version"
 )
 
+// JobConfig contains the configuration for a new Kubernetes Job
+type JobConfig struct {
+	JobName         string
+	RequestID       string
+	PipelineData    *databuilder.PipelineData
+	Namespace       string
+	JobTimeout      int64
+	ContainerName   string
+	JobCommand      []string
+	JobArgs         []string
+	Env             []corev1.EnvVar
+	ConfigmapName   string
+	ImagePullPolicy string
+}
+
 // getKubernetesClient returns a Kubernetes clientset configured for either in-cluster or local access
 func getKubernetesClient() (*kubernetes.Clientset, error) {
 	// Try to get the in-cluster config
@@ -94,40 +109,28 @@ func getEnvVarsFromPipelineData(pipelineData *databuilder.PipelineData) []corev1
 }
 
 // createJobObject creates a Kubernetes Job object with the given parameters
-func createJobObject(
-	jobName,
-	requestID string,
-	pipelineData *databuilder.PipelineData,
-	namespace string,
-	jobTimeout int64,
-	containerName string,
-	jobCommand []string,
-	jobArgs []string,
-	env []corev1.EnvVar,
-	configmapName string,
-	imagePullPolicy string) *batchv1.Job {
-
+func createJobObject(job *JobConfig) *batchv1.Job {
 	return &batchv1.Job{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      jobName,
-			Labels:    getLabels(requestID, pipelineData),
-			Namespace: namespace,
+			Name:      job.JobName,
+			Labels:    getLabels(job.RequestID, job.PipelineData),
+			Namespace: job.Namespace,
 		},
 		Spec: batchv1.JobSpec{
-			ActiveDeadlineSeconds: &jobTimeout,
+			ActiveDeadlineSeconds: &job.JobTimeout,
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Labels: getLabels(requestID, pipelineData),
+					Labels: getLabels(job.RequestID, job.PipelineData),
 				},
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{
 						{
-							Name:            containerName,
+							Name:            job.ContainerName,
 							Image:           GetLauncherImage(),
-							ImagePullPolicy: corev1.PullPolicy(imagePullPolicy),
-							Command:         jobCommand,
-							Args:            jobArgs,
-							Env:             env, // Environment variables with the pipeline data
+							ImagePullPolicy: corev1.PullPolicy(job.ImagePullPolicy),
+							Command:         job.JobCommand,
+							Args:            job.JobArgs,
+							Env:             job.Env, // Environment variables with the pipeline data
 							VolumeMounts: []corev1.VolumeMount{
 								{
 									Name:      "config-volume",
@@ -143,7 +146,7 @@ func createJobObject(
 							VolumeSource: corev1.VolumeSource{
 								ConfigMap: &corev1.ConfigMapVolumeSource{
 									LocalObjectReference: corev1.LocalObjectReference{
-										Name: configmapName,
+										Name: job.ConfigmapName,
 									},
 								},
 							},

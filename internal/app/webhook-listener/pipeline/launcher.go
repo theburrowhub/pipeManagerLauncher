@@ -17,13 +17,7 @@ const containerName = "launcher"
 // The request ID is the unique identifier of the http request coming from the webhook
 // The pipeline data contains the pipeline name, path, event, repository, commit, and variables
 func LaunchJob(requestID string, pipelineData *databuilder.PipelineData) error {
-	jobName := config.Launcher.Data.JobNamePrefix + "-" + requestID
 	namespace := config.Launcher.Data.Namespace
-	jobTimeout := config.Launcher.Data.Timeout
-	configmapName := config.Launcher.Data.ConfigmapName
-	imagePullPolicy := config.Launcher.Data.PullPolicy
-	jobCommand := []string{"/app/pipeline-converter"}
-	jobArgs := []string{"-c", "/etc/pipe-manager/config.yaml"}
 
 	// Get the Kubernetes client
 	client, err := getKubernetesClient()
@@ -46,8 +40,20 @@ func LaunchJob(requestID string, pipelineData *databuilder.PipelineData) error {
 	// ** TODO: Create a kubernetes controller to manage a new object type called, for example, "Pipeline". That way, we can manage the pipeline lifecycle
 	// ** from the creation to the deletion of the resources. This controller will be responsible for creating the Tekton Pipeline and manage the resources
 	// ** created by the pipeline.
-	job := createJobObject(jobName, requestID, pipelineData, namespace, jobTimeout,
-		containerName, jobCommand, jobArgs, env, configmapName, imagePullPolicy)
+	jobData := &JobConfig{
+		JobName:         config.Launcher.Data.JobNamePrefix + "-" + requestID,
+		RequestID:       requestID,
+		PipelineData:    pipelineData,
+		Namespace:       namespace,
+		JobTimeout:      config.Launcher.Data.Timeout,
+		ContainerName:   containerName,
+		JobCommand:      []string{"/app/pipeline-converter"},
+		JobArgs:         []string{"-c", "/etc/pipe-manager/config.yaml"},
+		Env:             env,
+		ConfigmapName:   config.Launcher.Data.ConfigmapName,
+		ImagePullPolicy: config.Launcher.Data.PullPolicy,
+	}
+	job := createJobObject(jobData)
 
 	// Build the Job
 	jobClient := client.BatchV1().Jobs(namespace)
