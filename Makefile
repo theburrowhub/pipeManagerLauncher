@@ -78,6 +78,10 @@ port-forward: ## Port forward to devel k8s cluster
 	@echo "Port forwarding to devel k8s cluster..."
 	kubectl --kubeconfig ${KUBECONFIG} port-forward svc/webhook-listener 8080:80 --namespace pipe-manager
 
+tunnel: ## Tunnel with ngrok to devel k8s cluster
+	@echo "Tunneling with ngrok to devel k8s cluster..."
+	ngrok http 8080
+
 release: ## Release applications to prod k8s cluster
 	@echo "TODO: Release applications and helm charts"
 	@echo goreleaser build --snapshot
@@ -86,6 +90,12 @@ release: ## Release applications to prod k8s cluster
 helm-docs: ## Generate helm documentation
 	@echo "Generating helm documentation..."
 	helm-docs
+
+create-git-secret: ## Create git secret in devel k8s cluster using local ssh key
+	@echo "Creating git secret..."
+	kubectl --kubeconfig ${KUBECONFIG} create secret generic git-secret \
+		--namespace pipe-manager \
+		--from-file=id_rsa=${HOME}/.ssh/id_rsa
 
 # Build go application
 $(APPS):

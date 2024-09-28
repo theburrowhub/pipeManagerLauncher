@@ -228,6 +228,54 @@
           "store_path": "/nix/store/gl7z7bx0csk5flgidxjhjswf13y7vd7w-kubernetes-helm-3.16.1"
         }
       }
+    },
+    "ngrok@latest": {
+      "last_modified": "2024-09-10T15:01:03Z",
+      "resolved": "github:NixOS/nixpkgs/5ed627539ac84809c78b2dd6d26a5cebeb5ae269#ngrok",
+      "source": "devbox-search",
+      "version": "3.14.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/8s1pb2g5iq22l3hqqkvw5kfvm5bjnvll-ngrok-3.14.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/8s1pb2g5iq22l3hqqkvw5kfvm5bjnvll-ngrok-3.14.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/1kakbpq5cirxcxbzbs1va39b7n9qzn75-ngrok-3.14.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/1kakbpq5cirxcxbzbs1va39b7n9qzn75-ngrok-3.14.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/9bkfg49fd0rczwg3g1s0ayssnrn8b89w-ngrok-3.14.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/9bkfg49fd0rczwg3g1s0ayssnrn8b89w-ngrok-3.14.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/zqj7f9i0wi7maafrfrxvlsh2rd2aah1g-ngrok-3.14.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/zqj7f9i0wi7maafrfrxvlsh2rd2aah1g-ngrok-3.14.0"
+        }
+      }
     }
   }
 }

@@ -4,16 +4,21 @@
     "helm-docs@1.14.2",
     "kubernetes-helm@3.16.1",
     "kubectl@1.30.0",
-    "k3d@5.7.3"
+    "k3d@5.7.3",
+    "ngrok@latest"
   ],
   "shell": {
     "init_hook": [
       "echo 'Welcome to devbox!' > /dev/null",
       "alias ls='ls --color=auto'",
+      "echo 'Creating k3d cluster'",
       "k3d registry create registry -p 5111 2> /dev/null || true",
       "k3d cluster create --registry-use k3d-registry:5111 -a 3 2> /dev/null || true",
-      "make get-kubeconfig",
-      "source set-kubeconfig.sh"
+      "k3d kubeconfig get k3s-default > kubeconfig && chmod 600 kubeconfig && export KUBECONFIG=$(pwd)/kubeconfig",
+      "echo 'Creating namespace pipe-manager'",
+      "kubectl --kubeconfig $(pwd)/kubeconfig create namespace pipe-manager 2> /dev/null",
+      "echo 'Creating secret git-secret'",
+      "kubectl --kubeconfig $(pwd)/kubeconfig create secret generic git-secret --namespace pipe-manager --from-file=id_rsa=${HOME}/.ssh/id_rsa 2> /dev/null"
     ],
     "scripts": {
       "test": [
