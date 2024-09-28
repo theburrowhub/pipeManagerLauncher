@@ -214,7 +214,7 @@ config:
   # -- Configuration for Pipeline Launcher
   launcher:
     # -- Docker image to use for launching pipeline jobs.
-    imageName: "k3d-registry:5111/launcher"
+    imageName: "k3d-registry:5111/pipeline-converter"
     # -- Image pull policy for the pipeline job.
     # Options:
     # - "Always": Always pull the image, even if it exists locally.
@@ -226,7 +226,7 @@ config:
     pullPolicy: "IfNotPresent"
     # -- Tag of the Docker image to use for launching pipeline jobs.
     # Leave empty to use the current version of pipeManager.
-    tag: ""
+    tag: "0.0.2"
 
     # -- Namespace where the pipeline will be launched. Leave empty to use the current namespace where the webhook server is deployed.
     namespace: ""
