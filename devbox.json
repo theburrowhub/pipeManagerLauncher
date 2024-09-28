@@ -9,7 +9,6 @@
   ],
   "shell": {
     "init_hook": [
-      "echo 'Welcome to devbox!' > /dev/null",
       "alias ls='ls --color=auto'",
       "echo 'Creating k3d cluster'",
       "k3d registry create registry -p 5111 2> /dev/null || true",
