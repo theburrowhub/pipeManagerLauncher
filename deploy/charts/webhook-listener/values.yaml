@@ -249,3 +249,8 @@ config:
     # Ensure that the files are mounted from secrets in the pipeline job and the fingerprint of the ssh keys are
     # added to the known_hosts file.
     gitSecretPath: "/etc/pipeManager/git-credentials"
+
+    # -- Clone depth for the pipeline job. The number of commits to fetch from the repository.
+    # Adjust this value based on the size of the repository and the required history for the pipeline job.
+    # A value of 0 fetches the entire history of the repository.
+    cloneDepth: 0
