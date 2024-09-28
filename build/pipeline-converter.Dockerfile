@@ -29,7 +29,8 @@ FROM alpine:3.20.3
 RUN apk --no-cache add \
     ca-certificates \
     openssh-client \
-    git
+    git \
+    bash
 
 RUN echo 'eval $(ssh-agent -s)' >> /root/.bashrc
 
