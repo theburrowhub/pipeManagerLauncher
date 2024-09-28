@@ -19,7 +19,9 @@
       "kubectl --kubeconfig $(pwd)/kubeconfig create namespace pipe-manager 2> /dev/null",
       "echo 'Creating secret git-credentials'",
       "ssh-keyscan -t rsa github.com > /tmp/known_hosts",
-      "kubectl --kubeconfig $(pwd)/kubeconfig create secret generic git-credentials --namespace pipe-manager --from-file=id_rsa=${HOME}/.ssh/id_rsa --from-file=known_hosts=/tmp/known_hosts 2> /dev/null"
+      "kubectl --kubeconfig $(pwd)/kubeconfig create secret generic git-credentials --namespace pipe-manager --from-file=id_rsa=${HOME}/.ssh/id_rsa --from-file=known_hosts=/tmp/known_hosts 2> /dev/null",
+      "echo Installing vendor packages",
+      "go mod vendor"
     ],
     "scripts": {
       "test": [
