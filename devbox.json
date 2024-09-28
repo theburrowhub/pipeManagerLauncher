@@ -1,0 +1,22 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.13.1/.schema/devbox.schema.json",
+  "packages": [
+    "helm-docs@1.14.2",
+    "kubernetes-helm@3.16.1",
+    "kubectl@1.30.0",
+    "k3d@5.7.3"
+  ],
+  "shell": {
+    "init_hook": [
+      "echo 'Welcome to devbox!' > /dev/null",
+      "alias ls='ls --color=auto'",
+      "make get-kubeconfig",
+      "source set-kubeconfig.sh"
+    ],
+    "scripts": {
+      "test": [
+        "echo \"Error: no test specified\" && exit 1"
+      ]
+    }
+  }
+}
