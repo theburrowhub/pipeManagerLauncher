@@ -97,9 +97,11 @@ helm-docs: ## Generate helm documentation
 
 create-git-secret: ## Create git secret in devel k8s cluster using local ssh key
 	@echo "Creating git secret..."
+	ssh-keyscan -t rsa github.com > /tmp/known_hosts
 	kubectl --kubeconfig ${KUBECONFIG} create secret generic git-credentials \
 		--namespace pipe-manager \
-		--from-file=id_rsa=${HOME}/.ssh/id_rsa
+		--from-file=id_rsa=${HOME}/.ssh/id_rsa \
+		--from-file=known_hosts=/tmp/known_hosts
 
 # Build go application
 $(APPS):
