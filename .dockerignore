@@ -5,3 +5,7 @@ bin
 Dockerfile
 deploy/charts
 docs
+devbox.*
+.devbox
+kubeconfig
+set-kubeconfig.sh
