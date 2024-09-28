@@ -4,10 +4,12 @@ package main
 import (
 	"fmt"
 	"log"
+	"log/slog"
 	"os"
 
 	"github.com/spf13/cobra"
 
+	"github.com/sergiotejon/pipeManager/internal/app/pipe-converter/repository"
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
 	"github.com/sergiotejon/pipeManager/internal/pkg/envvars"
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
@@ -79,7 +81,20 @@ func app() {
 		logging.Logger.Debug("Environment variable", key, value)
 	}
 
-	// Start the launcher
+	// Clone the repository
+	err = repository.Clone(envvars.Variables["REPOSITORY"],
+		config.Launcher.Data.CloneDepth,
+		envvars.Variables["COMMIT"],
+		"/tmp/repo")
+	if err != nil {
+		slog.Error("Error cloning repository", "msg", err,
+			"repository", envvars.Variables["REPOSITORY"],
+			"commit", envvars.Variables["COMMIT"],
+			"depth", config.Launcher.Data.CloneDepth)
+		os.Exit(1)
+	}
+
+	// Parse the pipeline
 
 	return
 }
