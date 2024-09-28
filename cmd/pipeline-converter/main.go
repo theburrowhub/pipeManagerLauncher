@@ -56,6 +56,10 @@ func app() {
 	if err != nil {
 		log.Fatalf("Error loading launcher config: %v", err)
 	}
+	err = config.LoadCommonConfig(configFile)
+	if err != nil {
+		log.Fatalf("Error loading common config: %v", err)
+	}
 
 	// Setup Logger
 	err = logging.SetupLogger(config.Common.Data.Log.Level, config.Common.Data.Log.Format, config.Common.Data.Log.File)
