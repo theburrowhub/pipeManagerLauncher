@@ -54,6 +54,10 @@ remove-cluster: ## Remove local development environment
 	@echo "Local development environment removed"
 
 shell: ## Open a shell in the devbox
+	if ! command -v devbox &> /dev/null; then \
+    echo "devbox is not installed. Installing devbox..."; \
+		curl -fsSL https://get.jetify.com/devbox | bash; \
+	fi
 	devbox shell
 
 all: $(APPS) $(IMAGES) ## Build all go applications and docker images
