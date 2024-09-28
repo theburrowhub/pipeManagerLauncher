@@ -15,9 +15,9 @@ import (
 )
 
 var (
-	defaultConfigFile = "/etc/pipe-manager.conf" // defaultConfigFile is the default configuration file
-	configFile        string                     // configFile is the path to the configuration file
-	showVersion       bool                       // showVersion is a flag to show the version
+	defaultConfigFile = "/etc/pipe-manager/config.yaml" // defaultConfigFile is the default configuration file
+	configFile        string                            // configFile is the path to the configuration file
+	showVersion       bool                              // showVersion is a flag to show the version
 )
 
 // main is the entrypoint for the application
