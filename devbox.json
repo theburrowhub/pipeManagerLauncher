@@ -10,8 +10,8 @@
     "init_hook": [
       "echo 'Welcome to devbox!' > /dev/null",
       "alias ls='ls --color=auto'",
-      "k3d registry create registry -p 5111 || true",
-      "k3d cluster create --registry-use k3d-registry:5111 -a 3 || true",
+      "k3d registry create registry -p 5111 2> /dev/null || true",
+      "k3d cluster create --registry-use k3d-registry:5111 -a 3 2> /dev/null || true",
       "make get-kubeconfig",
       "source set-kubeconfig.sh"
     ],
