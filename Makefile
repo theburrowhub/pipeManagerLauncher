@@ -126,6 +126,7 @@ clean: ## Clean up
 	@echo "Cleaning up"
 	rm -rf ${KUBECONFIG}
 	rm -rf set-kubeconfig.sh
+	rm -rf gke_gcloud_auth_plugin_cache
 	rm -rf bin/*
 	rm -rf dist
 	rm -rf vendor
