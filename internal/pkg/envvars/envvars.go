@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-const prefix = "PIPE_MANAGER_"
+const prefix = "PIPELINE_"
 
 var Variables map[string]string
 
