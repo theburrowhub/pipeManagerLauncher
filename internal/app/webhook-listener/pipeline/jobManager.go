@@ -102,6 +102,7 @@ func createJobObject(
 	jobTimeout int64,
 	containerName string,
 	jobCommand []string,
+	jobArgs []string,
 	env []corev1.EnvVar) *batchv1.Job {
 
 	return &batchv1.Job{
@@ -122,6 +123,7 @@ func createJobObject(
 							Name:    containerName,
 							Image:   GetLauncherImage(),
 							Command: jobCommand,
+							Args:    jobArgs,
 							Env:     env, // Environment variables with the pipeline data
 						},
 					},

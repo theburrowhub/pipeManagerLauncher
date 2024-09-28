@@ -13,7 +13,8 @@ import (
 
 const containerName = "launcher"
 
-var jobCommand = []string{"sh", "-c", "export && sleep 60"}
+var jobCommand = []string{"/app/pipeline-converter"}
+var jobArgs = []string{"-c", "/etc/pipe-manager/config.yaml"}
 
 // LaunchJob creates a new Kubernetes Job with the given request ID and pipeline data
 // It returns an error if the job cannot be created
@@ -45,7 +46,7 @@ func LaunchJob(requestID string, pipelineData *databuilder.PipelineData) error {
 	// ** TODO: Create a kubernetes controller to manage a new object type called, for example, "Pipeline". That way, we can manage the pipeline lifecycle
 	// ** from the creation to the deletion of the resources. This controller will be responsible for creating the Tekton Pipeline and manage the resources
 	// ** created by the pipeline.
-	job := createJobObject(jobName, requestID, pipelineData, namespace, jobTimeout, containerName, jobCommand, env)
+	job := createJobObject(jobName, requestID, pipelineData, namespace, jobTimeout, containerName, jobCommand, jobArgs, env)
 
 	// Build the Job
 	jobClient := client.BatchV1().Jobs(namespace)
