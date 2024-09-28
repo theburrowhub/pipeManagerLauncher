@@ -15,12 +15,15 @@ import (
 	"github.com/sergiotejon/pipeManager/internal/pkg/version"
 )
 
-var (
+const (
 	defaultConfigFile = "/etc/pipe-manager/config.yaml" // defaultConfigFile is the default configuration file
 	defaultListenAddr = ":80"                           // defaultListenAddr is the default listen address
-	configFile        string                            // configFile is the path to the configuration file
-	listenAddr        string                            // listenAddr is the address to listen on
-	showVersion       bool                              // showVersion is a flag to show the version
+)
+
+var (
+	configFile  string // configFile is the path to the configuration file
+	listenAddr  string // listenAddr is the address to listen on
+	showVersion bool   // showVersion is a flag to show the version
 )
 
 // main is the entrypoint for the application

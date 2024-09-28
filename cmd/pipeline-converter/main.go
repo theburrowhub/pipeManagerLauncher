@@ -16,10 +16,12 @@ import (
 	"github.com/sergiotejon/pipeManager/internal/pkg/version"
 )
 
+// defaultConfigFile is the default configuration file
+const defaultConfigFile = "/etc/pipe-manager/config.yaml"
+
 var (
-	defaultConfigFile = "/etc/pipe-manager/config.yaml" // defaultConfigFile is the default configuration file
-	configFile        string                            // configFile is the path to the configuration file
-	showVersion       bool                              // showVersion is a flag to show the version
+	configFile  string // configFile is the path to the configuration file
+	showVersion bool   // showVersion is a flag to show the version
 )
 
 // main is the entrypoint for the application
