@@ -74,6 +74,10 @@ uninstall: ## Delete applications from devel k8s cluster
 	@echo "Deleting applications from devel k8s cluster..."
 	helm delete --kubeconfig ${KUBECONFIG} --namespace pipe-manager webhook-listener
 
+port-forward: ## Port forward to devel k8s cluster
+	@echo "Port forwarding to devel k8s cluster..."
+	kubectl --kubeconfig ${KUBECONFIG} port-forward svc/webhook-listener 8080:80 --namespace pipe-manager
+
 release: ## Release applications to prod k8s cluster
 	@echo "TODO: Release applications and helm charts"
 	@echo goreleaser build --snapshot
