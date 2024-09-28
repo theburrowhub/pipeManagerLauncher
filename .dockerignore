@@ -2,7 +2,7 @@
 .dockerignore
 Makefile
 bin
-Dockerfile
+build/*
 deploy/charts
 docs
 devbox.*
