@@ -26,8 +26,6 @@ type JobConfig struct {
 	Namespace       string
 	JobTimeout      int64
 	ContainerName   string
-	JobCommand      []string
-	JobArgs         []string
 	Env             []corev1.EnvVar
 	ConfigmapName   string
 	ImagePullPolicy string
@@ -143,8 +141,6 @@ func createJobObject(job *JobConfig) *batchv1.Job {
 							Name:            job.ContainerName,
 							Image:           GetLauncherImage(),
 							ImagePullPolicy: corev1.PullPolicy(job.ImagePullPolicy),
-							Command:         job.JobCommand,
-							Args:            job.JobArgs,
 							Env:             job.Env, // Environment variables with the pipeline data
 							VolumeMounts: []corev1.VolumeMount{
 								{

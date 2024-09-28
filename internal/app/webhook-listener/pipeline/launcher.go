@@ -47,8 +47,6 @@ func LaunchJob(requestID string, pipelineData *databuilder.PipelineData) error {
 		Namespace:       namespace,
 		JobTimeout:      config.Launcher.Data.Timeout,
 		ContainerName:   containerName,
-		JobCommand:      []string{"/app/pipeline-converter"},
-		JobArgs:         []string{"-c", "/etc/pipe-manager/config.yaml"},
 		Env:             env,
 		ConfigmapName:   config.Launcher.Data.ConfigmapName,
 		ImagePullPolicy: config.Launcher.Data.PullPolicy,
