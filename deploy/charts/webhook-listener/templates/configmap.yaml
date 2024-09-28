@@ -8,17 +8,17 @@ data:
   config.yaml: |-
     common:
       log:
-        level: {{ .Values.log.level | quote }}
-        file: {{ .Values.log.file | quote }}
-        format: {{ .Values.log.format | quote }}
+        level: {{ .Values.config.common.log.level | quote }}
+        file: {{ .Values.config.common.log.file | quote }}
+        format: {{ .Values.config.common.log.format | quote }}
     webhook:
-      workers: {{ .Values.webhook.workers }}
-      routes: {{ .Values.webhook.routes | toYaml | nindent 8 }}
+      workers: {{ .Values.config.webhook.workers }}
+      routes: {{ .Values.config.webhook.routes | toYaml | nindent 8 }}
     launcher:
-      imageName: {{ .Values.launcher.imageName | quote }}
-      pullPolicy: {{ .Values.launcher.pullPolicy | quote }}
-      tag: {{ .Values.launcher.tag | quote }}
-      namespace: {{ .Values.launcher.namespace | quote }}
-      jobNamePrefix: {{ .Values.launcher.jobNamePrefix | quote }}
-      timeout: {{ .Values.launcher.timeout }}
-      gitSecret: {{ .Values.launcher.gitSecret | quote }}
+      imageName: {{ .Values.config.launcher.imageName | quote }}
+      pullPolicy: {{ .Values.config.launcher.pullPolicy | quote }}
+      tag: {{ .Values.config.launcher.tag | quote }}
+      namespace: {{ .Values.config.launcher.namespace | quote }}
+      jobNamePrefix: {{ .Values.config.launcher.jobNamePrefix | quote }}
+      timeout: {{ .Values.config.launcher.timeout }}
+      gitSecret: {{ .Values.config.launcher.gitSecret | quote }}

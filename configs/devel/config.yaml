@@ -1,83 +1,84 @@
-#
-# Common configuration for the applications of pipeManager.
-#
-common:
-  log:
-    level: "debug"
-    format: "text"
+config:
+  #
+  # Common configuration for the applications of pipeManager.
+  #
+  common:
+    log:
+      level: "debug"
+      format: "text"
 
 
-#
-# Configuration for Webhook Server
-#
-webhook:
-  routes:
-    # Example route configuration for GitHub webhooks
-    - name: github
-      path: /github  # The endpoint path where GitHub will send webhook payloads. Ensure this path is accessible
-                     # and correctly configured in your GitHub repository settings.
-      eventType: "data.headers['X-Github-Event'][0]"  # CEL expression to retrieve the event.
+  #
+  # Configuration for Webhook Server
+  #
+  webhook:
+    routes:
+      # Example route configuration for GitHub webhooks
+      - name: github
+        path: /github  # The endpoint path where GitHub will send webhook payloads. Ensure this path is accessible
+                       # and correctly configured in your GitHub repository settings.
+        eventType: "data.headers['X-Github-Event'][0]"  # CEL expression to retrieve the event.
 
-      events:
-        # Handler for push events (branches and tags)
-        - type: push
-          repository: "data.body.payload.repository.ssh_url"  # (Mandatory) CEL expression to extract the repository name from the payload.
-          commit: "data.body.payload.after"  # (Optional) CEL expression to extract the full commit SHA.
-          diffCommit: "data.body.payload.before"  # (Optional) CEL expression to extract the previous commit SHA.
-          variables: # Additional custom variables to be passed to the pipeline.
-            ref: "data.body.payload.ref.replace('refs/heads/', '').replace('refs/tags/', '')" # CEL expression to extract the branch or tag name.
-            tag: "data.body.payload.ref.startsWith('refs/tags/')"  # CEL expression to determine if the push includes a tag (true/false).
-            shortCommit: "data.body.payload.head_commit.id.substring(0,7)"  # CEL expression to get the first 7 characters of the commit SHA.
-            email: "data.body.payload.head_commit.author.email"  # CEL expression to extract the author's email from the commit.
-            author: "data.body.payload.head_commit.author.name"  # CEL expression to extract the author's name from the commit.
-            user: "data.body.payload.pusher.name"  # CEL expression to extract the pusher's username.
-            custom: "'MY_CUSTOM_VALUE'"  # Custom value to be passed to the pipeline. Literal values must be enclosed in single quotes.
+        events:
+          # Handler for push events (branches and tags)
+          - type: push
+            repository: "data.body.payload.repository.ssh_url"  # (Mandatory) CEL expression to extract the repository name from the payload.
+            commit: "data.body.payload.after"  # (Optional) CEL expression to extract the full commit SHA.
+            diffCommit: "data.body.payload.before"  # (Optional) CEL expression to extract the previous commit SHA.
+            variables: # Additional custom variables to be passed to the pipeline.
+              ref: "data.body.payload.ref.replace('refs/heads/', '').replace('refs/tags/', '')" # CEL expression to extract the branch or tag name.
+              tag: "data.body.payload.ref.startsWith('refs/tags/')"  # CEL expression to determine if the push includes a tag (true/false).
+              shortCommit: "data.body.payload.head_commit.id.substring(0,7)"  # CEL expression to get the first 7 characters of the commit SHA.
+              email: "data.body.payload.head_commit.author.email"  # CEL expression to extract the author's email from the commit.
+              author: "data.body.payload.head_commit.author.name"  # CEL expression to extract the author's name from the commit.
+              user: "data.body.payload.pusher.name"  # CEL expression to extract the pusher's username.
+              custom: "'MY_CUSTOM_VALUE'"  # Custom value to be passed to the pipeline. Literal values must be enclosed in single quotes.
 
-        # Handler for pull request events
-        - type: pullRequest
-          repository: "data.body.pull_request.base.repo.ssh_url"  # (Mandatory) CEL expression to extract the repository name from the payload.
-          commit: "data.body.pull_request.head.sha"  # (Optional) CEL expression to get the commit SHA of the PR.
-          diffCommit: "data.body.pull_request.base.sha" # (Optional) CEL expression to get the base commit SHA of the PR.
-          variables: # Additional custom variables to be passed to the pipeline.
-            ref: "data.body.pull_request.base.ref"  # CEL expression to extract the branch reference of the PR.
-            tag: "data.body.pull_request.merge_commit_sha != null"  # CEL expression to determine if the PR has been merged with a commit SHA.
-            shortCommit: "data.body.pull_request.base.sha.substring(0, 7)"  # CEL expression for the abbreviated commit SHA.
-            user: "data.body.pull_request.user.login"  # CEL expression to get the PR creator's GitHub username.
+          # Handler for pull request events
+          - type: pullRequest
+            repository: "data.body.pull_request.base.repo.ssh_url"  # (Mandatory) CEL expression to extract the repository name from the payload.
+            commit: "data.body.pull_request.head.sha"  # (Optional) CEL expression to get the commit SHA of the PR.
+            diffCommit: "data.body.pull_request.base.sha" # (Optional) CEL expression to get the base commit SHA of the PR.
+            variables: # Additional custom variables to be passed to the pipeline.
+              ref: "data.body.pull_request.base.ref"  # CEL expression to extract the branch reference of the PR.
+              tag: "data.body.pull_request.merge_commit_sha != null"  # CEL expression to determine if the PR has been merged with a commit SHA.
+              shortCommit: "data.body.pull_request.base.sha.substring(0, 7)"  # CEL expression for the abbreviated commit SHA.
+              user: "data.body.pull_request.user.login"  # CEL expression to get the PR creator's GitHub username.
 
-        # Instructions for Developers:
-        # 1. **Replace CEL Expressions as Needed:**
-        #    - The provided CEL expressions are examples based on GitHub's typical webhook payload structure.
-        #    - Verify the structure of your webhook payload and adjust the CEL expressions accordingly.
-        #    - Refer to GitHub's [Webhook Payloads](https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads) documentation for detailed payload structures.
-        #
-        # 2. **Define Additional Routes or Events:**
-        #    - You can add more routes for different services or additional event handlers by following the existing structure.
+          # Instructions for Developers:
+          # 1. **Replace CEL Expressions as Needed:**
+          #    - The provided CEL expressions are examples based on GitHub's typical webhook payload structure.
+          #    - Verify the structure of your webhook payload and adjust the CEL expressions accordingly.
+          #    - Refer to GitHub's [Webhook Payloads](https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads) documentation for detailed payload structures.
+          #
+          # 2. **Define Additional Routes or Events:**
+          #    - You can add more routes for different services or additional event handlers by following the existing structure.
 
-        # Notes:
-        # - **CEL Syntax:** Ensure that your CEL expressions are syntactically correct. Refer to the [CEL Language Specification](https://github.com/google/cel-spec) for guidance.
-        # - **Payload Validation:** It's crucial to validate that the CEL expressions accurately reflect the structure of your incoming webhook payloads to avoid misconfigurations.
-        # - **Dynamic Values:** CEL expressions can include functions and operators to manipulate and evaluate payload data dynamically.
-        # - **Documentation:** Always refer to your webhook provider's latest documentation to understand the payload structure and available fields for accurate CEL expression crafting.
+          # Notes:
+          # - **CEL Syntax:** Ensure that your CEL expressions are syntactically correct. Refer to the [CEL Language Specification](https://github.com/google/cel-spec) for guidance.
+          # - **Payload Validation:** It's crucial to validate that the CEL expressions accurately reflect the structure of your incoming webhook payloads to avoid misconfigurations.
+          # - **Dynamic Values:** CEL expressions can include functions and operators to manipulate and evaluate payload data dynamically.
+          # - **Documentation:** Always refer to your webhook provider's latest documentation to understand the payload structure and available fields for accurate CEL expression crafting.
 
-    # Example of route configuration for custom webhooks
-    - name: custom
-      path: /custom
-      eventType: "data.body.type"
-      events:
-        - type: customEvent
-          repository: "data.body.repository_name"
-          # This case does not include a commit field, but you can add it if needed.
-          #commit: "'HEAD'"  # Example of a static value for the commit field. This case is using the string 'HEAD' to reach the latest commit.
-          #diffCommit: "'HEAD~1'"  # Example of a static value for the diffCommit field. This case is using the string 'HEAD~1' to reach the previous commit.
-          variables:
-            ref: "data.body.branch"
-            custom: "'MY_CUSTOM_VALUE'"  # Custom value to be passed to the pipeline. Literal values must be enclosed in single quotes.
+      # Example of route configuration for custom webhooks
+      - name: custom
+        path: /custom
+        eventType: "data.body.type"
+        events:
+          - type: customEvent
+            repository: "data.body.repository_name"
+            # This case does not include a commit field, but you can add it if needed.
+            #commit: "'HEAD'"  # Example of a static value for the commit field. This case is using the string 'HEAD' to reach the latest commit.
+            #diffCommit: "'HEAD~1'"  # Example of a static value for the diffCommit field. This case is using the string 'HEAD~1' to reach the previous commit.
+            variables:
+              ref: "data.body.branch"
+              custom: "'MY_CUSTOM_VALUE'"  # Custom value to be passed to the pipeline. Literal values must be enclosed in single quotes.
 
 
-#
-# Configuration for Pipeline Launcher
-#
-launcher:
-  imageName: "k3d-registry:5111/launcher"
-  pullPolicy: "Always"
-  tag: "0.0.2"
+  #
+  # Configuration for Pipeline Launcher
+  #
+  launcher:
+    imageName: "k3d-registry:5111/launcher"
+    pullPolicy: "Always"
+    tag: "0.0.2"
