@@ -83,6 +83,10 @@ release: ## Release applications to prod k8s cluster
 	@echo goreleaser build --snapshot
 	@echo goreleaser release --snapshot
 
+helm-docs: ## Generate helm documentation
+	@echo "Generating helm documentation..."
+	helm-docs
+
 # Build go application
 $(APPS):
 	@echo "Building $(basename $@)"
