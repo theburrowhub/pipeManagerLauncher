@@ -1,10 +1,12 @@
-webhook:
-  workers: 8
-
+common:
   log:
     level: "debug"
     file: "stdout"
-    format: "json"
+    format: "text"
+
+
+webhook:
+  workers: 8
 
   routes:
     - name: github

@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
+	"github.com/sergiotejon/pipeManager/internal/pkg/envvars"
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
 	"github.com/sergiotejon/pipeManager/internal/pkg/version"
 )
@@ -57,7 +58,6 @@ func app() {
 	}
 
 	// Setup Logger
-	// TODO: global log level configuration for all components
 	err = logging.SetupLogger(config.Common.Data.Log.Level, config.Common.Data.Log.Format, config.Common.Data.Log.File)
 	if err != nil {
 		log.Fatalf("Error configuring the logger: %v", err)
@@ -70,6 +70,10 @@ func app() {
 		"logFile", config.Common.Data.Log.File)
 
 	// Print all environment variables in log
+	envvars.GetEnvVars()
+	for key, value := range envvars.Variables {
+		logging.Logger.Debug("Environment variable", key, value)
+	}
 
 	// Start the launcher
 

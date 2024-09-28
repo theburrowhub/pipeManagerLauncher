@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"gopkg.in/yaml.v3"
 	"os"
 )
 
