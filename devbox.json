@@ -17,8 +17,8 @@
       "k3d kubeconfig get k3s-default > kubeconfig && chmod 600 kubeconfig && export KUBECONFIG=$(pwd)/kubeconfig",
       "echo 'Creating namespace pipe-manager'",
       "kubectl --kubeconfig $(pwd)/kubeconfig create namespace pipe-manager 2> /dev/null",
-      "echo 'Creating secret git-secret'",
-      "kubectl --kubeconfig $(pwd)/kubeconfig create secret generic git-secret --namespace pipe-manager --from-file=id_rsa=${HOME}/.ssh/id_rsa 2> /dev/null"
+      "echo 'Creating secret git-credentials'",
+      "kubectl --kubeconfig $(pwd)/kubeconfig create secret generic git-credentials --namespace pipe-manager --from-file=id_rsa=${HOME}/.ssh/id_rsa 2> /dev/null"
     ],
     "scripts": {
       "test": [
