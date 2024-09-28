@@ -15,6 +15,7 @@ type LauncherStruct struct {
 	Namespace     string `yaml:"namespace"`     // Namespace is the Kubernetes namespace to deploy the job
 	JobNamePrefix string `yaml:"jobNamePrefix"` // JobNamePrefix is the prefix to use for the job name
 	Timeout       int64  `yaml:"timeout"`       // Timeout is the maximum time in seconds to wait for the job to complete
+	ConfigmapName string `yaml:"configmapName"` // ConfigmapName is the name of the ConfigMap to use
 	GitSecretPath string `yaml:"gitSecretPath"` // GitSecretPath is the path to the directory containing the Git credentials
 }
 

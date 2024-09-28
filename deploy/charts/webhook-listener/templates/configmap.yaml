@@ -21,4 +21,5 @@ data:
       namespace: {{ .Values.config.launcher.namespace | quote }}
       jobNamePrefix: {{ .Values.config.launcher.jobNamePrefix | quote }}
       timeout: {{ .Values.config.launcher.timeout }}
+      configmapName: {{ include "webhook-listener.fullname" . }}
       gitSecret: {{ .Values.config.launcher.gitSecret | quote }}

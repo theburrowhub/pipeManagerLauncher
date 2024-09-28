@@ -53,4 +53,6 @@ launcher:
   jobNamePrefix: "pipeline-launcher"
   timeout: 600
 
+  configmapName: "pipeline-launcher-config"
+
   gitSecret: "/etc/pipeManager/git-credentials"

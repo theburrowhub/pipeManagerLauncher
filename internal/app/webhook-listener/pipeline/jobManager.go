@@ -103,7 +103,9 @@ func createJobObject(
 	containerName string,
 	jobCommand []string,
 	jobArgs []string,
-	env []corev1.EnvVar) *batchv1.Job {
+	env []corev1.EnvVar,
+	configmapName string,
+	imagePullPolicy string) *batchv1.Job {
 
 	return &batchv1.Job{
 		ObjectMeta: metav1.ObjectMeta{
@@ -120,14 +122,33 @@ func createJobObject(
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{
 						{
-							Name:    containerName,
-							Image:   GetLauncherImage(),
-							Command: jobCommand,
-							Args:    jobArgs,
-							Env:     env, // Environment variables with the pipeline data
+							Name:            containerName,
+							Image:           GetLauncherImage(),
+							ImagePullPolicy: corev1.PullPolicy(imagePullPolicy),
+							Command:         jobCommand,
+							Args:            jobArgs,
+							Env:             env, // Environment variables with the pipeline data
+							VolumeMounts: []corev1.VolumeMount{
+								{
+									Name:      "config-volume",
+									MountPath: "/etc/pipe-manager",
+								},
+							},
 						},
 					},
 					RestartPolicy: corev1.RestartPolicyNever,
+					Volumes: []corev1.Volume{
+						{
+							Name: "config-volume",
+							VolumeSource: corev1.VolumeSource{
+								ConfigMap: &corev1.ConfigMapVolumeSource{
+									LocalObjectReference: corev1.LocalObjectReference{
+										Name: configmapName,
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 		},

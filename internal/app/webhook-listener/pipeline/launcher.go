@@ -3,7 +3,6 @@ package pipeline
 
 import (
 	"context"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/databuilder"
@@ -13,9 +12,6 @@ import (
 
 const containerName = "launcher"
 
-var jobCommand = []string{"/app/pipeline-converter"}
-var jobArgs = []string{"-c", "/etc/pipe-manager/config.yaml"}
-
 // LaunchJob creates a new Kubernetes Job with the given request ID and pipeline data
 // It returns an error if the job cannot be created
 // The request ID is the unique identifier of the http request coming from the webhook
@@ -24,6 +20,10 @@ func LaunchJob(requestID string, pipelineData *databuilder.PipelineData) error {
 	jobName := config.Launcher.Data.JobNamePrefix + "-" + requestID
 	namespace := config.Launcher.Data.Namespace
 	jobTimeout := config.Launcher.Data.Timeout
+	configmapName := config.Launcher.Data.ConfigmapName
+	imagePullPolicy := config.Launcher.Data.PullPolicy
+	jobCommand := []string{"/app/pipeline-converter"}
+	jobArgs := []string{"-c", "/etc/pipe-manager/config.yaml"}
 
 	// Get the Kubernetes client
 	client, err := getKubernetesClient()
@@ -46,7 +46,8 @@ func LaunchJob(requestID string, pipelineData *databuilder.PipelineData) error {
 	// ** TODO: Create a kubernetes controller to manage a new object type called, for example, "Pipeline". That way, we can manage the pipeline lifecycle
 	// ** from the creation to the deletion of the resources. This controller will be responsible for creating the Tekton Pipeline and manage the resources
 	// ** created by the pipeline.
-	job := createJobObject(jobName, requestID, pipelineData, namespace, jobTimeout, containerName, jobCommand, jobArgs, env)
+	job := createJobObject(jobName, requestID, pipelineData, namespace, jobTimeout,
+		containerName, jobCommand, jobArgs, env, configmapName, imagePullPolicy)
 
 	// Build the Job
 	jobClient := client.BatchV1().Jobs(namespace)
