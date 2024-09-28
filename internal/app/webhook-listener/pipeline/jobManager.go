@@ -110,6 +110,21 @@ func getEnvVarsFromPipelineData(pipelineData *databuilder.PipelineData) []corev1
 
 // createJobObject creates a Kubernetes Job object with the given parameters
 func createJobObject(job *JobConfig) *batchv1.Job {
+	// If the GitSecretName is empty, use an emptyDir volume. Otherwise, use a secret volume
+	var gitSecretVolume corev1.VolumeSource
+	if job.PipelineData.GitSecretName == "" {
+		gitSecretVolume = corev1.VolumeSource{
+			EmptyDir: &corev1.EmptyDirVolumeSource{},
+		}
+	} else {
+		gitSecretVolume = corev1.VolumeSource{
+			Secret: &corev1.SecretVolumeSource{
+				SecretName: job.PipelineData.GitSecretName,
+			},
+		}
+	}
+
+	// Create the Job object
 	return &batchv1.Job{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      job.JobName,
@@ -136,6 +151,14 @@ func createJobObject(job *JobConfig) *batchv1.Job {
 									Name:      "config-volume",
 									MountPath: "/etc/pipe-manager",
 								},
+								{
+									Name:      "git-credentials",
+									MountPath: "/root/.ssh",
+								},
+								{
+									Name:      "repo-storage",
+									MountPath: "/tmp/repo",
+								},
 							},
 						},
 					},
@@ -149,6 +172,16 @@ func createJobObject(job *JobConfig) *batchv1.Job {
 										Name: job.ConfigmapName,
 									},
 								},
+							},
+						},
+						{
+							Name:         "git-credentials",
+							VolumeSource: gitSecretVolume,
+						},
+						{
+							Name: "repo-storage",
+							VolumeSource: corev1.VolumeSource{
+								EmptyDir: &corev1.EmptyDirVolumeSource{},
 							},
 						},
 					},

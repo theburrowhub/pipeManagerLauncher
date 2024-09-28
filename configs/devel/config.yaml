@@ -18,7 +18,9 @@ config:
         path: /github  # The endpoint path where GitHub will send webhook payloads. Ensure this path is accessible
                        # and correctly configured in your GitHub repository settings.
         eventType: "data.headers['X-Github-Event'][0]"  # CEL expression to retrieve the event.
-
+        gitSecretName: "'git-credentials'" # The name of the Kubernetes secret containing the Git credentials. It's a
+                                         # CEL expression that must resolve to a valid secret name. Use single quotes
+                                         # for literal values.
         events:
           # Handler for push events (branches and tags)
           - type: push
@@ -82,3 +84,5 @@ config:
     imageName: "k3d-registry:5111/pipeline-converter"
     pullPolicy: "Always"
     tag: "0.0.2"
+
+    gitSecretName: "git-credentials"

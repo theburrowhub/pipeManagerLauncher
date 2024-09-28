@@ -9,10 +9,11 @@ import (
 // Route defines a single webhook route configuration.
 // It captures the name, path, event type, and a list of event handlers.
 type Route struct {
-	Name      string  `yaml:"name"`      // Name of the route (e.g., "github")
-	Path      string  `yaml:"path"`      // Path endpoint (e.g., "/github")
-	EventType string  `yaml:"eventType"` // EventType is a CEL expression to determine the event
-	Events    []Event `yaml:"events"`    // Events is a list of event handlers for this route
+	Name          string  `yaml:"name"`                    // Name of the route (e.g., "github")
+	Path          string  `yaml:"path"`                    // Path endpoint (e.g., "/github")
+	EventType     string  `yaml:"eventType"`               // EventType is a CEL expression to determine the event
+	GitSecretName string  `yaml:"gitSecretName,omitempty"` // GitSecretName is the name of the secret containing the Git credentials
+	Events        []Event `yaml:"events"`                  // Events is a list of event handlers for this route
 }
 
 // Event represents a single event handler within a route.

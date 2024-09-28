@@ -12,6 +12,7 @@ webhook:
     - name: github
       path: /github
       eventType: "data.headers['X-Github-Event'][0]"  # CEL expression to retrieve the event.
+      gitSecretName: "'git-credentials'" # CEL expression that must resolve to a valid secret name. Use single quotes for literal values.
       events:
         - type: push
           repository: "data.body.payload.repository.ssh_url"
@@ -54,5 +55,3 @@ launcher:
   timeout: 600
 
   configmapName: "pipeline-launcher-config"
-
-  gitSecret: "/etc/pipeManager/git-credentials"

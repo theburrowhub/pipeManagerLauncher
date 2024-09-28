@@ -13,13 +13,14 @@ import (
 // PipelineData represents a pipeline to be executed
 // It contains the name, path, event, repository, commit, and variables (a map of variable names and their values)
 type PipelineData struct {
-	Name       string
-	Path       string
-	Event      string
-	Repository string
-	Commit     string
-	DiffCommit string
-	Variables  map[string]string
+	Name          string
+	Path          string
+	Event         string
+	Repository    string
+	GitSecretName string
+	Commit        string
+	DiffCommit    string
+	Variables     map[string]string
 }
 
 // Run executes the parser with the given payload and routes configuration returning a Pipeline
@@ -50,6 +51,15 @@ func Run(payload json.RawMessage, path string, routes []config.Route) (*Pipeline
 	eventType, err = evaluateCELExpression(route.EventType, jsonData)
 	if err != nil {
 		return nil, err
+	}
+
+	// Evaluate the git secret name from the route
+	gitSecretName := ""
+	if route.GitSecretName != "" {
+		gitSecretName, err = evaluateCELExpression(route.GitSecretName, jsonData)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Retrieve the event route information from the events configuration
@@ -86,13 +96,14 @@ func Run(payload json.RawMessage, path string, routes []config.Route) (*Pipeline
 
 	// Create a PipelineData object
 	pipelineData := PipelineData{
-		Name:       route.Name,
-		Path:       route.Path,
-		Event:      eventType,
-		Repository: repository,
-		Commit:     commit,
-		DiffCommit: diffCommit,
-		Variables:  make(map[string]string),
+		Name:          route.Name,
+		Path:          route.Path,
+		Event:         eventType,
+		Repository:    repository,
+		GitSecretName: gitSecretName,
+		Commit:        commit,
+		DiffCommit:    diffCommit,
+		Variables:     make(map[string]string),
 	}
 
 	// Evaluate the variables and store them in the PipelineData object
