@@ -13,7 +13,12 @@ image:
   # -- Tag of the Docker image to use for the webhook listener.
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
-
+command: ["/app/webhook-listener"]
+args:
+  - "-c"
+  - "/etc/pipe-manager/config.yaml"
+  - "-l"
+  - ":80"
 # -- Image Pull Secrets for the webhook listener.
 imagePullSecrets: []
 # -- Name to override the default resource name.

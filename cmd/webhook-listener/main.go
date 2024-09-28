@@ -16,11 +16,11 @@ import (
 )
 
 var (
-	defaultConfigFile = "/etc/pipe-manager.conf" // defaultConfigFile is the default configuration file
-	defaultListenPort = 80                       // defaultListenPort is the default port to listen on
-	configFile        string                     // configFile is the path to the configuration file
-	listenPort        int                        // listenPort is the port to listen on
-	showVersion       bool                       // showVersion is a flag to show the version
+	defaultConfigFile = "/etc/pipe-manager/config.yaml" // defaultConfigFile is the default configuration file
+	defaultListenAddr = ":80"                           // defaultListenAddr is the default listen address
+	configFile        string                            // configFile is the path to the configuration file
+	listenAddr        string                            // listenAddr is the address to listen on
+	showVersion       bool                              // showVersion is a flag to show the version
 )
 
 // main is the entrypoint for the application
@@ -42,7 +42,7 @@ func main() {
 	}
 
 	rootCmd.Flags().StringVarP(&configFile, "config", "c", defaultConfigFile, "Path to the config file")
-	rootCmd.Flags().IntVarP(&listenPort, "listen", "l", defaultListenPort, "Listener port")
+	rootCmd.Flags().StringVarP(&listenAddr, "listen", "l", defaultListenAddr, "Listen address")
 	rootCmd.Flags().BoolVarP(&showVersion, "version", "v", false, "Print the version")
 
 	if err := rootCmd.Execute(); err != nil {
@@ -80,14 +80,14 @@ func app() {
 	logging.Logger.Info("Pipe Manager starting up...")
 	logging.Logger.Info("Setup", "configFile", configFile,
 		"workers", config.Webhook.Data.Workers,
-		"listenPort", listenPort,
+		"listenAddr", listenAddr,
 		"logLevel", config.Common.Data.Log.Level,
 		"logFormat", config.Common.Data.Log.Format,
 		"logFile", config.Common.Data.Log.File,
 		"launcherImage", pipeline.GetLauncherImage())
 
 	// Launch web server
-	err = httpServer.HttpServer(listenPort)
+	err = httpServer.HttpServer(listenAddr)
 	if err != nil {
 		logging.Logger.Error("Error starting server", "error", fmt.Sprintf("%v", err))
 		panic(err)

@@ -46,7 +46,7 @@ var jobQueue chan Job
 // It processes the requests and sends them to the worker pool
 // It also captures termination signals to stop the server and workers
 // It returns an error if the server fails to start
-func HttpServer(listenPort int) error {
+func HttpServer(listenAddr string) error {
 	// Setup
 	maxWorkers := config.Webhook.Data.Workers
 	jobQueue = make(chan Job, maxWorkers)
@@ -67,9 +67,9 @@ func HttpServer(listenPort int) error {
 	}
 
 	// Start the HTTP server
-	server := &http.Server{Addr: fmt.Sprintf(":%d", listenPort)}
+	server := &http.Server{Addr: listenAddr}
 	go func() {
-		logging.Logger.Info("Starting HTTP server", "port", listenPort)
+		logging.Logger.Info("Starting HTTP server", "listenAddr", listenAddr)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			logging.Logger.Error("HTTP server error", "error", fmt.Sprintf("%v", err))
 			panic(err)

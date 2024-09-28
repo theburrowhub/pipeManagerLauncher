@@ -47,7 +47,7 @@ RUN apk --no-cache add ca-certificates
 
 WORKDIR /app
 
-COPY --from=builder /go/src/github.com/${USER_NAME}/${REPORT_NAME}/${APP_NAME} ./app
+COPY --from=builder /go/src/github.com/${USER_NAME}/${REPORT_NAME}/${APP_NAME} "./${APP_NAME}"
 
-ENTRYPOINT ["./app"]
-CMD ["-c", "/etc/pipe-manager/config.yaml", "-l", "80"]
+ENTRYPOINT "./${APP_NAME}"
+CMD ["-c", "/etc/pipe-manager/config.yaml"]
