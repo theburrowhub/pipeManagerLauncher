@@ -118,6 +118,10 @@ $(IMAGES):
 		-t ${K3D_REGISTRY_NAME}:${K3D_REGISTRY_PORT}/$(basename $@):$(shell cz version -p) .
 	docker push ${K3D_REGISTRY_NAME}:${K3D_REGISTRY_PORT}/$(basename $@):$(shell cz version -p)
 
+vendor: ## Install dependencies
+	@echo "Installing dependencies..."
+	go mod vendor
+
 clean: ## Clean up
 	@echo "Cleaning up"
 	rm -rf ${KUBECONFIG}
@@ -126,5 +130,5 @@ clean: ## Clean up
 	rm -rf dist
 	rm -rf vendor
 	for image in $(IMAGES); do \
-		docker rmi -f ${REGISTRY_NAME}/$${image%.image}:latest || true; \
+		docker rmi -f ${K3D_REGISTRY_NAME}:${K3D_REGISTRY_PORT}/$${image%.image}:$(shell cz version -p) || true; \
 	done
