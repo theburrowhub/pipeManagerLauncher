@@ -106,6 +106,11 @@ func getEnvVarsFromPipelineData(pipelineData *databuilder.PipelineData) []corev1
 	return env
 }
 
+// pointerInt32 returns a pointer to an int32
+func pointerInt32(i int32) *int32 {
+	return &i
+}
+
 // createJobObject creates a Kubernetes Job object with the given parameters
 func createJobObject(job *JobConfig) *batchv1.Job {
 	// If the GitSecretName is empty, use an emptyDir volume. Otherwise, use a secret volume
@@ -118,7 +123,7 @@ func createJobObject(job *JobConfig) *batchv1.Job {
 		gitSecretVolume = corev1.VolumeSource{
 			Secret: &corev1.SecretVolumeSource{
 				SecretName:  job.PipelineData.GitSecretName,
-				DefaultMode: func(i int32) *int32 { return &i }(0o600),
+				DefaultMode: pointerInt32(0o600),
 			},
 		}
 	}

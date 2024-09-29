@@ -32,7 +32,7 @@ RUN apk --no-cache add \
     git \
     bash
 
-RUN echo 'eval $(ssh-agent -s)' >> /root/.bashrc
+RUN echo 'eval $(ssh-agent -s); ssh-add' >> /root/.bashrc
 
 WORKDIR /app
 
