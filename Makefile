@@ -13,6 +13,9 @@ KUBECONFIG=$(PWD)/kubeconfig
 # Project name
 PROJECT_NAME=github.com/sergiotejon/pipeManager
 
+# Key
+SSH_PRIVATE_KEY?=$(HOME)/.ssh/id_rsa
+
 # TODO: add commitlint
 
 help: ## Display this help
@@ -58,7 +61,7 @@ shell: ## Open a shell in the devbox
     echo "devbox is not installed. Installing devbox..."; \
 		curl -fsSL https://get.jetify.com/devbox | bash; \
 	fi
-	devbox shell
+	SSH_PRIVATE_KEY=${SSH_PRIVATE_KEY} devbox shell
 
 all: $(APPS) $(IMAGES) ## Build all go applications and docker images
 
@@ -100,7 +103,7 @@ create-git-secret: ## Create git secret in devel k8s cluster using local ssh key
 	ssh-keyscan -t rsa github.com > /tmp/known_hosts
 	kubectl --kubeconfig ${KUBECONFIG} create secret generic git-credentials \
 		--namespace pipe-manager \
-		--from-file=id_rsa=${HOME}/.ssh/id_rsa \
+		--from-file=id_rsa=${SSH_PRIVATE_KEY} \
 		--from-file=known_hosts=/tmp/known_hosts
 
 # Build go application
