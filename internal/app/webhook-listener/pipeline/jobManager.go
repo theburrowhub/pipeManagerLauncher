@@ -102,6 +102,10 @@ func getEnvVarsFromPipelineData(pipelineData *databuilder.PipelineData) []corev1
 		Name:  "PIPELINE_REPOSITORY",
 		Value: pipelineData.Repository,
 	})
+	env = append(env, corev1.EnvVar{
+		Name:  "PIPELINE_EVENT",
+		Value: pipelineData.Event,
+	})
 
 	return env
 }
