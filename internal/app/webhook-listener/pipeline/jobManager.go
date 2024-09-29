@@ -117,7 +117,8 @@ func createJobObject(job *JobConfig) *batchv1.Job {
 	} else {
 		gitSecretVolume = corev1.VolumeSource{
 			Secret: &corev1.SecretVolumeSource{
-				SecretName: job.PipelineData.GitSecretName,
+				SecretName:  job.PipelineData.GitSecretName,
+				DefaultMode: func(i int32) *int32 { return &i }(0o600),
 			},
 		}
 	}
