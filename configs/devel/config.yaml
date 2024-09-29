@@ -24,16 +24,16 @@ config:
         events:
           # Handler for push events (branches and tags)
           - type: push
-            repository: "data.body.payload.repository.ssh_url"  # (Mandatory) CEL expression to extract the repository name from the payload.
-            commit: "data.body.payload.after"  # (Optional) CEL expression to extract the full commit SHA.
-            diffCommit: "data.body.payload.before"  # (Optional) CEL expression to extract the previous commit SHA.
+            repository: "data.body.repository.ssh_url"  # (Mandatory) CEL expression to extract the repository name from the payload.
+            commit: "data.body.after"  # (Optional) CEL expression to extract the full commit SHA.
+            diffCommit: "data.body.before"  # (Optional) CEL expression to extract the previous commit SHA.
             variables: # Additional custom variables to be passed to the pipeline.
-              ref: "data.body.payload.ref.replace('refs/heads/', '').replace('refs/tags/', '')" # CEL expression to extract the branch or tag name.
-              tag: "data.body.payload.ref.startsWith('refs/tags/')"  # CEL expression to determine if the push includes a tag (true/false).
-              shortCommit: "data.body.payload.head_commit.id.substring(0,7)"  # CEL expression to get the first 7 characters of the commit SHA.
-              email: "data.body.payload.head_commit.author.email"  # CEL expression to extract the author's email from the commit.
-              author: "data.body.payload.head_commit.author.name"  # CEL expression to extract the author's name from the commit.
-              user: "data.body.payload.pusher.name"  # CEL expression to extract the pusher's username.
+              ref: "data.body.ref.replace('refs/heads/', '').replace('refs/tags/', '')" # CEL expression to extract the branch or tag name.
+              tag: "data.body.ref.startsWith('refs/tags/')"  # CEL expression to determine if the push includes a tag (true/false).
+              shortCommit: "data.body.head_commit.id.substring(0,7)"  # CEL expression to get the first 7 characters of the commit SHA.
+              email: "data.body.head_commit.author.email"  # CEL expression to extract the author's email from the commit.
+              author: "data.body.head_commit.author.name"  # CEL expression to extract the author's name from the commit.
+              user: "data.body.pusher.name"  # CEL expression to extract the pusher's username.
               custom: "'MY_CUSTOM_VALUE'"  # Custom value to be passed to the pipeline. Literal values must be enclosed in single quotes.
 
           # Handler for pull request events
