@@ -19,8 +19,10 @@ import (
 	"github.com/sergiotejon/pipeManager/internal/pkg/version"
 )
 
-// defaultConfigFile is the default configuration file
-const defaultConfigFile = "/etc/pipe-manager/config.yaml"
+const (
+	defaultConfigFile = "/etc/pipe-manager/config.yaml" // defaultConfigFile is the default configuration file
+	templateFolder    = "/etc/pipe-manager/templates"   // templateFolder is the folder where the templates are stored
+)
 
 var (
 	configFile  string // configFile is the path to the configuration file
@@ -111,16 +113,25 @@ func app() {
 		os.Exit(1)
 	}
 
-	logging.Logger.Debug("Pipeline files mixed successfully", "folder", pipelineFolder, "data", combinedData)
+	logging.Logger.Info("Pipeline files mixed successfully", "folder", pipelineFolder)
+	for key, _ := range combinedData {
+		if key == "global" {
+			continue
+		}
+		logging.Logger.Debug("Pipeline found", "pipeline", key)
+	}
+
+	pipelines := pipelineparser.FindPipelineByRegex(combinedData, envvars.Variables)
+	for key, _ := range pipelines {
+		logging.Logger.Info("Pipeline to launch due to triggers", "pipeline", key)
+	}
 
 	// Temporal
 	if config.Common.Data.Log.Level == "debug" {
-		data, err := yaml.Marshal(combinedData)
+		data, err := yaml.Marshal(pipelines)
 		if err != nil {
-			logging.Logger.Error("Error marshalling data", "msg", err)
 			os.Exit(1)
 		}
-		logging.Logger.Debug("Combined data", "data", string(data))
 		fmt.Println(string(data))
 	}
 	// Temporal
