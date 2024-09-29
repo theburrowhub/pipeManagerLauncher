@@ -96,6 +96,10 @@ func app() {
 		os.Exit(1)
 	}
 
+	logging.Logger.Info("Repository cloned successfully", "repository", envvars.Variables["REPOSITORY"], "commit", envvars.Variables["COMMIT"])
+
+	// Mix all the pipeline files
+
 	// Parse the pipeline
 
 	return
