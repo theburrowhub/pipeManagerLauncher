@@ -3,9 +3,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/sergiotejon/pipeManager/internal/app/pipe-converter/pipelineparser"
+	"gopkg.in/yaml.v3"
 	"log"
 	"log/slog"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 
@@ -84,10 +87,11 @@ func app() {
 	}
 
 	// Clone the repository
+	const repoDir = "/tmp/repo"
 	err = repository.Clone(envvars.Variables["REPOSITORY"],
 		config.Launcher.Data.CloneDepth,
 		envvars.Variables["COMMIT"],
-		"/tmp/repo")
+		repoDir)
 	if err != nil {
 		slog.Error("Error cloning repository", "msg", err,
 			"repository", envvars.Variables["REPOSITORY"],
@@ -99,6 +103,27 @@ func app() {
 	logging.Logger.Info("Repository cloned successfully", "repository", envvars.Variables["REPOSITORY"], "commit", envvars.Variables["COMMIT"])
 
 	// Mix all the pipeline files
+	const pipelineDir = ".pipelines"
+	pipelineFolder := filepath.Join(repoDir, pipelineDir)
+	err, combinedData := pipelineparser.MixPipelineFiles(pipelineFolder)
+	if err != nil {
+		logging.Logger.Error("Error mixing pipeline files", "msg", err, "folder", pipelineFolder)
+		os.Exit(1)
+	}
+
+	logging.Logger.Debug("Pipeline files mixed successfully", "folder", pipelineFolder, "data", combinedData)
+
+	// Temporal
+	if config.Common.Data.Log.Level == "debug" {
+		data, err := yaml.Marshal(combinedData)
+		if err != nil {
+			logging.Logger.Error("Error marshalling data", "msg", err)
+			os.Exit(1)
+		}
+		logging.Logger.Debug("Combined data", "data", string(data))
+		fmt.Println(string(data))
+	}
+	// Temporal
 
 	// Parse the pipeline
 
