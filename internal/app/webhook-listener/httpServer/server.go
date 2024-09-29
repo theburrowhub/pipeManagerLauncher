@@ -96,6 +96,8 @@ func HttpServer(listenAddr string) error {
 }
 
 // routes registers the allowed routes for the HTTP server
+// TODO:
+//   - Add route `ping` for github webhook (with event ping)
 func routes() {
 	// Health check endpoint
 	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
