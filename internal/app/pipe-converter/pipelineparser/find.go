@@ -8,15 +8,13 @@ import (
 
 // FindPipelineByRegex finds the pipeline to launch based on the variables
 func FindPipelineByRegex(data map[string]interface{}, variables map[string]string) map[string]interface{} {
-
 	// Create a map to store the pipelines that match the triggers
 	pipelines := make(map[string]interface{})
 
 	// Find the pipeline to launch
 	for key, value := range data {
-		// Skip the global configuration. It will be used for all pipelines
+		// If the key is "global", skip it
 		if key == "global" {
-			pipelines[key] = value
 			continue
 		}
 
@@ -57,7 +55,11 @@ func FindPipelineByRegex(data map[string]interface{}, variables map[string]strin
 
 		// Add the pipeline to the list if all triggers matched
 		if addPipeline {
-			pipelines[key] = value
+			pipelines[key] = make(map[string]interface{})
+			// Include the global variables into the pipeline
+			mergeMaps(pipelines[key].(map[string]interface{}), data["global"].(map[string]interface{}))
+			// Merge the pipeline with global variables. Overwrite global variables with pipeline variables
+			mergeMaps(pipelines[key].(map[string]interface{}), value.(map[string]interface{}))
 		}
 	}
 
