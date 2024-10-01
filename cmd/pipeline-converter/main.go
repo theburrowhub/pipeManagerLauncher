@@ -121,6 +121,16 @@ func app() {
 		logging.Logger.Debug("Pipeline found", "pipeline", key)
 	}
 
+	// Temporal
+	if config.Common.Data.Log.Level == "debug" {
+		data, err := yaml.Marshal(combinedData)
+		if err != nil {
+			os.Exit(1)
+		}
+		fmt.Println(string(data))
+	}
+	// Temporal
+
 	pipelines := pipelineparser.FindPipelineByRegex(combinedData, envvars.Variables)
 	for key, _ := range pipelines {
 		logging.Logger.Info("Pipeline to launch due to triggers", "pipeline", key)

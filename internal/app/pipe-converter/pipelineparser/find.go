@@ -1,9 +1,11 @@
 package pipelineparser
 
 import (
-	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
 	"regexp"
 	"strings"
+
+	"github.com/sergiotejon/pipeManager/internal/pkg/envvars"
+	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
 )
 
 // FindPipelineByRegex finds the pipeline to launch based on the variables
@@ -60,8 +62,28 @@ func FindPipelineByRegex(data map[string]interface{}, variables map[string]strin
 			mergeMaps(pipelines[key].(map[string]interface{}), data["global"].(map[string]interface{}))
 			// Merge the pipeline with global variables. Overwrite global variables with pipeline variables
 			mergeMaps(pipelines[key].(map[string]interface{}), value.(map[string]interface{}))
+			// Add the environment variables as parameters
+			for paramName, paramValue := range convertEnvVarsIntoParams() {
+				pipelines[key].(map[string]interface{})["params"].(map[string]interface{})[paramName] = paramValue
+			}
 		}
 	}
 
 	return pipelines
+}
+
+// convertEnvVarsIntoParams converts the environment variables into parameters of pipeline
+// Return two strings, the first one is the name of the parameter and the second one is the value
+// of the parameter
+func convertEnvVarsIntoParams() map[string]string {
+	params := make(map[string]string)
+
+	for key, value := range envvars.Variables {
+		paramName := strings.ReplaceAll(key, "_", "-")
+		paramValue := value
+
+		params[paramName] = paramValue
+	}
+
+	return params
 }
