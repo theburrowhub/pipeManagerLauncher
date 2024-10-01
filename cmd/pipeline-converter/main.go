@@ -133,7 +133,8 @@ func app() {
 
 	pipelines := pipelineparser.FindPipelineByRegex(combinedData, envvars.Variables)
 	for key, _ := range pipelines {
-		logging.Logger.Info("Pipeline to launch due to triggers", "pipeline", key)
+		logging.Logger.Info("Launching pipeline", "pipeline", key)
+		// TODO: Launch the pipeline
 	}
 
 	// Temporal
