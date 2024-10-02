@@ -244,6 +244,9 @@ config:
     # Adjust this value based on the expected duration of your pipeline jobs.
     timeout: 600
 
+    # -- Maximum number of retries for the pipeline job in case of failure.
+    backoffLimit: 3
+
     # -- Clone depth for the pipeline job. The number of commits to fetch from the repository.
     # Adjust this value based on the size of the repository and the required history for the pipeline job.
     # A value of 0 fetches the entire history of the repository.

@@ -46,6 +46,7 @@ func LaunchJob(requestID string, pipelineData *databuilder.PipelineData) error {
 		PipelineData:    pipelineData,
 		Namespace:       namespace,
 		JobTimeout:      config.Launcher.Data.Timeout,
+		BackoffLimit:    config.Launcher.Data.BackoffLimit,
 		ContainerName:   containerName,
 		Env:             env,
 		ConfigmapName:   config.Launcher.Data.ConfigmapName,

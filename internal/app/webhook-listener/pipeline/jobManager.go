@@ -25,6 +25,7 @@ type JobConfig struct {
 	PipelineData    *databuilder.PipelineData
 	Namespace       string
 	JobTimeout      int64
+	BackoffLimit    int32
 	ContainerName   string
 	Env             []corev1.EnvVar
 	ConfigmapName   string
@@ -141,6 +142,7 @@ func createJobObject(job *JobConfig) *batchv1.Job {
 		},
 		Spec: batchv1.JobSpec{
 			ActiveDeadlineSeconds: &job.JobTimeout,
+			BackoffLimit:          &job.BackoffLimit,
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: getLabels(job.RequestID, job.PipelineData),
