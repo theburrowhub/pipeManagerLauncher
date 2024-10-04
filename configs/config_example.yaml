@@ -54,3 +54,5 @@ launcher:
   jobNamePrefix: "pipeline-launcher"
   timeout: 600
   backoffLimit: 2
+
+  configmapName: "pipeline-launcher-config"
