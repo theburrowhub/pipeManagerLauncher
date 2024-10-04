@@ -134,7 +134,9 @@ func app() {
 	pipelines := pipelineparser.FindPipelineByRegex(combinedData, envvars.Variables)
 	for key, _ := range pipelines {
 		logging.Logger.Info("Launching pipeline", "pipeline", key)
-		// TODO: Launch the pipeline
+		// TODO:
+		// - KCL validation && mutation
+		// - Launch the pipeline (template to tekton pipelineRun)
 	}
 
 	// Temporal
