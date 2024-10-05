@@ -11,7 +11,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/sergiotejon/pipeManager/internal/app/launcher/pipelineparser"
+	"github.com/sergiotejon/pipeManager/internal/app/launcher/pipelineprocessor"
 	"github.com/sergiotejon/pipeManager/internal/app/launcher/repository"
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
 	"github.com/sergiotejon/pipeManager/internal/pkg/envvars"
@@ -107,7 +107,7 @@ func app() {
 	// Mix all the pipeline files
 	const pipelineDir = ".pipelines"
 	pipelineFolder := filepath.Join(repoDir, pipelineDir)
-	err, combinedData := pipelineparser.MixPipelineFiles(pipelineFolder)
+	err, combinedData := pipelineprocessor.MixPipelineFiles(pipelineFolder)
 	if err != nil {
 		logging.Logger.Error("Error mixing pipeline files", "msg", err, "folder", pipelineFolder)
 		os.Exit(1)
@@ -134,7 +134,7 @@ func app() {
 	var pipelines map[string]interface{}
 	if envvars.Variables["NAME"] == "" { // If no pipeline name is provided, launch all pipelines that match the triggers
 		logging.Logger.Info("Looking for pipelines using triggers")
-		pipelines = pipelineparser.FindPipelineByRegex(combinedData, envvars.Variables)
+		pipelines = pipelineprocessor.FindPipelineByRegex(combinedData, envvars.Variables)
 		for key, _ := range pipelines {
 			logging.Logger.Info("Launching pipeline", "pipeline", key)
 			// TODO:
@@ -143,7 +143,7 @@ func app() {
 		}
 	} else { // If a pipeline name is provided, launch the pipeline with that name
 		logging.Logger.Info("Looking for pipeline using name", "name", envvars.Variables["NAME"])
-		pipelines = pipelineparser.FindPipelineByName(combinedData, envvars.Variables, envvars.Variables["NAME"])
+		pipelines = pipelineprocessor.FindPipelineByName(combinedData, envvars.Variables, envvars.Variables["NAME"])
 		for key, _ := range pipelines {
 			logging.Logger.Info("Launching pipeline", "pipeline", key)
 			// TODO:

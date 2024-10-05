@@ -1,4 +1,4 @@
-package pipelineparser
+package pipelineprocessor
 
 import (
 	"gopkg.in/yaml.v3"
