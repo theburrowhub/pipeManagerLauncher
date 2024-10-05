@@ -16,9 +16,9 @@ builds:
       - linux
       - darwin
 
-  - id: pipeline-converter
-    binary: pipeline-converter
-    main: ./cmd/pipeline-converter
+  - id: launcher
+    binary: launcher
+    main: ./cmd/launcher
     ldflags:
       - "-X github.com/sergiotejon/pipeManager/internal/pkg/version.Version={{.Version}}"
     env:

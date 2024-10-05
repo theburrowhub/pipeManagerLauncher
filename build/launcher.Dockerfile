@@ -20,8 +20,8 @@ RUN go mod download
 RUN go build \
       -a -installsuffix cgo \
       -ldflags "-X github.com/sergiotejon/pipeManager/internal/pkg/version.Version=${APP_VERSION}" \
-      -o pipeline-converter \
-      cmd/pipeline-converter/main.go
+      -o launcher \
+      cmd/launcher/main.go
 
 # Final stage
 FROM alpine:3.20.3
@@ -36,8 +36,8 @@ RUN echo 'eval $(ssh-agent -s); ssh-add' >> /root/.bashrc
 
 WORKDIR /app
 
-COPY --from=builder /go/src/github.com/sergiotejon/pipeManager/pipeline-converter ./pipeline-converter
+COPY --from=builder /go/src/github.com/sergiotejon/pipeManager/launcher ./launcher
 
 # Set the entrypoint to start the SSH agent
 ENTRYPOINT ["/bin/bash", "-c", "source /root/.bashrc && exec \"$@\"", "--"]
-CMD ["/app/pipeline-converter", "-c", "/etc/pipe-manager/config.yaml"]
+CMD ["/app/launcher", "-c", "/etc/pipe-manager/config.yaml"]

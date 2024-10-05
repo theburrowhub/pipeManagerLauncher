@@ -3,7 +3,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/sergiotejon/pipeManager/internal/app/pipe-converter/pipelineparser"
 	"gopkg.in/yaml.v3"
 	"log"
 	"log/slog"
@@ -12,7 +11,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/sergiotejon/pipeManager/internal/app/pipe-converter/repository"
+	"github.com/sergiotejon/pipeManager/internal/app/launcher/pipelineparser"
+	"github.com/sergiotejon/pipeManager/internal/app/launcher/repository"
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
 	"github.com/sergiotejon/pipeManager/internal/pkg/envvars"
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"

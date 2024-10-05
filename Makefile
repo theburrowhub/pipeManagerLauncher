@@ -1,8 +1,8 @@
 .PHONY: deploy release clean shell
 
 # Local variables
-APPS := dashboard.bin pipeline-converter.bin webhook-listener.bin cleaner.bin
-IMAGES := dashboard.image pipeline-converter.image webhook-listener.image cleaner.image
+APPS := dashboard.bin launcher.bin webhook-listener.bin cleaner.bin
+IMAGES := dashboard.image launcher.image webhook-listener.image cleaner.image
 
 # Local Development Environment
 K3D_REGISTRY_NAME=k3d-registry
