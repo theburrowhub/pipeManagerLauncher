@@ -122,21 +122,34 @@ func app() {
 	}
 
 	// Temporal
-	if config.Common.Data.Log.Level == "debug" {
-		data, err := yaml.Marshal(combinedData)
-		if err != nil {
-			os.Exit(1)
-		}
-		fmt.Println(string(data))
-	}
+	//if config.Common.Data.Log.Level == "debug" {
+	//	data, err := yaml.Marshal(combinedData)
+	//	if err != nil {
+	//		os.Exit(1)
+	//	}
+	//	fmt.Println(string(data))
+	//}
 	// Temporal
 
-	pipelines := pipelineparser.FindPipelineByRegex(combinedData, envvars.Variables)
-	for key, _ := range pipelines {
-		logging.Logger.Info("Launching pipeline", "pipeline", key)
-		// TODO:
-		// - KCL validation && mutation
-		// - Launch the pipeline (template to tekton pipelineRun)
+	var pipelines map[string]interface{}
+	if envvars.Variables["NAME"] == "" { // If no pipeline name is provided, launch all pipelines that match the triggers
+		logging.Logger.Info("Looking for pipelines using triggers")
+		pipelines = pipelineparser.FindPipelineByRegex(combinedData, envvars.Variables)
+		for key, _ := range pipelines {
+			logging.Logger.Info("Launching pipeline", "pipeline", key)
+			// TODO:
+			// - KCL validation && mutation
+			// - Launch the pipeline (template to tekton pipelineRun)
+		}
+	} else { // If a pipeline name is provided, launch the pipeline with that name
+		logging.Logger.Info("Looking for pipeline using name", "name", envvars.Variables["NAME"])
+		pipelines = pipelineparser.FindPipelineByName(combinedData, envvars.Variables, envvars.Variables["NAME"])
+		for key, _ := range pipelines {
+			logging.Logger.Info("Launching pipeline", "pipeline", key)
+			// TODO:
+			// - KCL validation && mutation
+			// - Launch the pipeline (template to tekton pipelineRun)
+		}
 	}
 
 	// Temporal

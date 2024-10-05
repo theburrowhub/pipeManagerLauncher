@@ -9,12 +9,36 @@ import (
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
 )
 
+// FindPipelineByName finds the pipeline to launch based on the name
+func FindPipelineByName(data map[string]interface{}, variables map[string]string, pipelineName string) map[string]interface{} {
+	// Create a map to store the pipelines that match the triggers
+	pipelines := make(map[string]interface{})
+
+	// Find the pipeline to launch
+	// Key is the name of the pipeline or "global"
+	// Value is the pipeline data
+	for key, value := range data {
+		// If the key is "global", skip it
+		if key == "global" {
+			continue
+		}
+
+		if key == pipelineName {
+			pipelines[key] = createAtomicPipeline(data, value)
+		}
+	}
+
+	return pipelines
+}
+
 // FindPipelineByRegex finds the pipeline to launch based on the variables
 func FindPipelineByRegex(data map[string]interface{}, variables map[string]string) map[string]interface{} {
 	// Create a map to store the pipelines that match the triggers
 	pipelines := make(map[string]interface{})
 
 	// Find the pipeline to launch
+	// Key is the name of the pipeline or "global"
+	// Value is the pipeline data
 	for key, value := range data {
 		// If the key is "global", skip it
 		if key == "global" {
@@ -60,15 +84,7 @@ func FindPipelineByRegex(data map[string]interface{}, variables map[string]strin
 
 			// Add the pipeline to the list if all triggers matched
 			if addPipeline {
-				pipelines[key] = make(map[string]interface{})
-				// Include the global variables into the pipeline
-				mergeMaps(pipelines[key].(map[string]interface{}), data["global"].(map[string]interface{}))
-				// Merge the pipeline with global variables. Overwrite global variables with pipeline variables
-				mergeMaps(pipelines[key].(map[string]interface{}), value.(map[string]interface{}))
-				// Add the environment variables as parameters
-				for paramName, paramValue := range convertEnvVarsIntoParams() {
-					pipelines[key].(map[string]interface{})["params"].(map[string]interface{})[paramName] = paramValue
-				}
+				pipelines[key] = createAtomicPipeline(data, value)
 			}
 		default:
 			logging.Logger.Warn("Unexpected type found", "type", fmt.Sprintf("%T", v), "pipeline", key)
@@ -92,4 +108,25 @@ func convertEnvVarsIntoParams() map[string]string {
 	}
 
 	return params
+}
+
+// createAtomicPipeline creates a pipeline with the global variables and the pipeline variables
+func createAtomicPipeline(data map[string]interface{}, value interface{}) map[string]interface{} {
+	pipeline := make(map[string]interface{})
+
+	// Include the global variables into the pipeline
+	mergeMaps(pipeline, data["global"].(map[string]interface{}))
+
+	// Merge the pipeline with global variables. Overwrite global variables with pipeline variables
+	mergeMaps(pipeline, value.(map[string]interface{}))
+
+	// Add the environment variables as parameters
+	for paramName, paramValue := range convertEnvVarsIntoParams() {
+		pipeline["params"].(map[string]interface{})[paramName] = paramValue
+	}
+
+	// Remove the pipeline triggers if they exist
+	delete(pipeline, "pipelineTriggers")
+
+	return pipeline
 }
