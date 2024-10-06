@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/httpServer"
-	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/pipeline"
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
 	"github.com/sergiotejon/pipeManager/internal/pkg/version"
@@ -87,7 +86,7 @@ func app() {
 		"logLevel", config.Common.Data.Log.Level,
 		"logFormat", config.Common.Data.Log.Format,
 		"logFile", config.Common.Data.Log.File,
-		"launcherImage", pipeline.GetLauncherImage())
+		"launcherImage", config.Launcher.Data.GetLauncherImage())
 
 	// Launch web server
 	err = httpServer.HttpServer(listenAddr)

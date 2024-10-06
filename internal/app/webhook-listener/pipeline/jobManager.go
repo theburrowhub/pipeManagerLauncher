@@ -21,6 +21,7 @@ import (
 // JobConfig contains the configuration for a new Kubernetes Job
 type JobConfig struct {
 	JobName         string
+	Image           string
 	RequestID       string
 	PipelineData    *databuilder.PipelineData
 	Namespace       string
@@ -151,7 +152,7 @@ func createJobObject(job *JobConfig) *batchv1.Job {
 					Containers: []corev1.Container{
 						{
 							Name:            job.ContainerName,
-							Image:           GetLauncherImage(),
+							Image:           job.Image,
 							ImagePullPolicy: corev1.PullPolicy(job.ImagePullPolicy),
 							Env:             job.Env, // Environment variables with the pipeline data
 							VolumeMounts: []corev1.VolumeMount{

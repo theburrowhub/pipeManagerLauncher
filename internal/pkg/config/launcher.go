@@ -2,8 +2,11 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"gopkg.in/yaml.v3"
 	"os"
+
+	"github.com/sergiotejon/pipeManager/internal/pkg/version"
 )
 
 // LauncherStruct defines the launcher configuration.
@@ -47,4 +50,14 @@ func LoadLauncherConfig(configFile string) error {
 	}
 
 	return nil
+}
+
+// GetLauncherImage returns the image name and tag for the launcher image if format "name:tag"
+func (l *LauncherStruct) GetLauncherImage() string {
+	return fmt.Sprintf("%s:%s", l.ImageName, func() string {
+		if l.Tag == "" {
+			return version.GetVersion()
+		}
+		return l.Tag
+	}())
 }

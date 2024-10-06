@@ -42,6 +42,7 @@ func LaunchJob(requestID string, pipelineData *databuilder.PipelineData) error {
 	// ** created by the pipeline.
 	jobData := &JobConfig{
 		JobName:         config.Launcher.Data.JobNamePrefix + "-" + requestID,
+		Image:           config.Launcher.Data.GetLauncherImage(),
 		RequestID:       requestID,
 		PipelineData:    pipelineData,
 		Namespace:       namespace,
