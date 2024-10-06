@@ -21,7 +21,7 @@ RUN go build \
       -a -installsuffix cgo \
       -ldflags "-X github.com/sergiotejon/pipeManager/internal/pkg/version.Version=${APP_VERSION}" \
       -o launcher \
-      cmd/launcher/main.go
+      cmd/launcher/*.go
 
 # Final stage
 FROM alpine:3.20.3

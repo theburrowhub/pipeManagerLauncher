@@ -3,30 +3,34 @@ package main
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"log"
-	"log/slog"
 	"os"
-	"path/filepath"
 
 	"github.com/spf13/cobra"
 
-	"github.com/sergiotejon/pipeManager/internal/app/launcher/pipelineprocessor"
-	"github.com/sergiotejon/pipeManager/internal/app/launcher/repository"
-	"github.com/sergiotejon/pipeManager/internal/pkg/config"
-	"github.com/sergiotejon/pipeManager/internal/pkg/envvars"
-	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
 	"github.com/sergiotejon/pipeManager/internal/pkg/version"
 )
 
 const (
 	defaultConfigFile = "/etc/pipe-manager/config.yaml" // defaultConfigFile is the default configuration file
 	templateFolder    = "/etc/pipe-manager/templates"   // templateFolder is the folder where the templates are stored
+	repoDir           = "/tmp/repo"                     // repoDir is the directory where the repository is cloned
 )
 
 var (
 	configFile  string // configFile is the path to the configuration file
 	showVersion bool   // showVersion is a flag to show the version
+)
+
+const (
+	ErrCodeOK             = 0
+	ErrCodeLoadConfig     = 1
+	ErrCodeCloneRepo      = 2
+	ErrCodeMixFiles       = 3
+	ErrCodeNormalize      = 4
+	ErrCodeClone          = 5
+	ErrCodeBucketDownload = 6
+	ErrCodeBucketUpload   = 7
 )
 
 // main is the entrypoint for the application
@@ -43,6 +47,7 @@ func main() {
 			}
 
 			// Run the application
+			initApp()
 			app()
 		},
 	}
@@ -50,119 +55,10 @@ func main() {
 	rootCmd.Flags().StringVarP(&configFile, "config", "c", defaultConfigFile, "Path to the config file")
 	rootCmd.Flags().BoolVarP(&showVersion, "version", "v", false, "Print the version")
 
+	// Add commands to rootCmd
+	rootCmd.AddCommand(cloneCmd, bucketCmd)
+
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatalf("Error executing command: %v", err)
 	}
-}
-
-// app is the main application function
-// It loads the configuration, sets up the logger and starts the launcher
-func app() {
-	var err error
-
-	// Load configuration
-	err = config.LoadLauncherConfig(configFile)
-	if err != nil {
-		log.Fatalf("Error loading launcher config: %v", err)
-	}
-	err = config.LoadCommonConfig(configFile)
-	if err != nil {
-		log.Fatalf("Error loading common config: %v", err)
-	}
-
-	// Setup Logger
-	err = logging.SetupLogger(config.Common.Data.Log.Level, config.Common.Data.Log.Format, config.Common.Data.Log.File)
-	if err != nil {
-		log.Fatalf("Error configuring the logger: %v", err)
-	}
-
-	logging.Logger.Info("Pipe Manager starting up...")
-	logging.Logger.Info("Setup", "configFile", configFile,
-		"logLevel", config.Common.Data.Log.Level,
-		"logFormat", config.Common.Data.Log.Format,
-		"logFile", config.Common.Data.Log.File)
-
-	// Print all environment variables in log
-	envvars.GetEnvVars()
-	for key, value := range envvars.Variables {
-		logging.Logger.Debug("Environment variable", key, value)
-	}
-
-	// Clone the repository
-	const repoDir = "/tmp/repo"
-	err = repository.Clone(envvars.Variables["REPOSITORY"],
-		config.Launcher.Data.CloneDepth,
-		envvars.Variables["COMMIT"],
-		repoDir)
-	if err != nil {
-		slog.Error("Error cloning repository", "msg", err,
-			"repository", envvars.Variables["REPOSITORY"],
-			"commit", envvars.Variables["COMMIT"],
-			"depth", config.Launcher.Data.CloneDepth)
-		os.Exit(1)
-	}
-
-	logging.Logger.Info("Repository cloned successfully", "repository", envvars.Variables["REPOSITORY"], "commit", envvars.Variables["COMMIT"])
-
-	// Mix all the pipeline files
-	const pipelineDir = ".pipelines"
-	pipelineFolder := filepath.Join(repoDir, pipelineDir)
-	err, combinedData := pipelineprocessor.MixPipelineFiles(pipelineFolder)
-	if err != nil {
-		logging.Logger.Error("Error mixing pipeline files", "msg", err, "folder", pipelineFolder)
-		os.Exit(1)
-	}
-
-	logging.Logger.Info("Pipeline files mixed successfully", "folder", pipelineFolder)
-	for key, _ := range combinedData {
-		if key == "global" {
-			continue
-		}
-		logging.Logger.Debug("Pipeline found", "pipeline", key)
-	}
-
-	// Temporal
-	//if config.Common.Data.Log.Level == "debug" {
-	//	data, err := yaml.Marshal(combinedData)
-	//	if err != nil {
-	//		os.Exit(1)
-	//	}
-	//	fmt.Println(string(data))
-	//}
-	// Temporal
-
-	var pipelines map[string]interface{}
-	if envvars.Variables["NAME"] == "" { // If no pipeline name is provided, launch all pipelines that match the triggers
-		logging.Logger.Info("Looking for pipelines using triggers")
-		pipelines = pipelineprocessor.FindPipelineByRegex(combinedData, envvars.Variables)
-		for key, _ := range pipelines {
-			logging.Logger.Info("Launching pipeline", "pipeline", key)
-			// TODO:
-			// - KCL validation && mutation
-			// - Launch the pipeline (template to tekton pipelineRun)
-		}
-	} else { // If a pipeline name is provided, launch the pipeline with that name
-		logging.Logger.Info("Looking for pipeline using name", "name", envvars.Variables["NAME"])
-		pipelines = pipelineprocessor.FindPipelineByName(combinedData, envvars.Variables, envvars.Variables["NAME"])
-		for key, _ := range pipelines {
-			logging.Logger.Info("Launching pipeline", "pipeline", key)
-			// TODO:
-			// - KCL validation && mutation
-			// - Launch the pipeline (template to tekton pipelineRun)
-		}
-	}
-
-	// Temporal
-	if config.Common.Data.Log.Level == "debug" {
-		data, err := yaml.Marshal(pipelines)
-		if err != nil {
-			os.Exit(1)
-		}
-		fmt.Println(string(data))
-	}
-	// Temporal
-
-	// Parse the pipeline
-
-	return
 }
