@@ -54,5 +54,6 @@ launcher:
   jobNamePrefix: "pipeline-launcher"
   timeout: 600
   backoffLimit: 2
+  cloneDepth: 1
 
   configmapName: "pipeline-launcher-config"
