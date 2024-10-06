@@ -219,7 +219,7 @@ config:
   # -- Configuration for Pipeline Launcher
   launcher:
     # -- Docker image to use for launching pipeline jobs.
-    imageName: "k3d-registry:5111/pipeline-converter"
+    imageName: "k3d-registry:5111/launcher"
     # -- Image pull policy for the pipeline job.
     # Options:
     # - "Always": Always pull the image, even if it exists locally.
