@@ -251,3 +251,10 @@ config:
     # Adjust this value based on the size of the repository and the required history for the pipeline job.
     # A value of 0 fetches the entire history of the repository.
     cloneDepth: 0
+
+    # -- Configuration for the MinIO bucket where pipeline artifacts will be stored.
+    # This is the default configuration for bucket storage. You can override this configuration in the pipeline job.
+    bucket:
+      url: "http://minio.minio.svc.cluster.local:9000"
+      bucketName: "pipe-manager"
+      secretName: "minio-secret"

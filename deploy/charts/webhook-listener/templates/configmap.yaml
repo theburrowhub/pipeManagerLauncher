@@ -24,3 +24,7 @@ data:
       backoffLimit: {{ .Values.config.launcher.backoffLimit }}
       configmapName: {{ include "webhook-listener.fullname" . }}
       cloneDepth: {{ .Values.config.launcher.cloneDepth }}
+      bucket:
+        url: {{ .Values.config.launcher.bucket.url | quote }}
+        bucketName: {{ .Values.config.launcher.bucket.bucketName | quote }}
+        secretName: {{ .Values.config.launcher.bucket.secretName | quote }}

@@ -12,15 +12,23 @@ import (
 // LauncherStruct defines the launcher configuration.
 // It captures the image name, pull policy, tag, namespace, job name prefix, and timeout.
 type LauncherStruct struct {
-	ImageName     string `yaml:"imageName"`     // ImageName is the name of the Docker image to be used
-	PullPolicy    string `yaml:"pullPolicy"`    // PullPolicy is the policy to use when pulling the image
-	Tag           string `yaml:"tag"`           // Tag is the tag of the Docker image to be used
-	Namespace     string `yaml:"namespace"`     // Namespace is the Kubernetes namespace to deploy the job
-	JobNamePrefix string `yaml:"jobNamePrefix"` // JobNamePrefix is the prefix to use for the job name
-	Timeout       int64  `yaml:"timeout"`       // Timeout is the maximum time in seconds to wait for the job to complete
-	BackoffLimit  int32  `yaml:"backoffLimit"`  // BackoffLimit is the number of retries before considering the job as failed
-	ConfigmapName string `yaml:"configmapName"` // ConfigmapName is the name of the ConfigMap to use
-	CloneDepth    int    `yaml:"cloneDepth"`    // CloneDepth is the depth to use when cloning the Git repository
+	ImageName     string       `yaml:"imageName"`     // ImageName is the name of the Docker image to be used
+	PullPolicy    string       `yaml:"pullPolicy"`    // PullPolicy is the policy to use when pulling the image
+	Tag           string       `yaml:"tag"`           // Tag is the tag of the Docker image to be used
+	Namespace     string       `yaml:"namespace"`     // Namespace is the Kubernetes namespace to deploy the job
+	JobNamePrefix string       `yaml:"jobNamePrefix"` // JobNamePrefix is the prefix to use for the job name
+	Timeout       int64        `yaml:"timeout"`       // Timeout is the maximum time in seconds to wait for the job to complete
+	BackoffLimit  int32        `yaml:"backoffLimit"`  // BackoffLimit is the number of retries before considering the job as failed
+	ConfigmapName string       `yaml:"configmapName"` // ConfigmapName is the name of the ConfigMap to use
+	CloneDepth    int          `yaml:"cloneDepth"`    // CloneDepth is the depth to use when cloning the Git repository
+	Bucket        BucketConfig `yaml:"bucket"`        // Bucket is the bucket configuration
+}
+
+// BucketConfig defines the bucket configuration.
+type BucketConfig struct {
+	URL        string `yaml:"url"`
+	BucketName string `yaml:"bucketName"`
+	SecretName string `yaml:"secretName"`
 }
 
 // LauncherConfig defines the launcher configuration.
