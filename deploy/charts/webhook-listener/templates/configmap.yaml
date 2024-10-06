@@ -23,5 +23,4 @@ data:
       timeout: {{ .Values.config.launcher.timeout }}
       backoffLimit: {{ .Values.config.launcher.backoffLimit }}
       configmapName: {{ include "webhook-listener.fullname" . }}
-      gitSecret: {{ .Values.config.launcher.gitSecret | quote }}
       cloneDepth: {{ .Values.config.launcher.cloneDepth }}
