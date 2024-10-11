@@ -1,4 +1,6 @@
-package main
+// Package cmd
+// cmd package contains the Cobra commands for the launcher application.
+package cmd
 
 import (
 	"fmt"
@@ -15,8 +17,28 @@ import (
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
 )
 
-// initApp initializes the application by loading the configuration, setting up the logger, and getting environment variables
-func initApp() {
+const (
+	ErrCodeOK             = 0
+	ErrCodeLoadConfig     = 1
+	ErrCodeCloneRepo      = 2
+	ErrCodeMixFiles       = 3
+	ErrCodeNormalize      = 4
+	ErrCodeBucketDownload = 6
+	ErrCodeBucketUpload   = 7
+)
+
+const (
+	defaultConfigFile = "/etc/pipe-manager/config.yaml" // defaultConfigFile is the default configuration file
+	templateFolder    = "/etc/pipe-manager/templates"   // templateFolder is the folder where the templates are stored
+	repoDir           = "/tmp/repo"                     // repoDir is the directory where the repository is cloned
+)
+
+var (
+	configFile string // configFile is the path to the configuration file
+)
+
+// setup initializes the application by loading the configuration, setting up the logger, and getting environment variables
+func setup() {
 	var err error
 
 	// Load configuration

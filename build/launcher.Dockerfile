@@ -21,7 +21,7 @@ RUN go build \
       -a -installsuffix cgo \
       -ldflags "-X github.com/sergiotejon/pipeManager/internal/pkg/version.Version=${APP_VERSION}" \
       -o launcher \
-      cmd/launcher/*.go
+      cmd/launcher/main.go
 
 # Final stage
 FROM alpine:3.20.3
@@ -40,4 +40,4 @@ COPY --from=builder /go/src/github.com/sergiotejon/pipeManager/launcher ./launch
 
 # Set the entrypoint to start the SSH agent
 ENTRYPOINT ["/bin/bash", "-c", "source /root/.bashrc && exec \"$@\"", "--"]
-CMD ["/app/launcher", "-c", "/etc/pipe-manager/config.yaml"]
+CMD ["/app/launcher", "run", "-c", "/etc/pipe-manager/config.yaml"]
