@@ -45,7 +45,7 @@ var cacheDownloadCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		bucketFolder := filepath.Join("artifacts", getMD5Hash(cacheProject))
+		bucketFolder := filepath.Join("cache", getMD5Hash(cacheProject))
 
 		err := artifacts.Download(cachePaths, bucketFolder, cacheDestination)
 		if err != nil {
