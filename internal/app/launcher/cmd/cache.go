@@ -13,9 +13,10 @@ import (
 )
 
 var (
-	cacheProject string
-	cachePaths   []string
-	cacheTarFile string
+	cacheProject     string
+	cachePaths       []string
+	cacheTarFile     string
+	cacheDestination string
 )
 
 // cacheCmd represents the bucket command for cache
@@ -51,7 +52,7 @@ var cacheDownloadCmd = &cobra.Command{
 		fileName := fmt.Sprintf("%s.tar.gz", cacheProject)
 		source := filepath.Join("cache", fileName)
 
-		err := buckets.Download(source, cacheTarFile)
+		err := buckets.Download(source, cacheTarFile, cacheDestination)
 		if err != nil {
 			logging.Logger.Error("Cache download from bucket failed", "error", err)
 			os.Exit(ErrCodeBucketDownload)
@@ -113,8 +114,14 @@ func init() {
 
 	// download flags
 	cacheDownloadCmd.PersistentFlags().StringVar(&cacheTarFile, "tar", "", "The name of the tar file where the cache will be downloaded")
+	cacheDownloadCmd.PersistentFlags().StringVar(&cacheDestination, "destination", "", "The destination path to extract the cache")
 
 	err = cacheDownloadCmd.MarkPersistentFlagRequired("tar")
+	if err != nil {
+		logging.Logger.Error("Error marking flag as required", "error", err)
+		return
+	}
+	err = cacheDownloadCmd.MarkPersistentFlagRequired("destination")
 	if err != nil {
 		logging.Logger.Error("Error marking flag as required", "error", err)
 		return
