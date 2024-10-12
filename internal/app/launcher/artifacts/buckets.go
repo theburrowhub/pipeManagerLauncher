@@ -1,84 +1,19 @@
-package buckets
+package artifacts
 
 import (
 	"context"
 	"io"
 	"os"
-	"path/filepath"
 
 	"gocloud.dev/blob"
 	_ "gocloud.dev/blob/azureblob"
 	_ "gocloud.dev/blob/gcsblob"
 	_ "gocloud.dev/blob/s3blob"
 
-	"github.com/sergiotejon/pipeManager/internal/pkg/config"
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
 )
 
-var (
-	bucketURL string // URL of the bucket
-	basePath  string // Base path of the bucket
-)
-
-// setup initializes the bucket configuration
-func setup() {
-	bucketURL = config.Launcher.Data.Bucket.URL
-	basePath = config.Launcher.Data.Bucket.BasePath
-}
-
-// Download downloads the source file from the bucket and extracts it to the destination folder, keeping the tar file
-// in the destinationTarFile to use it later in the upload process.
-func Download(source, destinationTarFile, destinationFolder string) error {
-	var err error
-
-	// Setup the bucket configuration
-	setup()
-
-	sourceURL := filepath.Join(bucketURL, basePath, source)
-	logging.Logger.Info("Downloading source from the bucket", "source", sourceURL, "destination tar file", destinationTarFile, "destination", destinationFolder)
-
-	// Download the source file from the bucket
-	err = downloadFromBucket(source, destinationTarFile)
-	if err != nil {
-		return err
-	}
-
-	// Extract the tar file
-	err = untarPath(destinationTarFile, destinationFolder)
-	if err != nil {
-		return err
-	}
-
-	logging.Logger.Info("Source downloaded from the bucket", "source", sourceURL, "destination tar file", destinationTarFile, "destination", destinationFolder)
-
-	return nil
-}
-
-// Upload uploads the paths to the bucket in the destination folder. The paths are added to it are added to the tar file
-func Upload(paths []string, sourceTarFile, destination string) error {
-	var err error
-
-	// Setup the bucket configuration
-	setup()
-
-	destinationURL := filepath.Join(bucketURL, basePath, destination)
-	logging.Logger.Info("Uploading paths to the bucket", "paths", paths, "source tar file", sourceTarFile, "destination", destinationURL)
-
-	err = tarPaths(paths, sourceTarFile)
-	if err != nil {
-		return err
-	}
-
-	err = uploadToBucket(sourceTarFile, destinationURL)
-	if err != nil {
-		return err
-	}
-
-	logging.Logger.Info("Paths uploaded to the bucket", "paths", paths, "source tar file", sourceTarFile, "destination", destinationURL)
-
-	return nil
-}
-
+// DownloadFromBucket downloads a file from the bucket
 func downloadFromBucket(source, destination string) error {
 	ctx := context.Background()
 
@@ -127,6 +62,7 @@ func downloadFromBucket(source, destination string) error {
 	return nil
 }
 
+// UploadToBucket uploads a file to the bucket
 func uploadToBucket(source, destination string) error {
 	ctx := context.Background()
 
