@@ -3,6 +3,8 @@
 package cmd
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"log"
 	"os"
@@ -149,4 +151,10 @@ func app() {
 	}
 
 	return
+}
+
+// getMD5Hash returns the MD5 hash of the text
+func getMD5Hash(text string) string {
+	hash := md5.Sum([]byte(text))
+	return hex.EncodeToString(hash[:])
 }

@@ -2,20 +2,19 @@ package cmd
 
 import (
 	"errors"
-	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 
 	"github.com/spf13/cobra"
 
-	"github.com/sergiotejon/pipeManager/internal/app/launcher/buckets"
+	"github.com/sergiotejon/pipeManager/internal/app/launcher/artifacts"
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
 )
 
 var (
 	cacheProject     string
 	cachePaths       []string
-	cacheTarFile     string
 	cacheDestination string
 )
 
@@ -29,9 +28,6 @@ var cacheCmd = &cobra.Command{
 func validateCacheDownloadFlags() error {
 	if cacheProject == "" {
 		return errors.New("project is required")
-	}
-	if cacheTarFile == "" {
-		return errors.New("tar file is required")
 	}
 	return nil
 }
@@ -49,10 +45,9 @@ var cacheDownloadCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		fileName := fmt.Sprintf("%s.tar.gz", cacheProject)
-		source := filepath.Join("cache", fileName)
+		bucketFolder := filepath.Join("artifacts", getMD5Hash(cacheProject))
 
-		err := buckets.Download(source, cacheTarFile, cacheDestination)
+		err := artifacts.Download(cachePaths, bucketFolder, cacheDestination)
 		if err != nil {
 			logging.Logger.Error("Cache download from bucket failed", "error", err)
 			os.Exit(ErrCodeBucketDownload)
@@ -68,9 +63,6 @@ func validateCacheUploadFlags() error {
 	}
 	if len(cachePaths) == 0 {
 		return errors.New("paths for upload are required")
-	}
-	if cacheTarFile == "" {
-		return errors.New("tar file is required")
 	}
 	return nil
 }
@@ -88,10 +80,9 @@ var cacheUploadCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		fileName := fmt.Sprintf("%s.tar.gz", cacheProject)
-		destination := filepath.Join("cache", fileName)
+		destination := filepath.Join("cache", getMD5Hash(cacheProject))
 
-		err := buckets.Upload(cachePaths, cacheTarFile, destination)
+		err := artifacts.Upload(cachePaths, destination)
 		if err != nil {
 			logging.Logger.Error("Cache upload to bucket failed", "error", err)
 			os.Exit(ErrCodeBucketUpload)
@@ -105,43 +96,29 @@ func init() {
 
 	// cache flags
 	cacheCmd.PersistentFlags().StringVar(&cacheProject, "project", "", "Project name")
+	cacheCmd.PersistentFlags().StringSliceVar(&cachePaths, "path", []string{}, "List of directories and files")
 
 	err = cacheCmd.MarkPersistentFlagRequired("project")
 	if err != nil {
-		logging.Logger.Error("Error marking flag as required", "error", err)
+		slog.Error("Error marking flag as required", "error", err)
+		return
+	}
+	err = cacheCmd.MarkPersistentFlagRequired("path")
+	if err != nil {
+		slog.Error("Error marking flag as required", "error", err)
 		return
 	}
 
 	// download flags
-	cacheDownloadCmd.PersistentFlags().StringVar(&cacheTarFile, "tar", "", "The name of the tar file where the cache will be downloaded")
 	cacheDownloadCmd.PersistentFlags().StringVar(&cacheDestination, "destination", "", "The destination path to extract the cache")
 
-	err = cacheDownloadCmd.MarkPersistentFlagRequired("tar")
-	if err != nil {
-		logging.Logger.Error("Error marking flag as required", "error", err)
-		return
-	}
 	err = cacheDownloadCmd.MarkPersistentFlagRequired("destination")
 	if err != nil {
-		logging.Logger.Error("Error marking flag as required", "error", err)
+		slog.Error("Error marking flag as required", "error", err)
 		return
 	}
 
-	// upload flags
-	cacheUploadCmd.PersistentFlags().StringSliceVar(&cachePaths, "path", []string{}, "List of directories and files")
-	cacheUploadCmd.PersistentFlags().StringVar(&cacheTarFile, "tar", "", "Tar file to add the path to")
-
-	err = cacheUploadCmd.MarkPersistentFlagRequired("path")
-	if err != nil {
-		logging.Logger.Error("Error marking flag as required", "error", err)
-		return
-	}
-	err = cacheUploadCmd.MarkPersistentFlagRequired("tar")
-	if err != nil {
-		logging.Logger.Error("Error marking flag as required", "error", err)
-		return
-	}
-
+	// commands
 	cacheCmd.AddCommand(cacheDownloadCmd)
 	cacheCmd.AddCommand(cacheUploadCmd)
 }
