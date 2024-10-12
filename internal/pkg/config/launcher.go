@@ -26,9 +26,10 @@ type LauncherStruct struct {
 
 // BucketConfig defines the bucket configuration.
 type BucketConfig struct {
-	URL        string `yaml:"url"`        // URL is the URL of the bucket
-	BucketName string `yaml:"bucketName"` // BucketName is the name of the bucket
-	SecretName string `yaml:"secretName"` // SecretName is the name of the secret to use when accessing the bucket
+	URL        string            `yaml:"url"`                  // URL is the URL of the bucket
+	BasePath   string            `yaml:"basePath"`             // BasePath is the name of the bucket
+	SecretName string            `yaml:"secretName"`           // SecretName is the name of the secret to use when accessing the bucket
+	Parameters map[string]string `yaml:"parameters,omitempty"` // Parameters is a map of additional parameters for the bucket
 }
 
 // LauncherConfig defines the launcher configuration.

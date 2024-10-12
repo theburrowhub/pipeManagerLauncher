@@ -57,9 +57,14 @@ launcher:
   cloneDepth: 1
 
   bucket:
-    url: "http://minio.minio.svc.cluster.local:9000"
-    bucketName: "pipe-manager"
+    url: "s3://pipemanager"
+    basePath: "pipe-manager"
     secretName: "minio-secret"
+    parameters:
+      endpoint: "localhost:9000"
+      disableSSL: "true"
+      s3ForcePathStyle: "true"
+      awssdk: "v1"
 
   configmapName: "pipeline-launcher-config"
 
