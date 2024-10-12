@@ -111,7 +111,7 @@ $(APPS):
 	@echo "Building $(basename $@)"
 	go build \
 		-ldflags "-X ${PROJECT_NAME}/internal/pkg/version.Version=$(shell cz version -p)" \
-		-o bin/$(basename $@) cmd/$(basename $@)/*.go
+		-o bin/$(basename $@) cmd/$(basename $@)/main.go
 
 # Build docker image
 $(IMAGES):
