@@ -16,6 +16,7 @@ var (
 	artifactCommit   string
 	artifactsProject string
 	artifactsPaths   []string
+	artifactTarFile  string
 )
 
 // artifactsCmd represents the bucket command for artifacts
@@ -31,6 +32,9 @@ func validateArtifactDownloadFlags() error {
 	}
 	if artifactsProject == "" {
 		return errors.New("project is required")
+	}
+	if artifactTarFile == "" {
+		return errors.New("tar file is required")
 	}
 	return nil
 }
@@ -51,7 +55,7 @@ var artifactDownloadCmd = &cobra.Command{
 		fileName := fmt.Sprintf("%s.tar.gz", artifactCommit)
 		source := filepath.Join("artifacts", artifactsProject, fileName)
 
-		err := buckets.Download(source)
+		err := buckets.Download(source, artifactTarFile)
 		if err != nil {
 			logging.Logger.Error("Artifact download from bucket failed", "error", err)
 			os.Exit(ErrCodeBucketDownload)
@@ -70,6 +74,9 @@ func validateArtifactUploadFlags() error {
 	}
 	if len(artifactsPaths) == 0 {
 		return errors.New("paths for upload are required")
+	}
+	if artifactTarFile == "" {
+		return errors.New("tar file is required")
 	}
 	return nil
 }
@@ -90,7 +97,7 @@ var artifactUploadCmd = &cobra.Command{
 		fileName := fmt.Sprintf("%s.tar.gz", artifactCommit)
 		destination := filepath.Join("artifacts", artifactsProject, fileName)
 
-		err := buckets.Upload(artifactsPaths, destination)
+		err := buckets.Upload(artifactsPaths, artifactTarFile, destination)
 		if err != nil {
 			logging.Logger.Error("Artifacts upload to bucket failed", "error", err)
 			os.Exit(ErrCodeBucketUpload)
@@ -102,6 +109,7 @@ var artifactUploadCmd = &cobra.Command{
 func init() {
 	var err error
 
+	// artifact global flags
 	artifactsCmd.PersistentFlags().StringVar(&artifactCommit, "commit", "", "Commit hash in case of artifact")
 	artifactsCmd.PersistentFlags().StringVar(&artifactsProject, "project", "", "Project name")
 
@@ -116,9 +124,25 @@ func init() {
 		return
 	}
 
+	// artifact download flags
+	artifactDownloadCmd.PersistentFlags().StringVar(&artifactTarFile, "tar", "", "Tar file to download the artifact")
+
+	err = artifactDownloadCmd.MarkPersistentFlagRequired("tar")
+	if err != nil {
+		logging.Logger.Error("Error marking flag as required", "error", err)
+		return
+	}
+
+	// artifact upload flags
 	artifactUploadCmd.PersistentFlags().StringSliceVar(&artifactsPaths, "path", []string{}, "List of directories and files")
+	artifactUploadCmd.PersistentFlags().StringVar(&artifactTarFile, "tar", "", "Tar file to include the paths")
 
 	err = artifactUploadCmd.MarkPersistentFlagRequired("path")
+	if err != nil {
+		logging.Logger.Error("Error marking flag as required", "error", err)
+		return
+	}
+	err = artifactUploadCmd.MarkPersistentFlagRequired("tar")
 	if err != nil {
 		logging.Logger.Error("Error marking flag as required", "error", err)
 		return
