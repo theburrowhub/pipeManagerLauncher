@@ -45,6 +45,7 @@ func init() {
 	}
 
 	rootCmd.AddCommand(runCmd)
-	rootCmd.AddCommand(bucketCmd)
 	rootCmd.AddCommand(cloneCmd)
+	rootCmd.AddCommand(artifactsCmd)
+	rootCmd.AddCommand(cacheCmd)
 }
