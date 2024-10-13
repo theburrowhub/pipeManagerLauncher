@@ -1,7 +1,6 @@
 package logging
 
 import (
-	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -25,6 +24,8 @@ func SetupLogger(logLevel string, logFormat string, logDest string) error {
 
 	switch logDest {
 	case "stdout":
+		file = os.Stdout
+	case "":
 		file = os.Stdout
 	default:
 		var err error
@@ -56,8 +57,8 @@ func SetupLogger(logLevel string, logFormat string, logDest string) error {
 		}
 		attributes.Store("pid", fmt.Sprintf("%d", os.Getpid()))
 		attributes.Store("go_version", buildInfo.GoVersion)
-	default:
-		return errors.New("unrecognized log level")
+	default: // Default to info
+		level = slog.LevelInfo
 	}
 
 	var handler slog.Handler
@@ -73,8 +74,11 @@ func SetupLogger(logLevel string, logFormat string, logDest string) error {
 			AddSource: addSource,
 			Level:     level,
 		})
-	default:
-		return errors.New("unrecognized log format")
+	default: // Default to text
+		handler = slog.NewTextHandler(file, &slog.HandlerOptions{
+			AddSource: addSource,
+			Level:     level,
+		})
 	}
 
 	mng = LogManager{
