@@ -254,7 +254,7 @@ config:
 
     # -- Configuration for the MinIO bucket where pipeline artifacts will be stored.
     # This is the default configuration for bucket storage. You can override this configuration in the pipeline job.
-    bucket:
+    artifactsBucket:
       url: "http://my-bucket"
       basePath: "pipe-manager"
       parameters:

@@ -24,8 +24,8 @@ var (
 // setup initializes the bucket configuration
 func setup() {
 	// Compose the bucket URL and parameters
-	bucketURL = fmt.Sprintf("%s?", config.Launcher.Data.Bucket.URL)
-	for key, value := range config.Launcher.Data.Bucket.Parameters {
+	bucketURL = fmt.Sprintf("%s?", config.Launcher.Data.ArtifactsBucket.URL)
+	for key, value := range config.Launcher.Data.ArtifactsBucket.Parameters {
 		separator := "&"
 		if bucketURL[len(bucketURL)-1] == '?' {
 			separator = ""
@@ -33,7 +33,7 @@ func setup() {
 		bucketURL = fmt.Sprintf("%s%s%s=%s", bucketURL, separator, key, value)
 	}
 
-	basePath = config.Launcher.Data.Bucket.BasePath
+	basePath = config.Launcher.Data.ArtifactsBucket.BasePath
 }
 
 // Download downloads the source file from the bucket and extracts it to the destination folder, keeping the tar file

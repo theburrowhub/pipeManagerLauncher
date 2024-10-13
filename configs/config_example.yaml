@@ -56,7 +56,7 @@ launcher:
   backoffLimit: 2
   cloneDepth: 1
 
-  bucket:
+  artifactsBucket:
     url: "s3://pipemanager"
     basePath: "pipe-manager"
     parameters:
