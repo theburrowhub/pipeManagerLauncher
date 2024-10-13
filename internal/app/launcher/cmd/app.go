@@ -62,7 +62,7 @@ func setup() {
 	}
 
 	logging.Logger.Info("Pipe Manager starting up...")
-	logging.Logger.Info("Setup", "configFile", configFile,
+	logging.Logger.Debug("Setup", "configFile", configFile,
 		"logLevel", config.Common.Data.Log.Level,
 		"logFormat", config.Common.Data.Log.Format,
 		"logFile", config.Common.Data.Log.File)
