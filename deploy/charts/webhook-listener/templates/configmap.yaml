@@ -27,4 +27,4 @@ data:
       bucket:
         url: {{ .Values.config.launcher.bucket.url | quote }}
         bucketName: {{ .Values.config.launcher.bucket.bucketName | quote }}
-        secretName: {{ .Values.config.launcher.bucket.secretName | quote }}
+        parameters: {{ .Values.config.launcher.bucket.parameters | toYaml | nindent 8 }}
