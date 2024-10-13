@@ -6,25 +6,4 @@ metadata:
     {{- include "webhook-listener.labels" . | nindent 4 }}
 data:
   config.yaml: |-
-    common:
-      log:
-        level: {{ .Values.config.common.log.level | quote }}
-        file: {{ .Values.config.common.log.file | quote }}
-        format: {{ .Values.config.common.log.format | quote }}
-    webhook:
-      workers: {{ .Values.config.webhook.workers }}
-      routes: {{ .Values.config.webhook.routes | toYaml | nindent 8 }}
-    launcher:
-      imageName: {{ .Values.config.launcher.imageName | quote }}
-      pullPolicy: {{ .Values.config.launcher.pullPolicy | quote }}
-      tag: {{ .Values.config.launcher.tag | quote }}
-      namespace: {{ .Values.config.launcher.namespace | quote }}
-      jobNamePrefix: {{ .Values.config.launcher.jobNamePrefix | quote }}
-      timeout: {{ .Values.config.launcher.timeout }}
-      backoffLimit: {{ .Values.config.launcher.backoffLimit }}
-      configmapName: {{ include "webhook-listener.fullname" . }}
-      cloneDepth: {{ .Values.config.launcher.cloneDepth }}
-      bucket:
-        url: {{ .Values.config.launcher.bucket.url | quote }}
-        bucketName: {{ .Values.config.launcher.bucket.bucketName | quote }}
-        parameters: {{ .Values.config.launcher.bucket.parameters | toYaml | nindent 8 }}
+    {{ .Values.config | toYaml | nindent 4 }}
