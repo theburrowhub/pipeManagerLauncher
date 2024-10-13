@@ -257,8 +257,8 @@ config:
     bucket:
       url: "http://my-bucket"
       basePath: "pipe-manager"
-      secretName: "minio-secret"
       parameters:
         endpoint: "minio.minio.svc.cluster.local:9000"
         disableSSL: "true"
         s3ForcePathStyle: "true"
+        awssdk: "v1"
