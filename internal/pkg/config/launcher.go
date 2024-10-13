@@ -1,11 +1,7 @@
 package config
 
 import (
-	"errors"
 	"fmt"
-	"gopkg.in/yaml.v3"
-	"os"
-
 	"github.com/sergiotejon/pipeManager/internal/pkg/version"
 )
 
@@ -42,22 +38,18 @@ var Launcher LauncherConfig // Launcher is the global launcher configuration
 
 // LoadLauncherConfig loads the launcher configuration from the given file.
 // It returns an error if the configuration cannot be loaded.
-// The configuration file is expected to be in YAML format.
-// The configuration is loaded into the global Launcher variable.
+// The configuration file is expected to be in YAML format if a file is provided.
+// If the configuration file is not provided, the configuration is loaded from the environment variables.
+// The configuration loads into the global Launcher variable.
 func LoadLauncherConfig(configFile string) error {
-	yamlFile, err := os.ReadFile(configFile)
-	if err != nil {
-		return err
+	if configFile == "" { // Load the configuration from the environment variables
+		loadConfigFromEnv(&Launcher, "LAUNCHER")
+	} else { // Load the configuration from the file
+		err := loadConfigFromFile(configFile, &Launcher)
+		if err != nil {
+			return err
+		}
 	}
-
-	if err := yaml.Unmarshal(yamlFile, &Launcher); err != nil {
-		return err
-	}
-
-	if Launcher.Data.ImageName == "" {
-		return errors.New("the configuration had not been loaded correctly")
-	}
-
 	return nil
 }
 

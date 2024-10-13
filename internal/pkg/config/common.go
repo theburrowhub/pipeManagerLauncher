@@ -1,12 +1,6 @@
 // Package config contains the configuration data structures and loading functions.
 package config
 
-import (
-	"errors"
-	"gopkg.in/yaml.v3"
-	"os"
-)
-
 // LogConfig defines the logging configuration.
 // It captures the logging level, file, and format.
 type LogConfig struct {
@@ -30,20 +24,16 @@ var Common CommonConfig // Common is the common configuration for all components
 // LoadCommonConfig loads the common configuration from the given file.
 // It returns an error if the configuration cannot be loaded.
 // The configuration file is expected to be in YAML format.
+// It allows to load from environment variables also.
 // The configuration is loaded into the global Common variable.
 func LoadCommonConfig(configFile string) error {
-	yamlFile, err := os.ReadFile(configFile)
-	if err != nil {
-		return err
+	if configFile == "" { // Load the configuration from the environment variables
+		loadConfigFromEnv(&Common, "COMMON")
+	} else { // Load the configuration from the file
+		err := loadConfigFromFile(configFile, &Common)
+		if err != nil {
+			return err
+		}
 	}
-
-	if err := yaml.Unmarshal(yamlFile, &Common); err != nil {
-		return err
-	}
-
-	if Common.Data.Log.File == "" {
-		return errors.New("the configuration had not been loaded correctly")
-	}
-
 	return nil
 }
