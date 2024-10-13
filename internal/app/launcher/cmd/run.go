@@ -2,11 +2,10 @@ package cmd
 
 import (
 	"errors"
+	"log/slog"
 	"os"
 
 	"github.com/spf13/cobra"
-
-	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
 )
 
 // runCmd represents the run command
@@ -15,8 +14,8 @@ var runCmd = &cobra.Command{
 	Short: "Run the application",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if err := validateCacheUploadFlags(); err != nil {
-			logging.Logger.Error("Invalid flags", "error", err)
+		if err := validateRunFlags(); err != nil {
+			slog.Error("Invalid flags", "error", err)
 			os.Exit(1)
 		}
 
