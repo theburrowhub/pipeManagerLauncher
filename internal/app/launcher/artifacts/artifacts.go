@@ -43,7 +43,7 @@ func Download(paths []string, bucketPath, destinationFolder string) error {
 	setup()
 
 	for _, path := range paths {
-		logging.Logger.Info("Downloading path from the bucket", "bucket", bucketURL, "path", path, "destinationFolder", destinationFolder)
+		logging.Logger.Info("Downloading data from the bucket", "bucket", bucketURL, "path", path, "destinationFolder", destinationFolder)
 
 		// Create a temporary directory to store the tar file
 		tempDir, err := os.MkdirTemp("", "temp_tar_")
@@ -67,7 +67,7 @@ func Download(paths []string, bucketPath, destinationFolder string) error {
 			return err
 		}
 
-		logging.Logger.Info("Path downloaded from the bucket", "bucket", bucketURL, "path", path, "destinationFolder", destinationFolder)
+		logging.Logger.Info("Data downloaded from the bucket", "bucket", bucketURL, "path", path, "destinationFolder", destinationFolder)
 	}
 
 	return nil
@@ -102,7 +102,7 @@ func Upload(paths []string, bucketPath string) error {
 			return err
 		}
 
-		logging.Logger.Info("Tar file uploaded to the bucket", "buket", bucketURL, "path", path, "tarFile", tarFullPath, "bucketFile", bucketFile)
+		logging.Logger.Info("File uploaded to the bucket", "buket", bucketURL, "path", path, "tarFile", tarFullPath, "bucketFile", bucketFile)
 	}
 
 	return nil

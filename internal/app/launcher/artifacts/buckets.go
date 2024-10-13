@@ -58,7 +58,6 @@ func downloadFromBucket(source, destination string) error {
 		return err
 	}
 
-	logging.Logger.Info("File downloaded from the bucket", "source", source, "destination", destination)
 	return nil
 }
 
@@ -107,6 +106,5 @@ func uploadToBucket(source, destination string) error {
 		return err
 	}
 
-	logging.Logger.Info("File uploaded to the bucket", "source", source, "destination", destination)
 	return nil
 }

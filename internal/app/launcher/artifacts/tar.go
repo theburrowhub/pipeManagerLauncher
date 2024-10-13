@@ -12,7 +12,7 @@ import (
 
 // packageTarFile creates a tar file with the given path
 func packageTarFile(path string, destinationTarFile string) error {
-	logging.Logger.Info("Creating tar file", "tarFile", destinationTarFile, "path", path)
+	logging.Logger.Debug("Creating tar file", "tarFile", destinationTarFile, "path", path)
 
 	// Overwrite the destination tar file
 	tarFile, err := os.OpenFile(destinationTarFile, os.O_RDWR|os.O_CREATE, 0755)
@@ -46,7 +46,7 @@ func packageTarFile(path string, destinationTarFile string) error {
 
 	// Add the files to the tar
 	err = filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
-		logging.Logger.Info("Walking the path for the tar file", "path", filePath)
+		logging.Logger.Debug("Walking the path for the tar file", "path", filePath)
 
 		if err != nil {
 			return err
@@ -103,7 +103,7 @@ func packageTarFile(path string, destinationTarFile string) error {
 
 // extract extracts the files from a tar file to a destination folder
 func extract(sourceTarFile, destinationFolder string) error {
-	logging.Logger.Info("Extracting tar file", "tarFile", sourceTarFile, "destination", destinationFolder)
+	logging.Logger.Debug("Extracting tar file", "tarFile", sourceTarFile, "destination", destinationFolder)
 
 	// Open the tar file
 	tarFile, err := os.Open(sourceTarFile)
@@ -137,7 +137,7 @@ func extract(sourceTarFile, destinationFolder string) error {
 		}
 
 		path := filepath.Join(destinationFolder, header.Name)
-		logging.Logger.Info("Extracting file", "file", path)
+		logging.Logger.Debug("Extracting file", "file", path)
 		info := header.FileInfo()
 
 		if info.IsDir() {
