@@ -64,6 +64,26 @@ launcher:
       disableSSL: "true"
       s3ForcePathStyle: "true"
       awssdk: "v1"
+    credentials:
+      env:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: "s3-credentials"
+              key: aws_access_key_id
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: "s3-credentials"
+              key: aws_secret_access_key
+      volumes:
+        - name: s3-credentials
+          secret:
+            secretName: "s3-credentials"
+      volumeMounts:
+        - name: s3-credentials
+          mountPath: "/etc/s3-credentials"
+          readOnly: true
 
   configmapName: "pipeline-launcher-config"
 
