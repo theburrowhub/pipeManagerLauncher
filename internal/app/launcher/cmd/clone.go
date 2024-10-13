@@ -22,7 +22,7 @@ var cloneCmd = &cobra.Command{
 	Use:   "clone",
 	Short: "Clone repository",
 	Run: func(cmd *cobra.Command, args []string) {
-		// Setup the application
+		// Set up the application
 		setup()
 
 		// Run the clone command
