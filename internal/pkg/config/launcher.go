@@ -22,10 +22,21 @@ type LauncherStruct struct {
 
 // BucketConfig defines the bucket configuration.
 type BucketConfig struct {
-	URL        string            `yaml:"url"`                  // URL is the URL of the bucket
-	BasePath   string            `yaml:"basePath"`             // BasePath is the name of the bucket
-	SecretName string            `yaml:"secretName"`           // SecretName is the name of the secret to use when accessing the bucket
-	Parameters map[string]string `yaml:"parameters,omitempty"` // Parameters is a map of additional parameters for the bucket
+	URL         string            `yaml:"url"`                   // URL is the URL of the bucket
+	BasePath    string            `yaml:"basePath"`              // BasePath is the name of the bucket
+	SecretName  string            `yaml:"secretName"`            // SecretName is the name of the secret to use when accessing the bucket
+	Parameters  map[string]string `yaml:"parameters,omitempty"`  // Parameters is a map of additional parameters for the bucket
+	Credentials BucketCredentials `yaml:"credentials,omitempty"` // Credentials is the credentials to use when accessing the bucket
+}
+
+// BucketCredentials defines the bucket credentials.
+// It captures the environment variables, volumes, and volume mounts to use.
+// Usually, the credentials are stored in a secret and mounted as a volume or as environment variables.
+// Mutually exclusive, but both can be used.
+type BucketCredentials struct {
+	Env          []interface{} `yaml:"env,omitempty"`          // Env is the environment variables to use
+	Volumes      []interface{} `yaml:"volumes,omitempty"`      // Volumes is the volumes to use
+	VolumeMounts []interface{} `yaml:"volumeMounts,omitempty"` // VolumeMounts is the volume mounts to use
 }
 
 // LauncherConfig defines the launcher configuration.
