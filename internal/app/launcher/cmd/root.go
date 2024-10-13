@@ -32,7 +32,7 @@ func Execute() {
 // init initializes the application
 func init() {
 	// Persistent flags
-	rootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", defaultConfigFile, "Path to the config file")
+	rootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "Path to the config file")
 	rootCmd.PersistentFlags().BoolP("version", "v", false, "Print the version")
 
 	// Bind the version flag
