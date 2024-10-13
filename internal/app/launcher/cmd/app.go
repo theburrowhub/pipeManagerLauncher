@@ -30,9 +30,8 @@ const (
 )
 
 const (
-	defaultConfigFile = "/etc/pipe-manager/config.yaml" // defaultConfigFile is the default configuration file
-	templateFolder    = "/etc/pipe-manager/templates"   // templateFolder is the folder where the templates are stored
-	repoDir           = "/tmp/repo"                     // repoDir is the directory where the repository is cloned
+	templateFolder = "/etc/pipe-manager/templates" // templateFolder is the folder where the templates are stored
+	repoDir        = "/tmp/repo"                   // repoDir is the directory where the repository is cloned
 )
 
 var (
