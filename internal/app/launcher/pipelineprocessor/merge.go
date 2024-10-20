@@ -1,3 +1,4 @@
+// Package pipelineprocessor provides functionality to merge YAML files into a single map.
 package pipelineprocessor
 
 import (
