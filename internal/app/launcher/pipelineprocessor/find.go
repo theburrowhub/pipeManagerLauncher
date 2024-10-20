@@ -1,3 +1,5 @@
+// Package pipelineprocessor provides functionality to find the pipeline to launch based on the triggers and
+// environment variables along with the name of the pipeline.
 package pipelineprocessor
 
 import (
