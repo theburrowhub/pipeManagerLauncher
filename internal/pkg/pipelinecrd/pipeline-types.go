@@ -21,7 +21,7 @@ type CloneRepositoryConfig struct {
 type PipelineSpec struct {
 	Name            string
 	Description     string                `yaml:"description,omitempty"`
-	Namespace       Namespace             `yaml:"namespace"`
+	Namespace       Namespace             `yaml:"namespace,omitempty"`
 	CloneRepository CloneRepositoryConfig `yaml:"cloneRepository,omitempty"`
 	CloneDepth      int                   `yaml:"cloneDepth,omitempty"`
 	SshSecretName   string                `yaml:"sshSecretName,omitempty"`
