@@ -1,4 +1,4 @@
-package pipelineprocessor
+package normalize
 
 import (
 	"encoding/json"

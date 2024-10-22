@@ -1,4 +1,4 @@
-package pipelineprocessor
+package normalize
 
 const workspaceDir = "/workspaceDir" // Default workspace directory for the all steps
 

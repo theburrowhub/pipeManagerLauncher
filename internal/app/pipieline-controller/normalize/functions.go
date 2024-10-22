@@ -1,4 +1,4 @@
-package pipelineprocessor
+package normalize
 
 // k8sObjectName returns a valid Kubernetes object name by combining two strings
 func k8sObjectName(str1, str2 string) string {

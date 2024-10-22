@@ -1,4 +1,4 @@
-package pipelineprocessor
+package normalize
 
 // processBatchTask processes a batch task and returns a map of tasks to run in parallel
 func processBatchTask(taskName string, taskData Task) map[string]Task {

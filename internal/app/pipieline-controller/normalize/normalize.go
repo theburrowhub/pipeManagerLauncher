@@ -5,7 +5,7 @@
 // - expand each batch task in the pipeline
 // It also adds the necessary finish tasks to:
 // - launch the next pipeline in the chain
-package pipelineprocessor
+package normalize
 
 import (
 	"gopkg.in/yaml.v3"
