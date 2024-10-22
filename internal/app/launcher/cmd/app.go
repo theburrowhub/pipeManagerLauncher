@@ -6,11 +6,10 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"gopkg.in/yaml.v3"
 	"log"
 	"os"
 	"path/filepath"
-
-	"gopkg.in/yaml.v3"
 
 	"github.com/sergiotejon/pipeManager/internal/app/launcher/pipelineprocessor"
 	"github.com/sergiotejon/pipeManager/internal/app/launcher/repository"
@@ -124,29 +123,15 @@ func app() {
 		os.Exit(ErrCodeOK)
 	}
 
-	// Normalize the pipelines
-	pipelines, err := pipelineprocessor.Normalize(rawPipelines)
-	if err != nil {
-		logging.Logger.Error("Error normalizing pipelines", "msg", err)
-		os.Exit(ErrCodeNormalize)
-	}
-	d, _ := yaml.Marshal(pipelines)
-	fmt.Println(string(d))
+	// Launch the pipelines
+	for key, pipeline := range rawPipelines {
+		logging.Logger.Info("WIP: Launching pipeline", "key", key)
+		// TODO: Launch the pipeline (pipeline controller)
+		// internal/app/launcher/deploy/
 
-	// Temporal
-	//if config.Common.Data.Log.Level == "debug" {
-	//	data, err := yaml.Marshal(pipelines)
-	//	if err != nil {
-	//		os.Exit(1)
-	//	}
-	//	fmt.Println(string(data))
-	//}
-	// Temporal
+		d, _ := yaml.Marshal(pipeline)
+		fmt.Println(string(d))
 
-	for key, _ := range pipelines {
-		logging.Logger.Info("Launching pipeline", "pipeline", key)
-		// TODO:
-		// - Launch the pipeline (pipeline controller)
 	}
 
 	return
