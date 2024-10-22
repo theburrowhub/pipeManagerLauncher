@@ -1,4 +1,4 @@
-package normalize
+package pipeline
 
 import (
 	"encoding/json"
