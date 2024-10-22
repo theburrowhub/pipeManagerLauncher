@@ -6,13 +6,13 @@ import (
 
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
 	"github.com/sergiotejon/pipeManager/internal/pkg/envvars"
-	"github.com/sergiotejon/pipeManager/internal/pkg/pipeobject"
+	"github.com/sergiotejon/pipeManager/internal/pkg/pipelinecrd"
 )
 
 const envVarPrefix = "PIPELINE_"
 
 // defineLaunchPipelineTask defines the task to launch the next pipeline in the chain
-func defineLaunchPipelineTask(currentPipeline pipeobject.PipelineSpec, repository, commit, pipelineToLaunch string) pipeobject.Task {
+func defineLaunchPipelineTask(currentPipeline pipelinecrd.PipelineSpec, repository, commit, pipelineToLaunch string) pipelinecrd.Task {
 	var env []interface{}
 
 	// Set the parameters for the new pipeline through environment variables
@@ -53,9 +53,9 @@ func defineLaunchPipelineTask(currentPipeline pipeobject.PipelineSpec, repositor
 	launcherImage := config.Launcher.Data.GetLauncherImage()
 
 	// Define the task to launch the pipeline
-	launchPipelineTask := pipeobject.Task{
+	launchPipelineTask := pipelinecrd.Task{
 		Description: fmt.Sprintf("Launch the next pipeline '%s' in the chain", pipelineToLaunch),
-		Steps: []pipeobject.Step{
+		Steps: []pipelinecrd.Step{
 			{
 				Name:        "launch-pipeline",
 				Description: fmt.Sprintf("Launch the next pipeline '%s' in the chain", pipelineToLaunch),
@@ -73,7 +73,7 @@ func defineLaunchPipelineTask(currentPipeline pipeobject.PipelineSpec, repositor
 	// Append the clone repository step to the task steps to ensure the repository is cloned before launching the pipeline.
 	// It's the only way to look for the pipeline definition of pipelineToLaunch in the repository.
 	cloneRepositoryStep := defineCloneRepoStep(launchPipelineTask, repository, commit)
-	launchPipelineTask.Steps = append([]pipeobject.Step{cloneRepositoryStep}, launchPipelineTask.Steps...)
+	launchPipelineTask.Steps = append([]pipelinecrd.Step{cloneRepositoryStep}, launchPipelineTask.Steps...)
 
 	return launchPipelineTask
 }

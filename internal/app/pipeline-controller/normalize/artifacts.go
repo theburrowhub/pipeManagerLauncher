@@ -8,31 +8,31 @@ import (
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
 	"github.com/sergiotejon/pipeManager/internal/pkg/envvars"
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
-	"github.com/sergiotejon/pipeManager/internal/pkg/pipeobject"
+	"github.com/sergiotejon/pipeManager/internal/pkg/pipelinecrd"
 )
 
 // defineDownloadArtifactsStep defines the download artifacts step in the task
-func defineDownloadArtifactsStep(taskData pipeobject.Task) pipeobject.Step {
+func defineDownloadArtifactsStep(taskData pipelinecrd.Task) pipelinecrd.Step {
 	return defineArtifactBucketStep("artifacts", "download", taskData.Paths.Artifacts)
 }
 
 // defineDownloadCacheStep defines the download cache step in the task
-func defineDownloadCacheStep(taskData pipeobject.Task) pipeobject.Step {
+func defineDownloadCacheStep(taskData pipelinecrd.Task) pipelinecrd.Step {
 	return defineArtifactBucketStep("cache", "download", taskData.Paths.Cache)
 }
 
 // defineUploadArtifactsStep defines the upload artifacts step in the task
-func defineUploadArtifactsStep(taskData pipeobject.Task) pipeobject.Step {
+func defineUploadArtifactsStep(taskData pipelinecrd.Task) pipelinecrd.Step {
 	return defineArtifactBucketStep("artifacts", "upload", taskData.Paths.Artifacts)
 }
 
 // defineUploadCacheStep defines the upload cache step in the task
-func defineUploadCacheStep(taskData pipeobject.Task) pipeobject.Step {
+func defineUploadCacheStep(taskData pipelinecrd.Task) pipelinecrd.Step {
 	return defineArtifactBucketStep("cache", "upload", taskData.Paths.Cache)
 }
 
 // defineArtifactBucketStep defines the download step in the task for artifacts or cache
-func defineArtifactBucketStep(commandType, commandAction string, paths []string) pipeobject.Step {
+func defineArtifactBucketStep(commandType, commandAction string, paths []string) pipelinecrd.Step {
 	// Get the download image from the configuration
 	image := config.Launcher.Data.GetLauncherImage()
 
@@ -50,7 +50,7 @@ func defineArtifactBucketStep(commandType, commandAction string, paths []string)
 	env, volumeMounts, command := defineArtifactBucketStepConfig(
 		commandType, commandAction, bucketURL, basePath, paths, bucketParameters, credentials, workspaceDir,
 	)
-	step := pipeobject.Step{
+	step := pipelinecrd.Step{
 		Name:         fmt.Sprintf("%s-%s", commandAction, commandType),
 		Description:  fmt.Sprintf("Automatically %s the %s", commandAction, commandType),
 		Image:        image,

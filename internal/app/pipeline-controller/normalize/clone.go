@@ -5,11 +5,11 @@ import (
 	"strings"
 
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
-	"github.com/sergiotejon/pipeManager/internal/pkg/pipeobject"
+	"github.com/sergiotejon/pipeManager/internal/pkg/pipelinecrd"
 )
 
 // defineCloneRepoStep defines the clone repository step in the task
-func defineCloneRepoStep(taskData pipeobject.Task, repository, commit string) pipeobject.Step {
+func defineCloneRepoStep(taskData pipelinecrd.Task, repository, commit string) pipelinecrd.Step {
 	// Get the git image from the configuration
 	gitImage := config.Launcher.Data.GetLauncherImage()
 
@@ -24,7 +24,7 @@ func defineCloneRepoStep(taskData pipeobject.Task, repository, commit string) pi
 	// Repository step for cloning the repository
 	command := fmt.Sprintf("%s %s --depth %d --repository '%s' --commit '%s' --destination '%s'",
 		launcherBinary, "clone", cloneDepth, repository, commit, workspaceDir)
-	step := pipeobject.Step{
+	step := pipelinecrd.Step{
 		Name:        "clone-repository",
 		Description: "Automatically clone the repository",
 		Image:       gitImage,

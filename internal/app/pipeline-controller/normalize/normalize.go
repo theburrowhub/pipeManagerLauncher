@@ -11,7 +11,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
-	"github.com/sergiotejon/pipeManager/internal/pkg/pipeobject"
+	"github.com/sergiotejon/pipeManager/internal/pkg/pipelinecrd"
 )
 
 const (
@@ -28,8 +28,8 @@ const (
 // It also adds the necessary finish tasks to:
 // - launch the next pipeline in the chain
 // TODO: Retrieve just one pipeline object to normalize and launch a Tekton pipeline
-func Normalize(data map[string]interface{}) ([]pipeobject.PipelineSpec, error) {
-	var rawPipelines []pipeobject.PipelineSpec
+func Normalize(data map[string]interface{}) ([]pipelinecrd.PipelineSpec, error) {
+	var rawPipelines []pipelinecrd.PipelineSpec
 	var err error
 
 	// Convert pipeline raw data to Pipelines struct
@@ -133,16 +133,16 @@ func Normalize(data map[string]interface{}) ([]pipeobject.PipelineSpec, error) {
 
 		// Clean
 		// Remove unnecessary cloneRepository and launchPipeline from the rawPipeline
-		rawPipelines[item].CloneRepository = pipeobject.CloneRepositoryConfig{}
-		rawPipelines[item].Launch = pipeobject.Launch{}
+		rawPipelines[item].CloneRepository = pipelinecrd.CloneRepositoryConfig{}
+		rawPipelines[item].Launch = pipelinecrd.Launch{}
 	}
 
 	return rawPipelines, nil
 }
 
 // convertToPipelines converts the raw data to a list of PipelineSpec structs
-func convertToPipelines(data map[string]interface{}) ([]pipeobject.PipelineSpec, error) {
-	var pipelines []pipeobject.PipelineSpec
+func convertToPipelines(data map[string]interface{}) ([]pipelinecrd.PipelineSpec, error) {
+	var pipelines []pipelinecrd.PipelineSpec
 
 	for name, item := range data {
 		// Convert each item to YAML
@@ -152,7 +152,7 @@ func convertToPipelines(data map[string]interface{}) ([]pipeobject.PipelineSpec,
 		}
 
 		// Unmarshal YAML to PipelineSpec struct
-		var pipeline pipeobject.PipelineSpec
+		var pipeline pipelinecrd.PipelineSpec
 		err = yaml.Unmarshal(yamlData, &pipeline)
 		if err != nil {
 			return nil, err
@@ -172,11 +172,11 @@ func convertToPipelines(data map[string]interface{}) ([]pipeobject.PipelineSpec,
 // - clone the repository
 // - download and upload the artifacts and cache
 // - expand each batch task in the pipeline
-func processTask(pipe pipeobject.PipelineSpec, taskName string, taskData pipeobject.Task, repository, commit string) pipeobject.Task {
+func processTask(pipe pipelinecrd.PipelineSpec, taskName string, taskData pipelinecrd.Task, repository, commit string) pipelinecrd.Task {
 	logging.Logger.Debug("Normalizing task", "taskName", taskName)
 
 	// This is the list of steps that will be added to the task at the beginning
-	var firstSteps []pipeobject.Step
+	var firstSteps []pipelinecrd.Step
 
 	// Add the clone repository step if it is defined as true in the pipe or in the task itself
 	cloneRepository := pipe.CloneRepository.Enable || taskData.CloneRepository.Enable
@@ -206,7 +206,7 @@ func processTask(pipe pipeobject.PipelineSpec, taskName string, taskData pipeobj
 	taskData.Steps = append(firstSteps, taskData.Steps...)
 
 	// This is the list of steps that will be added at the end of the task
-	var lastSteps []pipeobject.Step
+	var lastSteps []pipelinecrd.Step
 
 	// If the clone repository step is enabled, upload the artifacts and cache
 	if cloneRepository {
@@ -240,8 +240,8 @@ func processTask(pipe pipeobject.PipelineSpec, taskName string, taskData pipeobj
 
 	// Clean
 	// Remove unnecessary cloneRepository and path from the task
-	taskData.CloneRepository = pipeobject.CloneRepositoryConfig{}
-	taskData.Paths = pipeobject.Paths{}
+	taskData.CloneRepository = pipelinecrd.CloneRepositoryConfig{}
+	taskData.Paths = pipelinecrd.Paths{}
 
 	return taskData
 }
