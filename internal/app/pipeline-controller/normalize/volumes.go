@@ -1,9 +1,11 @@
 package normalize
 
+import "github.com/sergiotejon/pipeManager/internal/pkg/pipeobject"
+
 const workspaceDir = "/workspaceDir" // Default workspace directory for the all steps
 
 // addDefaultVolumes adds the default volumes to the task
-func addDefaultVolumes(task Task, workspace interface{}, sshSecretName string) Task {
+func addDefaultVolumes(task pipeobject.Task, workspace interface{}, sshSecretName string) pipeobject.Task {
 	// Volumes for the workspaceDir and the ssh secret if it is defined
 	var volumes []interface{}
 	volumes = append(volumes, workspaceVolume(workspace))
@@ -41,7 +43,7 @@ func sshSecretVolume(sshSecretName string) interface{} {
 }
 
 // addDefaultVolumeMounts adds the default volume mounts to the step
-func addDefaultVolumeMounts(step Step, workspaceDir, sshSecretName string) Step {
+func addDefaultVolumeMounts(step pipeobject.Step, workspaceDir, sshSecretName string) pipeobject.Step {
 	// Volume mounts for the workspaceDir and the ssh secret if it is defined
 	var volumeMounts []interface{}
 	volumeMounts = append(volumeMounts, workspaceVolumeMount(workspaceDir))

@@ -1,4 +1,4 @@
-// Package pipelineprocessor provides functionality to normalize the pipeline data.
+// Package normalize provides functionality to normalize the pipeline data.
 // It adds the necessary steps to the tasks to:
 // - clone the repository
 // - download and upload the artifacts and cache
@@ -11,6 +11,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
+	"github.com/sergiotejon/pipeManager/internal/pkg/pipeobject"
 )
 
 const (
@@ -26,121 +27,122 @@ const (
 // - expand each batch task in the pipeline
 // It also adds the necessary finish tasks to:
 // - launch the next pipeline in the chain
-func Normalize(data map[string]interface{}) ([]Pipeline, error) {
-	var pipelines []Pipeline
+// TODO: Retrieve just one pipeline object to normalize and launch a Tekton pipeline
+func Normalize(data map[string]interface{}) ([]pipeobject.Pipeline, error) {
+	var rawPipelines []pipeobject.Pipeline
 	var err error
 
 	// Convert pipeline raw data to Pipelines struct
-	pipelines, err = convertToPipelines(data)
+	rawPipelines, err = convertToPipelines(data)
 	if err != nil {
 		return nil, err
 	}
 
-	// Loop pipelines
-	for item := range pipelines {
-		pipeline := pipelines[item]
+	// Loop rawPipelines
+	for item := range rawPipelines {
+		rawPipeline := rawPipelines[item]
 
-		repository := pipeline.Params["REPOSITORY"]
-		commit := pipeline.Params["COMMIT"]
+		repository := rawPipeline.Params["REPOSITORY"]
+		commit := rawPipeline.Params["COMMIT"]
 
 		// Loop tasks for:
 		// - cloning the repository
 		// - download and upload the artifacts and cache
-		// - expand each batch task in the pipeline
-		for taskName, taskData := range pipeline.Tasks {
+		// - expand each batch task in the rawPipeline
+		for taskName, taskData := range rawPipeline.Tasks {
 			// Process the task data to add the necessary steps
-			taskData = processTask(pipeline, taskName, taskData, repository, commit)
+			taskData = processTask(rawPipeline, taskName, taskData, repository, commit)
 
 			// Explode batch tasks if they are defined
 			if taskData.Batch != nil {
 				// Explode the batch task
 				tasks := processBatchTask(taskName, taskData)
 				if tasks != nil {
-					// Add all the new tasks to the pipeline
+					// Add all the new tasks to the rawPipeline
 					for name, tData := range tasks {
-						pipeline.Tasks[name] = tData
+						rawPipeline.Tasks[name] = tData
 					}
-					// Remove the original task from the pipeline
-					delete(pipeline.Tasks, taskName)
+					// Remove the original task from the rawPipeline
+					delete(rawPipeline.Tasks, taskName)
 				}
 			} else {
-				// Replace the task with the new data in the pipeline
-				pipeline.Tasks[taskName] = taskData
+				// Replace the task with the new data in the rawPipeline
+				rawPipeline.Tasks[taskName] = taskData
 			}
 		}
 
 		// Normalize Fail tasks
-		for taskName, taskData := range pipeline.FinishTasks.Fail {
+		for taskName, taskData := range rawPipeline.FinishTasks.Fail {
 			// Process the task data to add the necessary steps
-			taskData = processTask(pipeline, taskName, taskData, repository, commit)
+			taskData = processTask(rawPipeline, taskName, taskData, repository, commit)
 
 			// Explode batch tasks if they are defined
 			if taskData.Batch != nil {
 				// Explode the batch task
 				tasks := processBatchTask(taskName, taskData)
 				if tasks != nil {
-					// Add all the new tasks to the pipeline
+					// Add all the new tasks to the rawPipeline
 					for name, tData := range tasks {
-						pipeline.FinishTasks.Fail[name] = tData
+						rawPipeline.FinishTasks.Fail[name] = tData
 					}
-					// Remove the original task from the pipeline
-					delete(pipeline.Tasks, taskName)
+					// Remove the original task from the rawPipeline
+					delete(rawPipeline.Tasks, taskName)
 				}
 			} else {
-				// Replace the task with the new data in the pipeline
-				pipeline.FinishTasks.Fail[taskName] = taskData
+				// Replace the task with the new data in the rawPipeline
+				rawPipeline.FinishTasks.Fail[taskName] = taskData
 			}
 
 		}
 
-		// Loop through the list of pipelines to launch when the current pipeline fails
-		for _, launchPipelineName := range pipeline.Launch.WhenFail {
+		// Loop through the list of rawPipelines to launch when the current rawPipeline fails
+		for _, launchPipelineName := range rawPipeline.Launch.WhenFail {
 			taskName := k8sObjectName("launch", launchPipelineName)
-			pipeline.FinishTasks.Fail[taskName] = defineLaunchPipelineTask(pipeline, repository, commit, launchPipelineName)
+			rawPipeline.FinishTasks.Fail[taskName] = defineLaunchPipelineTask(rawPipeline, repository, commit, launchPipelineName)
 		}
 
 		// Normalize Success tasks
-		for taskName, taskData := range pipeline.FinishTasks.Success {
+		for taskName, taskData := range rawPipeline.FinishTasks.Success {
 			// Process the task data to add the necessary steps
-			taskData = processTask(pipeline, taskName, taskData, repository, commit)
+			taskData = processTask(rawPipeline, taskName, taskData, repository, commit)
 
 			// Explode batch tasks if they are defined
 			if taskData.Batch != nil {
 				// Explode the batch task
 				tasks := processBatchTask(taskName, taskData)
 				if tasks != nil {
-					// Add all the new tasks to the pipeline
+					// Add all the new tasks to the rawPipeline
 					for name, tData := range tasks {
-						pipeline.FinishTasks.Success[name] = tData
+						rawPipeline.FinishTasks.Success[name] = tData
 					}
-					// Remove the original task from the pipeline
-					delete(pipeline.Tasks, taskName)
+					// Remove the original task from the rawPipeline
+					delete(rawPipeline.Tasks, taskName)
 				}
 			} else {
-				// Replace the task with the new data in the pipeline
-				pipeline.FinishTasks.Success[taskName] = taskData
+				// Replace the task with the new data in the rawPipeline
+				rawPipeline.FinishTasks.Success[taskName] = taskData
 			}
 
 		}
 
-		// Loop through the list of pipelines to launch when the current pipeline finishes successfully
-		for _, launchPipelineName := range pipeline.Launch.WhenSuccess {
+		// Loop through the list of rawPipelines to launch when the current rawPipeline finishes successfully
+		for _, launchPipelineName := range rawPipeline.Launch.WhenSuccess {
 			taskName := k8sObjectName("launch", launchPipelineName)
-			pipeline.FinishTasks.Success[taskName] = defineLaunchPipelineTask(pipeline, repository, commit, launchPipelineName)
+			rawPipeline.FinishTasks.Success[taskName] = defineLaunchPipelineTask(rawPipeline, repository, commit, launchPipelineName)
 		}
 
 		// Clean
-		// Remove unnecessary cloneRepository and launchPipeline from the pipeline
-		pipelines[item].CloneRepository = CloneRepositoryConfig{}
-		pipelines[item].Launch = Launch{}
+		// Remove unnecessary cloneRepository and launchPipeline from the rawPipeline
+		rawPipelines[item].CloneRepository = pipeobject.CloneRepositoryConfig{}
+		rawPipelines[item].Launch = pipeobject.Launch{}
 	}
 
-	return pipelines, nil
+	return rawPipelines, nil
 }
 
 // convertToPipelines converts the raw data to a list of Pipeline structs
-func convertToPipelines(data map[string]interface{}) ([]Pipeline, error) {
-	var pipelines []Pipeline
+func convertToPipelines(data map[string]interface{}) ([]pipeobject.Pipeline, error) {
+	var pipelines []pipeobject.Pipeline
 
 	for name, item := range data {
 		// Convert each item to YAML
@@ -150,7 +152,7 @@ func convertToPipelines(data map[string]interface{}) ([]Pipeline, error) {
 		}
 
 		// Unmarshal YAML to Pipeline struct
-		var pipeline Pipeline
+		var pipeline pipeobject.Pipeline
 		err = yaml.Unmarshal(yamlData, &pipeline)
 		if err != nil {
 			return nil, err
@@ -170,21 +172,21 @@ func convertToPipelines(data map[string]interface{}) ([]Pipeline, error) {
 // - clone the repository
 // - download and upload the artifacts and cache
 // - expand each batch task in the pipeline
-func processTask(pipeline Pipeline, taskName string, taskData Task, repository, commit string) Task {
+func processTask(pipe pipeobject.Pipeline, taskName string, taskData pipeobject.Task, repository, commit string) pipeobject.Task {
 	logging.Logger.Debug("Normalizing task", "taskName", taskName)
 
 	// This is the list of steps that will be added to the task at the beginning
-	var firstSteps []Step
+	var firstSteps []pipeobject.Step
 
-	// Add the clone repository step if it is defined as true in the pipeline or in the task itself
-	cloneRepository := pipeline.CloneRepository.Enable || taskData.CloneRepository.Enable
+	// Add the clone repository step if it is defined as true in the pipe or in the task itself
+	cloneRepository := pipe.CloneRepository.Enable || taskData.CloneRepository.Enable
 	if cloneRepository {
 		logging.Logger.Debug("Adding clone repository step", "taskName", taskName)
 		cloneRepositoryStep := defineCloneRepoStep(taskData, repository, commit)
 		firstSteps = append(firstSteps, cloneRepositoryStep)
 
-		// Download artifacts if it is defined as true in the pipeline or in the task itself and the clone repository step is enabled
-		artifacts := pipeline.CloneRepository.Options.Artifacts || taskData.CloneRepository.Options.Artifacts
+		// Download artifacts if it is defined as true in the pipe or in the task itself and the clone repository step is enabled
+		artifacts := pipe.CloneRepository.Options.Artifacts || taskData.CloneRepository.Options.Artifacts
 		if artifacts {
 			logging.Logger.Debug("Adding download artifacts step", "taskName", taskName)
 			downloadArtifactsStep := defineDownloadArtifactsStep(taskData)
@@ -192,7 +194,7 @@ func processTask(pipeline Pipeline, taskName string, taskData Task, repository, 
 		}
 
 		// idem for cache
-		caches := pipeline.CloneRepository.Options.Cache || taskData.CloneRepository.Options.Cache
+		caches := pipe.CloneRepository.Options.Cache || taskData.CloneRepository.Options.Cache
 		if caches {
 			logging.Logger.Debug("Adding download cache step", "taskName", taskName)
 			downloadCacheStep := defineDownloadCacheStep(taskData)
@@ -204,12 +206,12 @@ func processTask(pipeline Pipeline, taskName string, taskData Task, repository, 
 	taskData.Steps = append(firstSteps, taskData.Steps...)
 
 	// This is the list of steps that will be added at the end of the task
-	var lastSteps []Step
+	var lastSteps []pipeobject.Step
 
 	// If the clone repository step is enabled, upload the artifacts and cache
 	if cloneRepository {
-		// Upload artifacts if it is defined as true in the pipeline or in the task itself and the clone repository step is enabled
-		artifacts := pipeline.CloneRepository.Options.Artifacts || taskData.CloneRepository.Options.Artifacts
+		// Upload artifacts if it is defined as true in the pipe or in the task itself and the clone repository step is enabled
+		artifacts := pipe.CloneRepository.Options.Artifacts || taskData.CloneRepository.Options.Artifacts
 		if artifacts {
 			logging.Logger.Debug("Adding upload artifacts step", "taskName", taskName)
 			uploadArtifactsStep := defineUploadArtifactsStep(taskData)
@@ -217,7 +219,7 @@ func processTask(pipeline Pipeline, taskName string, taskData Task, repository, 
 		}
 
 		// idem for cache
-		caches := pipeline.CloneRepository.Options.Cache || taskData.CloneRepository.Options.Cache
+		caches := pipe.CloneRepository.Options.Cache || taskData.CloneRepository.Options.Cache
 		if caches {
 			logging.Logger.Debug("Adding upload cache step", "taskName", taskName)
 			uploadCacheStep := defineUploadCacheStep(taskData)
@@ -229,17 +231,17 @@ func processTask(pipeline Pipeline, taskName string, taskData Task, repository, 
 	taskData.Steps = append(taskData.Steps, lastSteps...)
 
 	// Add the default volumes for the workspace and the ssh credentials secret if it is defined to the task
-	taskData = addDefaultVolumes(taskData, pipeline.Workspace, pipeline.SshSecretName)
+	taskData = addDefaultVolumes(taskData, pipe.Workspace, pipe.SshSecretName)
 
 	// Add the volumeMounts for the workspaceDir and the ssh secret if it is defined to the steps
 	for i := range taskData.Steps {
-		taskData.Steps[i] = addDefaultVolumeMounts(taskData.Steps[i], workspaceDir, pipeline.SshSecretName)
+		taskData.Steps[i] = addDefaultVolumeMounts(taskData.Steps[i], workspaceDir, pipe.SshSecretName)
 	}
 
 	// Clean
 	// Remove unnecessary cloneRepository and path from the task
-	taskData.CloneRepository = CloneRepositoryConfig{}
-	taskData.Paths = Paths{}
+	taskData.CloneRepository = pipeobject.CloneRepositoryConfig{}
+	taskData.Paths = pipeobject.Paths{}
 
 	return taskData
 }

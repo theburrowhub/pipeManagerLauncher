@@ -1,8 +1,10 @@
 package normalize
 
+import "github.com/sergiotejon/pipeManager/internal/pkg/pipeobject"
+
 // processBatchTask processes a batch task and returns a map of tasks to run in parallel
-func processBatchTask(taskName string, taskData Task) map[string]Task {
-	tasks := make(map[string]Task)
+func processBatchTask(taskName string, taskData pipeobject.Task) map[string]pipeobject.Task {
+	tasks := make(map[string]pipeobject.Task)
 
 	// If no batch is defined, return nil
 	if taskData.Batch == nil {
