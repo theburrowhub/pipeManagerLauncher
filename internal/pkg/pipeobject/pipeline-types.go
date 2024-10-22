@@ -17,8 +17,8 @@ type CloneRepositoryConfig struct {
 	Options CloneRepositoryOptions `yaml:"options,omitempty"`
 }
 
-// Pipeline is a struct to store the pipeline data
-type Pipeline struct {
+// PipelineSpec is a struct to store the pipeline data
+type PipelineSpec struct {
 	Name            string
 	Description     string                `yaml:"description,omitempty"`
 	Namespace       Namespace             `yaml:"namespace"`

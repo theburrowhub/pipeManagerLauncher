@@ -12,7 +12,7 @@ import (
 const envVarPrefix = "PIPELINE_"
 
 // defineLaunchPipelineTask defines the task to launch the next pipeline in the chain
-func defineLaunchPipelineTask(currentPipeline pipeobject.Pipeline, repository, commit, pipelineToLaunch string) pipeobject.Task {
+func defineLaunchPipelineTask(currentPipeline pipeobject.PipelineSpec, repository, commit, pipelineToLaunch string) pipeobject.Task {
 	var env []interface{}
 
 	// Set the parameters for the new pipeline through environment variables

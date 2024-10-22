@@ -28,8 +28,8 @@ const (
 // It also adds the necessary finish tasks to:
 // - launch the next pipeline in the chain
 // TODO: Retrieve just one pipeline object to normalize and launch a Tekton pipeline
-func Normalize(data map[string]interface{}) ([]pipeobject.Pipeline, error) {
-	var rawPipelines []pipeobject.Pipeline
+func Normalize(data map[string]interface{}) ([]pipeobject.PipelineSpec, error) {
+	var rawPipelines []pipeobject.PipelineSpec
 	var err error
 
 	// Convert pipeline raw data to Pipelines struct
@@ -140,9 +140,9 @@ func Normalize(data map[string]interface{}) ([]pipeobject.Pipeline, error) {
 	return rawPipelines, nil
 }
 
-// convertToPipelines converts the raw data to a list of Pipeline structs
-func convertToPipelines(data map[string]interface{}) ([]pipeobject.Pipeline, error) {
-	var pipelines []pipeobject.Pipeline
+// convertToPipelines converts the raw data to a list of PipelineSpec structs
+func convertToPipelines(data map[string]interface{}) ([]pipeobject.PipelineSpec, error) {
+	var pipelines []pipeobject.PipelineSpec
 
 	for name, item := range data {
 		// Convert each item to YAML
@@ -151,8 +151,8 @@ func convertToPipelines(data map[string]interface{}) ([]pipeobject.Pipeline, err
 			return nil, err
 		}
 
-		// Unmarshal YAML to Pipeline struct
-		var pipeline pipeobject.Pipeline
+		// Unmarshal YAML to PipelineSpec struct
+		var pipeline pipeobject.PipelineSpec
 		err = yaml.Unmarshal(yamlData, &pipeline)
 		if err != nil {
 			return nil, err
@@ -172,7 +172,7 @@ func convertToPipelines(data map[string]interface{}) ([]pipeobject.Pipeline, err
 // - clone the repository
 // - download and upload the artifacts and cache
 // - expand each batch task in the pipeline
-func processTask(pipe pipeobject.Pipeline, taskName string, taskData pipeobject.Task, repository, commit string) pipeobject.Task {
+func processTask(pipe pipeobject.PipelineSpec, taskName string, taskData pipeobject.Task, repository, commit string) pipeobject.Task {
 	logging.Logger.Debug("Normalizing task", "taskName", taskName)
 
 	// This is the list of steps that will be added to the task at the beginning
