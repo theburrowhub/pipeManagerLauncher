@@ -1,4 +1,4 @@
-package pipeobject
+package pipelinecrd
 
 import (
 	"encoding/json"
