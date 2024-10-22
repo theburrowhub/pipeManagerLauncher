@@ -8,6 +8,7 @@ import (
 
 // PipelineStatus defines the observed state of PipelineSpec
 type PipelineStatus struct {
+	// TODO:
 	// Aquí puedes definir el estado observado
 	// Por ejemplo, condiciones, mensajes, etc.
 }
