@@ -10,7 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/sergiotejon/pipeManager/internal/app/launcher/deploy"
+	"github.com/sergiotejon/pipeManager/internal/app/launcher/namespace"
 	"github.com/sergiotejon/pipeManager/internal/app/launcher/pipelineprocessor"
 	"github.com/sergiotejon/pipeManager/internal/app/launcher/repository"
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
@@ -134,26 +134,31 @@ func app() {
 		// Convert pipeline to PipelineSpec
 		spec, err := convertToPipelines(pipeline)
 		if err != nil {
-			logging.Logger.Error("Error converting pipeline to PipelineSpec", "error", err)
-			os.Exit(ErrCodeConvertingPipeline)
+			logging.Logger.Error("Error converting pipeline to PipelineSpec. Pipeline not deployed",
+				"pipeline", name, "error", err)
+			continue
 		}
 
 		// TODO:
 		// Create namespace
-		namespace := spec.Namespace.Name
-		// ...
-
-		// Remove namespace from spec once it's created
-		spec.Namespace = pipelinecrd.Namespace{}
-
-		// Deploy the pipeline
-		err = deploy.Pipeline(name, namespace, spec)
+		err = namespace.Create(spec.Namespace)
 		if err != nil {
-			logging.Logger.Error("Error deploying pipeline", "error", err)
-			os.Exit(ErrCodeDeploy)
+			logging.Logger.Error("Error creating namespace. Pipeline not deployed",
+				"namespace", spec.Namespace.Name, "pipeline", name, "error", err)
+			continue
 		}
 
-		logging.Logger.Info("Pipeline deployed successfully", "name", name, "namespace", namespace)
+		// Remove namespace from spec once it's created
+		//spec.Namespace = pipelinecrd.Namespace{}
+
+		// Deploy the pipeline
+		//err = deploy.Pipeline(name, spec.Namespace, spec)
+		//if err != nil {
+		//	logging.Logger.Error("Error deploying pipeline", "error", err)
+		//	os.Exit(ErrCodeDeploy)
+		//}
+
+		logging.Logger.Info("Pipeline deployed successfully", "name", name, "namespace", spec.Namespace.Name)
 	}
 
 	return
