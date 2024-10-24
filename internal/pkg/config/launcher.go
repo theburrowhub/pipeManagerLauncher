@@ -2,6 +2,9 @@ package config
 
 import (
 	"fmt"
+
+	corev1 "k8s.io/api/core/v1"
+
 	"github.com/sergiotejon/pipeManager/internal/pkg/version"
 )
 
@@ -34,9 +37,9 @@ type BucketConfig struct {
 // Usually, the credentials are stored in a secret and mounted as a volume or as environment variables.
 // Mutually exclusive, but both can be used.
 type BucketCredentials struct {
-	Env          []interface{} `yaml:"env,omitempty"`          // Env is the environment variables to use
-	Volumes      []interface{} `yaml:"volumes,omitempty"`      // Volumes is the volumes to use
-	VolumeMounts []interface{} `yaml:"volumeMounts,omitempty"` // VolumeMounts is the volume mounts to use
+	Env          []corev1.EnvVar      `yaml:"env,omitempty"`          // Env is the environment variables to use
+	Volumes      []corev1.Volume      `yaml:"volumes,omitempty"`      // Volumes is the volumes to use
+	VolumeMounts []corev1.VolumeMount `yaml:"volumeMounts,omitempty"` // VolumeMounts is the volume mounts to use
 }
 
 // LauncherConfig defines the launcher configuration.
