@@ -3,19 +3,13 @@ package pipeline
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 
+	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/databuilder"
+	"github.com/sergiotejon/pipeManager/internal/pkg/version"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd"
-
-	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/databuilder"
-	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
-	"github.com/sergiotejon/pipeManager/internal/pkg/version"
 )
 
 // JobConfig contains the configuration for a new Kubernetes Job
@@ -31,34 +25,6 @@ type JobConfig struct {
 	Env             []corev1.EnvVar
 	ConfigmapName   string
 	ImagePullPolicy string
-}
-
-// getKubernetesClient returns a Kubernetes clientset configured for either in-cluster or local access
-func getKubernetesClient() (*kubernetes.Clientset, error) {
-	// Try to get the in-cluster config
-	cfg, err := rest.InClusterConfig()
-	if err != nil {
-		logging.Logger.Warn("Failed to get in-cluster config, trying local config", "error", err)
-		// Fallback to local kubeconfig
-		var configPath string
-		if os.Getenv("KUBECONFIG") != "" { // Get the kubeconfig path from the KUBECONFIG environment variable
-			configPath = os.Getenv("KUBECONFIG")
-		} else { // If not set, use the default path ~/.kube/config
-			configPath = filepath.Join(os.Getenv("HOME"), ".kube", "config")
-		}
-		cfg, err = clientcmd.BuildConfigFromFlags("", configPath)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	// Create a clientset for interacting with the Kubernetes API
-	client, err := kubernetes.NewForConfig(cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	return client, nil
 }
 
 // getLabels returns a map of labels to be used in Kubernetes objects
