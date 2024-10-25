@@ -11,6 +11,12 @@ import (
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
 )
 
+const (
+	applicationLabelKey          = "app.kubernetes.io/name"
+	applicationManagedByLabelKey = "app.kubernetes.io/managed-by"
+	applicationLabelValue        = "pipe-manager"
+)
+
 // checkIfResourceNamespaceExists checks if a namespace with the given name exists
 func checkIfResourceNamespaceExists(client *kubernetes.Clientset, name string) (bool, error) {
 	_, err := client.CoreV1().Namespaces().Get(context.TODO(), name, metav1.GetOptions{})
@@ -23,15 +29,19 @@ func checkIfResourceNamespaceExists(client *kubernetes.Clientset, name string) (
 
 // createResourceNamespace creates a namespace with the given name and labels
 func createResourceNamespace(client *kubernetes.Clientset, name string, labels map[string]string) error {
-	// TODO:
-	// Add specific labels to the namespace for the application (see webhook-listener for an example)
-	// Send that labels to common packaged for reuse
-	// Like helm charts with its labels
+	// Add the default labels
+	customLabels := map[string]string{
+		applicationLabelKey:          applicationLabelValue,
+		applicationManagedByLabelKey: applicationLabelValue,
+	}
+	for k, v := range labels {
+		customLabels[k] = v
+	}
 
 	ns := &corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   name,
-			Labels: labels,
+			Labels: customLabels,
 		},
 	}
 
@@ -46,6 +56,15 @@ func createResourceNamespace(client *kubernetes.Clientset, name string, labels m
 
 // updateResourceNamespaceLabels updates the labels of a namespace with the given name if they are different
 func updateResourceNamespaceLabels(client *kubernetes.Clientset, name string, labels map[string]string) error {
+	// Add the default labels
+	customLabels := map[string]string{
+		applicationLabelKey:          applicationLabelValue,
+		applicationManagedByLabelKey: applicationLabelValue,
+	}
+	for k, v := range labels {
+		customLabels[k] = v
+	}
+
 	ns, err := client.CoreV1().Namespaces().Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to get namespace: %w", err)
@@ -57,7 +76,7 @@ func updateResourceNamespaceLabels(client *kubernetes.Clientset, name string, la
 	}
 
 	// Update the labels
-	ns.Labels = labels
+	ns.Labels = customLabels
 	_, err = client.CoreV1().Namespaces().Update(context.TODO(), ns, metav1.UpdateOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to update namespace labels: %w", err)
