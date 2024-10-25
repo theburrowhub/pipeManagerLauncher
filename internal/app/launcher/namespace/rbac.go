@@ -10,7 +10,6 @@ import (
 )
 
 // roleBinding creates role bindings for the given roles and binds them to the given Service Account
-// TODO
 func roleBinding(client *kubernetes.Clientset, namespace string, saName string, roleNames []string) error {
 	for _, roleName := range roleNames {
 		bindingName := fmt.Sprintf("%.59s-%.3s-binding", roleName, saName)
