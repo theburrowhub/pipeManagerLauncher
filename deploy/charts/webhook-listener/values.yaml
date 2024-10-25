@@ -261,6 +261,9 @@ config:
     # A value of 0 fetches the entire history of the repository.
     cloneDepth: 0
 
+    # -- Roles to bind to the pipeline service account.
+    rolesBinding: []
+
     # -- Configuration for the MinIO bucket where pipeline artifacts will be stored.
     # This is the default configuration for bucket storage. You can override this configuration in the pipeline job.
     artifactsBucket:
