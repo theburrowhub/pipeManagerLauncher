@@ -2,9 +2,12 @@ package namespace
 
 import (
 	"fmt"
+
 	"github.com/sergiotejon/pipeManager/internal/pkg/k8s"
 	"github.com/sergiotejon/pipeManager/internal/pkg/pipelinecrd"
 )
+
+const pipeManagerSA = "pipe-manager-sa"
 
 // Create creates a namespace with the given name and labels and creates the necessary resources inside the namespace
 // like the service account and the secrets for the bucket credentials.
@@ -20,29 +23,30 @@ func Create(ns pipelinecrd.Namespace) error {
 		return err
 	}
 
-	// 1. Check if the namespace already namespaceAlreadyExists
+	// Check if the namespace already namespaceAlreadyExists
 	namespaceAlreadyExists, err := checkIfResourceNamespaceExists(client, name)
 	if err != nil {
 		return err
 	}
 
-	// 2. Create the namespace if it does not exist
+	// Create the namespace if it does not exist or update the labels if they are different
 	if !namespaceAlreadyExists {
 		err := createResourceNamespace(client, name, labels)
 		if err != nil {
 			return err
 		}
-	}
-
-	// 3. Update the namespace labels if they are different
-	if namespaceAlreadyExists {
+	} else {
 		err := updateResourceNamespaceLabels(client, name, labels)
 		if err != nil {
 			return err
 		}
 	}
 
-	// 4. Create the service account if it does not exist
+	// Create or update the service account
+	err = createOrUpdateServiceAccount(client, pipeManagerSA, name)
+	if err != nil {
+		return err
+	}
 
 	// 5. Retrieve secrets from config
 	secretNames := getBucketCredentialsSecretFromConfig()
