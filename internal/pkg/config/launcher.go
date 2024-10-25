@@ -21,6 +21,7 @@ type LauncherStruct struct {
 	BackoffLimit    int32        `yaml:"backoffLimit"`    // BackoffLimit is the number of retries before considering the job as failed
 	ConfigmapName   string       `yaml:"configmapName"`   // ConfigmapName is the name of the ConfigMap to use
 	CloneDepth      int          `yaml:"cloneDepth"`      // CloneDepth is the depth to use when cloning the Git repository
+	RolesBinding    []string     `yaml:"rolesBinding"`    // RolesBinding is the list of roles to bind to the Service Account
 	ArtifactsBucket BucketConfig `yaml:"artifactsBucket"` // ArtifactsBucket is the bucket configuration for storing the artifacts
 }
 
