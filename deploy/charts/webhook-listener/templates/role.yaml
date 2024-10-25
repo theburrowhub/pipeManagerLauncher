@@ -8,3 +8,14 @@ rules:
   - apiGroups: ["batch", "extensions"]
     resources: ["jobs"]
     verbs: ["create", "get", "list", "watch", "delete"]
+---
+{{- if .Values.pipelineRoleRules -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "webhook-listener.fullname" . }}-pipeline
+  labels:
+    {{- include "webhook-listener.labels" . | nindent 4 }}
+rules:
+  {{- toYaml .Values.pipelineRoleRules | nindent 2 }}
+{{- end }}

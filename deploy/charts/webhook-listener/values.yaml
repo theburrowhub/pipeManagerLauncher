@@ -143,6 +143,15 @@ tolerations: []
 # -- Configuration for the affinity.
 affinity: {}
 
+# -- Configuration for the RBAC of pipelines launched by the webhook listener + pipeline launcher.
+pipelineRoleRules: []
+  # - apiGroups: [""]
+  #   resources: ["pods"]
+  #   verbs: ["create", "get", "list", "watch", "delete"]
+  # - apiGroups: ["batch", "extensions"]
+  #   resources: ["jobs"]
+  #   verbs: ["create", "get", "list", "watch", "delete"]
+
 #
 # Default configuration
 #
