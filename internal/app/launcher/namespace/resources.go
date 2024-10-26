@@ -117,3 +117,56 @@ func createOrUpdateServiceAccount(client *kubernetes.Clientset, saName string, n
 
 	return nil
 }
+
+// GetSecretsContent retrieves the content of each secret given by a list and returns it in a key/value list
+// where the key is the name of the secret and the value is its content.
+func GetSecretsContent(client *kubernetes.Clientset, namespace string, secretNames []string) (map[string]map[string][]byte, error) {
+	secretsContent := make(map[string]map[string][]byte)
+
+	for _, secretName := range secretNames {
+		secret, err := client.CoreV1().Secrets(namespace).Get(context.TODO(), secretName, metav1.GetOptions{})
+		if err != nil {
+			return nil, fmt.Errorf("failed to get secret %s: %w", secretName, err)
+		}
+		secretsContent[secretName] = secret.Data
+	}
+
+	return secretsContent, nil
+}
+
+// CopySecretsToNamespace copies the key/value pairs of all retrieved secrets to another given namespace
+func CopySecretsToNamespace(client *kubernetes.Clientset, sourceNamespace string, targetNamespace string, secretNames []string) error {
+	for _, secretName := range secretNames {
+		// Retrieve the secret from the source namespace
+		secret, err := client.CoreV1().Secrets(sourceNamespace).Get(context.TODO(), secretName, metav1.GetOptions{})
+		if err != nil {
+			return fmt.Errorf("failed to get secret %s from namespace %s: %w", secretName, sourceNamespace, err)
+		}
+
+		// Create a new secret object for the target namespace
+		newSecret := &corev1.Secret{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      secret.Name,
+				Namespace: targetNamespace,
+			},
+			Data: secret.Data,
+			Type: secret.Type,
+		}
+
+		// Check if the secret already exists in the target namespace
+		_, err = client.CoreV1().Secrets(targetNamespace).Get(context.TODO(), secretName, metav1.GetOptions{})
+		if err == nil { // Secret exists, update it
+			_, err = client.CoreV1().Secrets(targetNamespace).Update(context.TODO(), newSecret, metav1.UpdateOptions{})
+			if err != nil {
+				return fmt.Errorf("failed to update secret %s in namespace %s: %w", secretName, targetNamespace, err)
+			}
+		} else { // Secret does not exist, create it
+			_, err = client.CoreV1().Secrets(targetNamespace).Create(context.TODO(), newSecret, metav1.CreateOptions{})
+			if err != nil {
+				return fmt.Errorf("failed to create secret %s in namespace %s: %w", secretName, targetNamespace, err)
+			}
+		}
+	}
+
+	return nil
+}
