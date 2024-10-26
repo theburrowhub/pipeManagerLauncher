@@ -14,6 +14,9 @@ rules:
   - apiGroups: [""]
     resources: ["secrets", "namespaces"]
     verbs: ["create", "get", "list", "watch", "delete", "update"]
+  - apiGroups: ["pipe-manager.org"]
+    resources: ["pipelines"]
+    verbs: ["create", "get", "list", "watch", "delete", "update"]
 ---
 {{- if .Values.pipelineRoleRules -}}
 apiVersion: rbac.authorization.k8s.io/v1
