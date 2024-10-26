@@ -50,7 +50,7 @@ launcher:
   pullPolicy: "IfNotPresent"
   tag: ""
 
-  namespace: ""
+  namespace: "pipe-manager"
   jobNamePrefix: "pipeline-launcher"
   timeout: 600
   backoffLimit: 2
