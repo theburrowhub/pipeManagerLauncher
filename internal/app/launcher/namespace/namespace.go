@@ -1,10 +1,9 @@
 package namespace
 
 import (
-	"fmt"
-	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
-
+	"github.com/sergiotejon/pipeManager/internal/pkg/config"
 	"github.com/sergiotejon/pipeManager/internal/pkg/k8s"
+	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
 	"github.com/sergiotejon/pipeManager/internal/pkg/pipelinecrd"
 )
 
@@ -13,7 +12,7 @@ const pipeManagerSA = "pipe-manager-sa"
 // Create creates a namespace with the given name and labels and creates the necessary resources inside the namespace
 // like the service account and the secrets for the bucket credentials.
 func Create(ns pipelinecrd.Namespace) error {
-	name := ns.Name
+	namespace := ns.Name
 	labels := ns.Labels
 
 	// Get the Kubernetes client
@@ -23,43 +22,42 @@ func Create(ns pipelinecrd.Namespace) error {
 	}
 
 	// Check if the namespace already namespaceAlreadyExists
-	namespaceAlreadyExists, err := checkIfResourceNamespaceExists(client, name)
+	namespaceAlreadyExists, err := checkIfResourceNamespaceExists(client, namespace)
 	if err != nil {
 		return err
 	}
 
 	// Create the namespace if it does not exist or update the labels if they are different
 	if !namespaceAlreadyExists {
-		logging.Logger.Info("Creating namespace", "name", name)
-		err := createResourceNamespace(client, name, labels)
+		logging.Logger.Info("Creating namespace", "namespace", namespace)
+		err := createResourceNamespace(client, namespace, labels)
 		if err != nil {
 			return err
 		}
 	} else {
-		logging.Logger.Info("Updating namespace labels", "name", name)
-		err := updateResourceNamespaceLabels(client, name, labels)
+		logging.Logger.Info("Updating namespace labels", "namespace", namespace)
+		err := updateResourceNamespaceLabels(client, namespace, labels)
 		if err != nil {
 			return err
 		}
 	}
 
 	// Create or update the service account
-	logging.Logger.Info("Creating or updating service account", "name", pipeManagerSA)
-	err = createOrUpdateServiceAccount(client, pipeManagerSA, name)
+	logging.Logger.Info("Creating or updating service account", "namespace", pipeManagerSA)
+	err = createOrUpdateServiceAccount(client, pipeManagerSA, namespace)
 	if err != nil {
 		return err
 	}
 
-	// 5. Retrieve secrets from config
+	// Retrieve secrets from config for bucket credentials and copy them to the namespace, update if they already exist
 	logging.Logger.Info("Retrieving bucket credentials secret from config")
-	secretNames := getBucketCredentialsSecretFromConfig()
-	fmt.Println("Los secretos encontrados son: ", secretNames)
-
-	// 6. Create the secrets if they do not exist
-	logging.Logger.Info("TODO: Creating bucket credentials secrets")
-
-	// 7. Update the secrets if they are different (md5 hash)
-	logging.Logger.Info("TODO: Or updating bucket credentials secrets")
+	err = CopySecretsToNamespace(client,
+		config.Launcher.Data.Namespace,
+		namespace,
+		getBucketCredentialsSecretFromConfig())
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
