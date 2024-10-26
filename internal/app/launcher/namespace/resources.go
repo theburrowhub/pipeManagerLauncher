@@ -118,22 +118,6 @@ func createOrUpdateServiceAccount(client *kubernetes.Clientset, saName string, n
 	return nil
 }
 
-// GetSecretsContent retrieves the content of each secret given by a list and returns it in a key/value list
-// where the key is the name of the secret and the value is its content.
-func GetSecretsContent(client *kubernetes.Clientset, namespace string, secretNames []string) (map[string]map[string][]byte, error) {
-	secretsContent := make(map[string]map[string][]byte)
-
-	for _, secretName := range secretNames {
-		secret, err := client.CoreV1().Secrets(namespace).Get(context.TODO(), secretName, metav1.GetOptions{})
-		if err != nil {
-			return nil, fmt.Errorf("failed to get secret %s: %w", secretName, err)
-		}
-		secretsContent[secretName] = secret.Data
-	}
-
-	return secretsContent, nil
-}
-
 // CopySecretsToNamespace copies the key/value pairs of all retrieved secrets to another given namespace
 func CopySecretsToNamespace(client *kubernetes.Clientset, sourceNamespace string, targetNamespace string, secretNames []string) error {
 	for _, secretName := range secretNames {
