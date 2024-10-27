@@ -2,6 +2,7 @@ package deploy
 
 import (
 	"context"
+	"crypto/sha256"
 	"fmt"
 	"math/rand"
 	"time"
@@ -70,7 +71,7 @@ func deployPipelineObject(pipeline *pipelinecrd.Pipeline) error {
 	return nil
 }
 
-// generateRandomString generates a random string of the given length
+// generateRandomString generates a random string of the given length and returns its SHA-256 hash
 func generateRandomString(length int) string {
 	const charset = "abcdefghijklmnopqrstuvwxyz"
 	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -78,5 +79,7 @@ func generateRandomString(length int) string {
 	for i := range b {
 		b[i] = charset[seededRand.Intn(len(charset))]
 	}
-	return string(b)
+	randomString := string(b)
+	hash := sha256.Sum256([]byte(randomString))
+	return fmt.Sprintf("%x", hash)
 }
