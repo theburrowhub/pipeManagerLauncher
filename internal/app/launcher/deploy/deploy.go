@@ -2,6 +2,9 @@ package deploy
 
 import (
 	"context"
+	"fmt"
+	"math/rand"
+	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -40,7 +43,7 @@ func generatePipelineObject(name, namespace string, spec pipelinecrd.PipelineSpe
 			APIVersion: "pipe-manager.org/v1alpha1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      name,
+			Name:      fmt.Sprintf("%.58s-%s", name, generateRandomString(63-len(name)-1)),
 			Namespace: namespace,
 		},
 		Spec: spec,
@@ -65,4 +68,15 @@ func deployPipelineObject(pipeline *pipelinecrd.Pipeline) error {
 	}
 
 	return nil
+}
+
+// generateRandomString generates a random string of the given length
+func generateRandomString(length int) string {
+	const charset = "abcdefghijklmnopqrstuvwxyz"
+	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
 }
