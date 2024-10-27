@@ -157,13 +157,14 @@ func app() {
 		}
 
 		// Deploy the pipeline
-		err = deploy.Pipeline(name, namespaceName, spec)
+		resourceName, resourceNamespace, err := deploy.Pipeline(name, namespaceName, spec)
 		if err != nil {
 			logging.Logger.Error("Error deploying pipeline", "error", err)
 			continue
 		}
 
-		logging.Logger.Info("Pipeline deployed successfully", "name", name, "namespace", namespaceName)
+		logging.Logger.Info("Pipeline deployed successfully",
+			"name", name, "resourceName", resourceName, "resourceNamespace", resourceNamespace)
 	}
 
 	return
