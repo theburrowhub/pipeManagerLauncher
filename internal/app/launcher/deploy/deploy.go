@@ -1,29 +1,35 @@
 package deploy
 
 import (
-	"fmt"
-	"gopkg.in/yaml.v3"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"context"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/sergiotejon/pipeManager/internal/pkg/k8s"
 	"github.com/sergiotejon/pipeManager/internal/pkg/pipelinecrd"
 )
 
-// WIP: Pipeline deploys a pipeline object to the Kubernetes cluster
+// Pipeline deploys a pipeline object to the Kubernetes cluster
 func Pipeline(name, namespace string, spec pipelinecrd.PipelineSpec) error {
+	// Remove unused fields
+	removeUnusedFields(&spec)
+
 	// Generate the pipeline object
 	pipeline := generatePipelineObject(name, namespace, spec)
 
-	// Create the pipeline object
-	// TODO
-
-	data, err := yaml.Marshal(pipeline)
+	// Deploy the pipeline object to the Kubernetes cluster
+	err := deployPipelineObject(pipeline)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(string(data))
-
 	return nil
+}
+
+// removeUnusedFields removes the unused fields from the pipeline object
+func removeUnusedFields(spec *pipelinecrd.PipelineSpec) {
+	spec.Namespace = pipelinecrd.Namespace{}
 }
 
 // generatePipelineObject generates a pipeline object for the given name, namespace and spec to use in the deployment process
@@ -39,4 +45,24 @@ func generatePipelineObject(name, namespace string, spec pipelinecrd.PipelineSpe
 		},
 		Spec: spec,
 	}
+}
+
+// deployPipelineObject deploys the given pipeline object to the Kubernetes cluster
+func deployPipelineObject(pipeline *pipelinecrd.Pipeline) error {
+	config, err := k8s.GetKubernetesConfig()
+	if err != nil {
+		return err
+	}
+
+	k8sClient, err := client.New(config, client.Options{Scheme: pipelinecrd.Scheme})
+	if err != nil {
+		return err
+	}
+
+	err = k8sClient.Create(context.Background(), pipeline)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
