@@ -29,10 +29,11 @@ type PipelineList struct {
 	Items           []Pipeline `json:"items"`
 }
 
+var Scheme = runtime.NewScheme()
+
 func init() {
 	// TODO: Ver información en chatgpt para implementar esto
-	scheme := runtime.NewScheme()
-	err := addToScheme(scheme)
+	err := addToScheme(Scheme)
 	if err != nil {
 		panic(err)
 	}
@@ -40,8 +41,8 @@ func init() {
 
 func addToScheme(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(schema.GroupVersion{
-		Group:   "pipe-manager.sergiotejon.github.com",
-		Version: "v1beta1",
+		Group:   "pipe-manager.org",
+		Version: "v1alpha1",
 	},
 		&Pipeline{},
 		&PipelineList{},
