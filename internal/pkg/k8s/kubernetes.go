@@ -11,8 +11,8 @@ import (
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
 )
 
-// GetKubernetesClient returns a Kubernetes clientset configured for either in-cluster or local access
-func GetKubernetesClient() (*kubernetes.Clientset, error) {
+// GetKubernetesConfig returns a Kubernetes client configuration for either in-cluster or local access
+func GetKubernetesConfig() (*rest.Config, error) {
 	// Try to get the in-cluster config
 	cfg, err := rest.InClusterConfig()
 	if err != nil {
@@ -28,6 +28,16 @@ func GetKubernetesClient() (*kubernetes.Clientset, error) {
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	return cfg, nil
+}
+
+// GetKubernetesClient returns a Kubernetes clientset configured for either in-cluster or local access
+func GetKubernetesClient() (*kubernetes.Clientset, error) {
+	cfg, err := GetKubernetesConfig()
+	if err != nil {
+		return nil, err
 	}
 
 	// Create a clientset for interacting with the Kubernetes API
