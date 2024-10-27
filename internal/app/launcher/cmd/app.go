@@ -5,11 +5,11 @@ package cmd
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"gopkg.in/yaml.v3"
 	"log"
 	"os"
 	"path/filepath"
 
+	"github.com/sergiotejon/pipeManager/internal/app/launcher/deploy"
 	"github.com/sergiotejon/pipeManager/internal/app/launcher/namespace"
 	"github.com/sergiotejon/pipeManager/internal/app/launcher/pipelineprocessor"
 	"github.com/sergiotejon/pipeManager/internal/app/launcher/repository"
@@ -125,40 +125,45 @@ func app() {
 		os.Exit(ErrCodeOK)
 	}
 
-	// WIP: Launch the pipelines
+	// Launch the pipelines
 	for name, pipeline := range rawPipelines {
-		logging.Logger.Info("WIP: Launching pipeline", "name", name)
+		// --- DEBUG
+		//yamlData, err := yaml.Marshal(pipeline)
+		//if err != nil {
+		//	logging.Logger.Error("Error marshaling pipeline to YAML", "pipeline", name, "error", err)
+		//	continue
+		//}
+		//fmt.Println(string(yamlData))
+		// --- DEBUG
 
-		// TODO: Validate raw pipeline
+		logging.Logger.Info("Launching pipeline", "name", name)
+		// TODO: Validate raw pipeline?. A validation is done when converting to PipelineSpec
 
 		// Convert pipeline to PipelineSpec
-		spec, err := convertToPipelines(pipeline)
+		spec, err := pipelinecrd.ConvertToPipelines(pipeline)
 		if err != nil {
 			logging.Logger.Error("Error converting pipeline to PipelineSpec. Pipeline not deployed",
 				"pipeline", name, "error", err)
 			continue
 		}
 
-		// TODO:
 		// Create namespace
-		err = namespace.Create(spec.Namespace)
+		namespaceName := spec.Namespace.Name
+		err = namespace.Create(spec)
 		if err != nil {
 			logging.Logger.Error("Error creating namespace. Pipeline not deployed",
-				"namespace", spec.Namespace.Name, "pipeline", name, "error", err)
+				"namespace", namespaceName, "pipeline", name, "error", err)
 			continue
 		}
 
-		// Remove namespace from spec once it's created
-		//spec.Namespace = pipelinecrd.Namespace{}
-
 		// Deploy the pipeline
-		//err = deploy.Pipeline(name, spec.Namespace, spec)
-		//if err != nil {
-		//	logging.Logger.Error("Error deploying pipeline", "error", err)
-		//	os.Exit(ErrCodeDeploy)
-		//}
+		err = deploy.Pipeline(name, namespaceName, spec)
+		if err != nil {
+			logging.Logger.Error("Error deploying pipeline", "error", err)
+			continue
+		}
 
-		logging.Logger.Info("Pipeline deployed successfully", "name", name, "namespace", spec.Namespace.Name)
+		logging.Logger.Info("Pipeline deployed successfully", "name", name, "namespace", namespaceName)
 	}
 
 	return
@@ -168,25 +173,4 @@ func app() {
 func getMD5Hash(text string) string {
 	hash := md5.Sum([]byte(text))
 	return hex.EncodeToString(hash[:])
-}
-
-// convertToPipelines converts the raw data to a PipelineSpec struct
-// TODO: Duplicated code from internal/app/pipeline-controller/normalize/normalize.go
-// This function convert only one raw pipeline to a PipelineSpec struct
-// This would be the future version for normalize.go when it's refactored
-func convertToPipelines(data interface{}) (pipelinecrd.PipelineSpec, error) {
-	// Convert each item to YAML
-	yamlData, err := yaml.Marshal(data)
-	if err != nil {
-		return pipelinecrd.PipelineSpec{}, err
-	}
-
-	// Unmarshal YAML to PipelineSpec struct
-	var pipeline pipelinecrd.PipelineSpec
-	err = yaml.Unmarshal(yamlData, &pipeline)
-	if err != nil {
-		return pipelinecrd.PipelineSpec{}, err
-	}
-
-	return pipeline, nil
 }
