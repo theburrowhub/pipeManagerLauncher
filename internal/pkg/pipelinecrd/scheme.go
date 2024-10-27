@@ -4,42 +4,17 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
+	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 )
 
-// PipelineStatus defines the observed state of PipelineSpec
-type PipelineStatus struct {
-	// TODO:
-	// Aquí puedes definir el estado observado
-	// Por ejemplo, condiciones, mensajes, etc.
-}
+var (
+	Scheme        = runtime.NewScheme()
+	SchemeBuilder = runtime.NewSchemeBuilder(addKnownTypes)
+	AddToScheme   = SchemeBuilder.AddToScheme
+)
 
-// Pipeline is the Schema for the API
-type Pipeline struct {
-	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
-
-	Spec   PipelineSpec   `json:"spec,omitempty"`
-	Status PipelineStatus `json:"status,omitempty"`
-}
-
-// PipelineList contains a list of PipelineMain
-type PipelineList struct {
-	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Pipeline `json:"items"`
-}
-
-var Scheme = runtime.NewScheme()
-
-func init() {
-	// TODO: Ver información en chatgpt para implementar esto
-	err := addToScheme(Scheme)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func addToScheme(scheme *runtime.Scheme) error {
+func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(schema.GroupVersion{
 		Group:   "pipe-manager.org",
 		Version: "v1alpha1",
@@ -47,23 +22,14 @@ func addToScheme(scheme *runtime.Scheme) error {
 		&Pipeline{},
 		&PipelineList{},
 	)
+	metav1.AddToGroupVersion(scheme, schema.GroupVersion{
+		Group:   "pipe-manager.org",
+		Version: "v1alpha1",
+	})
 	return nil
 }
 
-func (in *Pipeline) DeepCopyObject() runtime.Object {
-	if in == nil {
-		return nil
-	}
-	out := new(Pipeline)
-	in.DeepCopyInto(&out.ObjectMeta)
-	return out
-}
-
-func (in *PipelineList) DeepCopyObject() runtime.Object {
-	if in == nil {
-		return nil
-	}
-	out := new(PipelineList)
-	in.DeepCopyInto(&out.ListMeta)
-	return out
+func init() {
+	utilruntime.Must(clientgoscheme.AddToScheme(runtime.NewScheme()))
+	utilruntime.Must(AddToScheme(Scheme))
 }
