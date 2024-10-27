@@ -69,11 +69,56 @@ spec:
                     properties:
                       description:
                         type: string
+                      runAfter:
+                        type: array
+                        nullable: true
+                        items:
+                          type: string
+                      batch:
+                        type: object
+                        nullable: true
+                        additionalProperties:
+                          type: object
+                          additionalProperties:
+                            type: string
                       params:
                         type: object
                         nullable: true
                         additionalProperties:
                           type: string
+                      cloneRepository:
+                        nullable: true
+                        type: object
+                        properties:
+                          enable:
+                            type: boolean
+                          options:
+                            nullable: true
+                            type: object
+                            properties:
+                              artifacts:
+                                nullable: true
+                                type: boolean
+                              cache:
+                                nullable: true
+                                type: boolean
+                      paths:
+                        nullable: true
+                        type: object
+                        properties:
+                          artifacts:
+                            nullable: true
+                            type: array
+                            items:
+                              type: string
+                          cache:
+                            nullable: true
+                            type: array
+                            items:
+                              type: string
+                      cloneDepth:
+                        type: integer
+                        nullable: true
                       steps:
                         type: array
                         items:
@@ -113,11 +158,6 @@ spec:
                         items:
                           type: object
                           additionalProperties: true
-                      runAfter:
-                        type: array
-                        nullable: true
-                        items:
-                          type: string
                 finishTasks:
                   type: object
                   nullable: true
@@ -129,8 +169,58 @@ spec:
                         type: object
                         properties:
                           description:
-                            nullable: true
                             type: string
+                            nullable: true
+                          runAfter:
+                            type: array
+                            nullable: true
+                            items:
+                              type: string
+                          batch:
+                            type: object
+                            nullable: true
+                            additionalProperties:
+                              type: object
+                              additionalProperties:
+                                type: string
+                          params:
+                            type: object
+                            nullable: true
+                            additionalProperties:
+                              type: string
+                          cloneRepository:
+                            type: object
+                            nullable: true
+                            properties:
+                              enable:
+                                type: boolean
+                              options:
+                                type: object
+                                nullable: true
+                                properties:
+                                  artifacts:
+                                    type: boolean
+                                    nullable: true
+                                  cache:
+                                    type: boolean
+                                    nullable: true
+                          paths:
+                            type: object
+                            nullable: true
+                            properties:
+                              artifacts:
+                                type: array
+                                nullable: true
+                                items:
+                                  type: string
+                              cache:
+                                type: array
+                                nullable: true
+                                items:
+                                  type: string
+                          cloneDepth:
+                            type: integer
+                            nullable: true
                           steps:
                             type: array
                             items:
@@ -141,11 +231,29 @@ spec:
                                 image:
                                   type: string
                                 description:
-                                  nullable: true
                                   type: string
+                                  nullable: true
+                                volumeMounts:
+                                  type: array
+                                  nullable: true
+                                  items:
+                                    type: object
+                                    additionalProperties: true
+                                env:
+                                  type: array
+                                  nullable: true
+                                  items:
+                                    type: object
+                                    additionalProperties: true
                                 script:
-                                  nullable: true
                                   type: string
+                                  nullable: true
+                          sidecars:
+                            type: array
+                            nullable: true
+                            items:
+                              type: object
+                              additionalProperties: true
                           volumes:
                             type: array
                             nullable: true
@@ -159,8 +267,58 @@ spec:
                         type: object
                         properties:
                           description:
-                            nullable: true
                             type: string
+                            nullable: true
+                          runAfter:
+                            type: array
+                            nullable: true
+                            items:
+                              type: string
+                          batch:
+                            type: object
+                            nullable: true
+                            additionalProperties:
+                              type: object
+                              additionalProperties:
+                                type: string
+                          params:
+                            type: object
+                            nullable: true
+                            additionalProperties:
+                              type: string
+                          cloneRepository:
+                            type: object
+                            nullable: true
+                            properties:
+                              enable:
+                                type: boolean
+                              options:
+                                type: object
+                                nullable: true
+                                properties:
+                                  artifacts:
+                                    type: boolean
+                                    nullable: true
+                                  cache:
+                                    type: boolean
+                                    nullable: true
+                          paths:
+                            type: object
+                            nullable: true
+                            properties:
+                              artifacts:
+                                type: array
+                                nullable: true
+                                items:
+                                  type: string
+                              cache:
+                                type: array
+                                nullable: true
+                                items:
+                                  type: string
+                          cloneDepth:
+                            type: integer
+                            nullable: true
                           steps:
                             type: array
                             items:
@@ -171,11 +329,29 @@ spec:
                                 image:
                                   type: string
                                 description:
-                                  nullable: true
                                   type: string
+                                  nullable: true
+                                volumeMounts:
+                                  type: array
+                                  nullable: true
+                                  items:
+                                    type: object
+                                    additionalProperties: true
+                                env:
+                                  type: array
+                                  nullable: true
+                                  items:
+                                    type: object
+                                    additionalProperties: true
                                 script:
-                                  nullable: true
                                   type: string
+                                  nullable: true
+                          sidecars:
+                            type: array
+                            nullable: true
+                            items:
+                              type: object
+                              additionalProperties: true
                           volumes:
                             type: array
                             nullable: true
