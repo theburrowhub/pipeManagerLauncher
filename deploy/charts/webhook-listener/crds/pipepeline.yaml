@@ -23,11 +23,45 @@ spec:
                 sshSecretName:
                   type: string
                   nullable: true
+                cloneDepth:
+                  type: integer
+                  nullable: true
                 params:
                   type: object
                   nullable: true
                   additionalProperties:
                     type: string
+                cloneRepository:
+                  nullable: true
+                  type: object
+                  properties:
+                    enable:
+                      type: boolean
+                    options:
+                      nullable: true
+                      type: object
+                      properties:
+                        artifacts:
+                          nullable: true
+                          type: boolean
+                        cache:
+                          nullable: true
+                          type: boolean
+                workspaceDir:
+                  nullable: true
+                  type: object
+                launch:
+                  nullable: true
+                  type: object
+                  properties:
+                    whenFail:
+                      type: array
+                      items:
+                        type: string
+                    whenSuccess:
+                      type: array
+                      items:
+                        type: string
                 tasks:
                   type: object
                   additionalProperties:
