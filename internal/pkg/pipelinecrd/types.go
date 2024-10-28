@@ -16,13 +16,13 @@ type CloneRepositoryOptions struct {
 
 // CloneRepositoryConfig define the configuration for the clone repository step in the pipeline
 type CloneRepositoryConfig struct {
-	Enable  bool                   `json:"enable"`
+	Enable  bool                   `json:"enable,omitempty"`
 	Options CloneRepositoryOptions `json:"options,omitempty"`
 }
 
 // PipelineSpec is a struct to store the pipeline data
 type PipelineSpec struct {
-	Name            string
+	Name            string                `json:"name,omitempty"`
 	Description     string                `json:"description,omitempty"`
 	Namespace       Namespace             `json:"namespace,omitempty"`
 	CloneRepository CloneRepositoryConfig `json:"cloneRepository,omitempty"`
@@ -93,13 +93,18 @@ type Namespace struct {
 	Name   string            `json:"name"`
 }
 
+// PipelineStatus defines the observed state of PushMain
+type PipelineStatus struct {
+	// TODO Aquí puedes agregar campos para el estado
+}
+
 // Pipeline is the Schema for the API
 type Pipeline struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   PipelineSpec `json:"spec,omitempty"`
-	Status interface{}  `json:"status,omitempty"`
+	Spec   PipelineSpec   `json:"spec,omitempty"`
+	Status PipelineStatus `json:"status,omitempty"`
 }
 
 // PipelineList contains a list of PipelineMain
