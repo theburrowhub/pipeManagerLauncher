@@ -1,59 +1,76 @@
 package cmd
 
 import (
-	"fmt"
-	"log"
-	"os"
-
-	"github.com/spf13/cobra"
-
-	"github.com/sergiotejon/pipeManager/internal/pkg/version"
+	"flag"
 )
 
-// rootCmd is the root command for the CLI
-var rootCmd = &cobra.Command{
-	Use:   "pipieline-controller",
-	Short: "Kubernetes pipeline controller",
-	Run: func(cmd *cobra.Command, args []string) {
-		err := cmd.Help()
-		if err != nil {
-			return
-		}
-	},
-}
+const (
+	ErrCodeOK         = 0
+	ErrCodeLoadConfig = 1
+)
 
-var configFile string // configFile is the path to the configuration file
+//// rootCmd is the root command for the CLI
+//var rootCmd = &cobra.Command{
+//	Use:   "pipieline-controller",
+//	Short: "Kubernetes pipeline manager controller",
+//	Run: func(cmd *cobra.Command, args []string) {
+//		err := cmd.Help()
+//		if err != nil {
+//			return
+//		}
+//	},
+//}
 
-// init initializes the application
-func init() {
-	// Persistent flags
-	rootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "Path to the config file")
-	rootCmd.PersistentFlags().BoolP("version", "v", false, "Print the version")
+var (
+	configFile           string // configFile is the path to the configuration file
+	versionFlag          bool   // versionFlag is the flag to print the version
+	probeAddr            string // probeAddr is the address the probe endpoint binds to
+	enableLeaderElection bool   // enableLeaderElection enables leader election for controller manager
+)
 
-	// Bind the version flag
-	rootCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
-		v, _ := cmd.Flags().GetBool("version")
-		if v {
-			fmt.Println(version.GetVersion())
-			os.Exit(0)
-		}
-
-		// TODO: Normalize
-		fmt.Println("Normalize... Under construction.")
-		// -- Read spec from k8s object (only one pipeline)
-		// -- Refactor Normalize to work only with one pipeline
-		// Normalize the pipelines
-		//pipelines, err := normalize.Normalize(rawPipelines)
-		//if err != nil {
-		//	logging.Logger.Error("Error normalizing pipelines", "msg", err)
-		//	os.Exit(ErrCodeNormalize)
-		//}
-	}
-}
+//
+//// init initializes the application
+//func init() {
+//	// Persistent flags
+//	rootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "Path to the config file")
+//	rootCmd.PersistentFlags().BoolP("version", "v", false, "Print the version")
+//	rootCmd.Flags().StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")
+//	rootCmd.PersistentFlags().BoolVar(&enableLeaderElection, "leader-elect", false,
+//		"Enable leader election for controller manager. Enabling this will ensure there is only one active controller manager.")
+//	rootCmd.Flags().StringVar(&logLevel, "zap-log-level", "info", "Log level")
+//
+//	rootCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
+//		v, err := cmd.Flags().GetBool("version")
+//		if err != nil {
+//			log.Fatalf("Error getting version flag: %v", err)
+//		}
+//		if v {
+//			fmt.Println(version.GetVersion())
+//			os.Exit(0)
+//		}
+//
+//		// Set up the app
+//		setup()
+//		// Run the app
+//		app()
+//
+//		os.Exit(0)
+//	}
+//}
 
 // Execute executes the root command
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		log.Fatalf("Error executing command: %v", err)
-	}
+	flag.StringVar(&configFile, "config", "", "Path to the config file")
+	flag.BoolVar(&versionFlag, "version", false, "Print the version")
+	flag.StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")
+	flag.BoolVar(&enableLeaderElection, "leader-elect", false,
+		"Enable leader election for controller manager. "+
+			"Enabling this will ensure there is only one active controller manager.")
+
+	setup()
+	app()
+
+	//if err := rootCmd.Execute(); err != nil {
+	//	log.Fatalf("Error executing command: %v", err)
+	//}
 }
