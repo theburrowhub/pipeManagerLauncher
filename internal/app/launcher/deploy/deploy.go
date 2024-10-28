@@ -16,8 +16,7 @@ import (
 
 // Pipeline deploys a pipeline object to the Kubernetes cluster
 func Pipeline(name, namespace string, spec pipelinecrd.PipelineSpec) (string, string, error) {
-	// Remove unused fields
-	removeUnusedFields(&spec)
+	spec.Name = name
 
 	// Generate the pipeline object
 	pipeline := generatePipelineObject(name, namespace, spec)
@@ -32,11 +31,6 @@ func Pipeline(name, namespace string, spec pipelinecrd.PipelineSpec) (string, st
 	resourceNamespace := pipeline.Namespace
 
 	return resourceName, resourceNamespace, nil
-}
-
-// removeUnusedFields removes the unused fields from the pipeline object
-func removeUnusedFields(spec *pipelinecrd.PipelineSpec) {
-	spec.Namespace = pipelinecrd.Namespace{}
 }
 
 // generatePipelineObject generates a pipeline object for the given name, namespace and spec to use in the deployment process
