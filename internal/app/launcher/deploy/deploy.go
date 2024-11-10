@@ -10,12 +10,18 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
+	pipemanagerv1alpha1 "github.com/sergiotejon/pipeManagerController/api/v1alpha1"
+
 	"github.com/sergiotejon/pipeManager/internal/pkg/k8s"
-	"github.com/sergiotejon/pipeManager/internal/pkg/pipelinecrd"
+)
+
+const (
+	Kind       = "Pipeline"
+	APIVersion = "pipemanager.sergiotejon.github.io/v1alpha1"
 )
 
 // Pipeline deploys a pipeline object to the Kubernetes cluster
-func Pipeline(name, namespace string, spec pipelinecrd.PipelineSpec) (string, string, error) {
+func Pipeline(name, namespace string, spec pipemanagerv1alpha1.PipelineSpec) (string, string, error) {
 	spec.Name = name
 
 	// Generate the pipeline object
@@ -34,11 +40,11 @@ func Pipeline(name, namespace string, spec pipelinecrd.PipelineSpec) (string, st
 }
 
 // generatePipelineObject generates a pipeline object for the given name, namespace and spec to use in the deployment process
-func generatePipelineObject(name, namespace string, spec pipelinecrd.PipelineSpec) *pipelinecrd.Pipeline {
-	return &pipelinecrd.Pipeline{
+func generatePipelineObject(name, namespace string, spec pipemanagerv1alpha1.PipelineSpec) *pipemanagerv1alpha1.Pipeline {
+	return &pipemanagerv1alpha1.Pipeline{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       "Pipeline",
-			APIVersion: "pipe-manager.org/v1alpha1",
+			Kind:       Kind,
+			APIVersion: APIVersion,
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      fmt.Sprintf("%.58s-%s", name, generateRandomString(63-len(name)-1)),
@@ -49,13 +55,13 @@ func generatePipelineObject(name, namespace string, spec pipelinecrd.PipelineSpe
 }
 
 // deployPipelineObject deploys the given pipeline object to the Kubernetes cluster
-func deployPipelineObject(pipeline *pipelinecrd.Pipeline) error {
+func deployPipelineObject(pipeline *pipemanagerv1alpha1.Pipeline) error {
 	config, err := k8s.GetKubernetesConfig()
 	if err != nil {
 		return err
 	}
 
-	k8sClient, err := client.New(config, client.Options{Scheme: pipelinecrd.Scheme})
+	k8sClient, err := client.New(config, client.Options{Scheme: pipemanagerv1alpha1.Scheme})
 	if err != nil {
 		return err
 	}

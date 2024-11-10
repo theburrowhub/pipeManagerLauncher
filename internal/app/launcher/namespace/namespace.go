@@ -1,17 +1,18 @@
 package namespace
 
 import (
+	pipemanagerv1alpha1 "github.com/sergiotejon/pipeManagerController/api/v1alpha1"
+
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
 	"github.com/sergiotejon/pipeManager/internal/pkg/k8s"
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
-	"github.com/sergiotejon/pipeManager/internal/pkg/pipelinecrd"
 )
 
 const pipeManagerSA = "pipe-manager-sa"
 
 // Create creates a namespace with the given name and labels and creates the necessary resources inside the namespace
 // like the service account and the secrets for the bucket credentials.
-func Create(pipeline pipelinecrd.PipelineSpec) error {
+func Create(pipeline pipemanagerv1alpha1.PipelineSpec) error {
 	ns := pipeline.Namespace
 	namespaceName := ns.Name
 	labels := ns.Labels

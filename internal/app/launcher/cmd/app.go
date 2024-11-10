@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/sergiotejon/pipeManager/internal/app/launcher/convert"
 	"github.com/sergiotejon/pipeManager/internal/app/launcher/deploy"
 	"github.com/sergiotejon/pipeManager/internal/app/launcher/namespace"
 	"github.com/sergiotejon/pipeManager/internal/app/launcher/pipelineprocessor"
@@ -16,7 +17,6 @@ import (
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
 	"github.com/sergiotejon/pipeManager/internal/pkg/envvars"
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
-	"github.com/sergiotejon/pipeManager/internal/pkg/pipelinecrd"
 )
 
 const (
@@ -140,7 +140,7 @@ func app() {
 		// TODO: Validate raw pipeline?. A validation is done when converting to PipelineSpec
 
 		// Convert pipeline to PipelineSpec
-		spec, err := pipelinecrd.ConvertToPipelines(pipeline)
+		spec, err := convert.ConvertToPipelines(pipeline)
 		if err != nil {
 			logging.Logger.Error("Error converting pipeline to PipelineSpec. Pipeline not deployed",
 				"pipeline", name, "error", err)

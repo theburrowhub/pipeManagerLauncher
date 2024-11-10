@@ -1,8 +1,9 @@
 package namespace
 
 import (
+	pipemanagerv1alpha1 "github.com/sergiotejon/pipeManagerController/api/v1alpha1"
+
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
-	"github.com/sergiotejon/pipeManager/internal/pkg/pipelinecrd"
 )
 
 // getBucketCredentialsSecretFromConfig returns the names of the secrets that are used in the namespace for the artifacts bucket and the
@@ -34,6 +35,6 @@ func getBucketCredentialsSecretFromConfig() []string {
 }
 
 // getSshSecretName returns the name of the secret that is used in the namespace for the SSH key to clone the repository.
-func getSshSecretName(pipeline pipelinecrd.PipelineSpec) string {
+func getSshSecretName(pipeline pipemanagerv1alpha1.PipelineSpec) string {
 	return pipeline.SshSecretName
 }
