@@ -3,10 +3,12 @@ package pipeline
 
 import (
 	"context"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/databuilder"
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
+	"github.com/sergiotejon/pipeManager/internal/pkg/k8s"
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
 )
 
@@ -20,7 +22,7 @@ func LaunchJob(requestID string, pipelineData *databuilder.PipelineData) error {
 	namespace := config.Launcher.Data.Namespace
 
 	// Get the Kubernetes client
-	client, err := getKubernetesClient()
+	client, err := k8s.GetKubernetesClient()
 	if err != nil {
 		return err
 	}

@@ -5,13 +5,13 @@ package cmd
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 
-	"gopkg.in/yaml.v3"
-
+	"github.com/sergiotejon/pipeManager/internal/app/launcher/convert"
+	"github.com/sergiotejon/pipeManager/internal/app/launcher/deploy"
+	"github.com/sergiotejon/pipeManager/internal/app/launcher/namespace"
 	"github.com/sergiotejon/pipeManager/internal/app/launcher/pipelineprocessor"
 	"github.com/sergiotejon/pipeManager/internal/app/launcher/repository"
 	"github.com/sergiotejon/pipeManager/internal/pkg/config"
@@ -20,13 +20,14 @@ import (
 )
 
 const (
-	ErrCodeOK             = 0
-	ErrCodeLoadConfig     = 1
-	ErrCodeCloneRepo      = 2
-	ErrCodeMixFiles       = 3
-	ErrCodeNormalize      = 4
-	ErrCodeBucketDownload = 6
-	ErrCodeBucketUpload   = 7
+	ErrCodeOK                 = 0
+	ErrCodeLoadConfig         = 1
+	ErrCodeCloneRepo          = 2
+	ErrCodeMixFiles           = 3
+	ErrCodeConvertingPipeline = 4
+	ErrCodeBucketDownload     = 6
+	ErrCodeBucketUpload       = 7
+	ErrCodeDeploy             = 8
 )
 
 const (
@@ -124,29 +125,46 @@ func app() {
 		os.Exit(ErrCodeOK)
 	}
 
-	// Normalize the pipelines
-	pipelines, err := pipelineprocessor.Normalize(rawPipelines)
-	if err != nil {
-		logging.Logger.Error("Error normalizing pipelines", "msg", err)
-		os.Exit(ErrCodeNormalize)
-	}
-	d, _ := yaml.Marshal(pipelines)
-	fmt.Println(string(d))
+	// Launch the pipelines
+	for name, pipeline := range rawPipelines {
+		// --- DEBUG
+		//yamlData, err := yaml.Marshal(pipeline)
+		//if err != nil {
+		//	logging.Logger.Error("Error marshaling pipeline to YAML", "pipeline", name, "error", err)
+		//	continue
+		//}
+		//fmt.Println(string(yamlData))
+		// --- DEBUG
 
-	// Temporal
-	//if config.Common.Data.Log.Level == "debug" {
-	//	data, err := yaml.Marshal(pipelines)
-	//	if err != nil {
-	//		os.Exit(1)
-	//	}
-	//	fmt.Println(string(data))
-	//}
-	// Temporal
+		logging.Logger.Info("Launching pipeline", "name", name)
+		// TODO: Validate raw pipeline?. A validation is done when converting to PipelineSpec
 
-	for key, _ := range pipelines {
-		logging.Logger.Info("Launching pipeline", "pipeline", key)
-		// TODO:
-		// - Launch the pipeline (pipeline controller)
+		// Convert pipeline to PipelineSpec
+		spec, err := convert.ConvertToPipelines(pipeline)
+		if err != nil {
+			logging.Logger.Error("Error converting pipeline to PipelineSpec. Pipeline not deployed",
+				"pipeline", name, "error", err)
+			continue
+		}
+
+		// Create namespace
+		namespaceName := spec.Namespace.Name
+		err = namespace.Create(spec)
+		if err != nil {
+			logging.Logger.Error("Error creating namespace. Pipeline not deployed",
+				"namespace", namespaceName, "pipeline", name, "error", err)
+			continue
+		}
+
+		// Deploy the pipeline
+		resourceName, resourceNamespace, err := deploy.Pipeline(name, namespaceName, spec)
+		if err != nil {
+			logging.Logger.Error("Error deploying pipeline", "error", err)
+			continue
+		}
+
+		logging.Logger.Info("Pipeline deployed successfully",
+			"name", name, "resourceName", resourceName, "resourceNamespace", resourceNamespace)
 	}
 
 	return

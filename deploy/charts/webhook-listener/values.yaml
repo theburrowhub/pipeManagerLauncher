@@ -143,6 +143,15 @@ tolerations: []
 # -- Configuration for the affinity.
 affinity: {}
 
+# -- Configuration for the RBAC of pipelines launched by the webhook listener + pipeline launcher.
+pipelineRoleRules: []
+  # - apiGroups: [""]
+  #   resources: ["pods"]
+  #   verbs: ["create", "get", "list", "watch", "delete"]
+  # - apiGroups: ["batch", "extensions"]
+  #   resources: ["jobs"]
+  #   verbs: ["create", "get", "list", "watch", "delete"]
+
 #
 # Default configuration
 #
@@ -251,6 +260,9 @@ config:
     # Adjust this value based on the size of the repository and the required history for the pipeline job.
     # A value of 0 fetches the entire history of the repository.
     cloneDepth: 0
+
+    # -- Roles to bind to the pipeline service account.
+    rolesBinding: []
 
     # -- Configuration for the MinIO bucket where pipeline artifacts will be stored.
     # This is the default configuration for bucket storage. You can override this configuration in the pipeline job.

@@ -50,11 +50,13 @@ launcher:
   pullPolicy: "IfNotPresent"
   tag: ""
 
-  namespace: ""
+  namespace: "pipe-manager"
   jobNamePrefix: "pipeline-launcher"
   timeout: 600
   backoffLimit: 2
   cloneDepth: 1
+
+  rolesBinding: []
 
   artifactsBucket:
     url: "s3://pipemanager"

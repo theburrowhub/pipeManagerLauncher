@@ -1,7 +1,11 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
+
+	corev1 "k8s.io/api/core/v1"
+
 	"github.com/sergiotejon/pipeManager/internal/pkg/version"
 )
 
@@ -17,6 +21,7 @@ type LauncherStruct struct {
 	BackoffLimit    int32        `yaml:"backoffLimit"`    // BackoffLimit is the number of retries before considering the job as failed
 	ConfigmapName   string       `yaml:"configmapName"`   // ConfigmapName is the name of the ConfigMap to use
 	CloneDepth      int          `yaml:"cloneDepth"`      // CloneDepth is the depth to use when cloning the Git repository
+	RolesBinding    []string     `yaml:"rolesBinding"`    // RolesBinding is the list of roles to bind to the Service Account
 	ArtifactsBucket BucketConfig `yaml:"artifactsBucket"` // ArtifactsBucket is the bucket configuration for storing the artifacts
 }
 
@@ -45,7 +50,16 @@ type LauncherConfig struct {
 	Data LauncherStruct `yaml:"launcher"`
 }
 
+// K8sBucketCredentials defines the bucket credentials using Kubernetes types.
+type K8sBucketCredentials struct {
+	Env          []corev1.EnvVar      `json:"env,omitempty"`          // Env is the environment variables to use
+	Volumes      []corev1.Volume      `json:"volumes,omitempty"`      // Volumes is the volumes to use
+	VolumeMounts []corev1.VolumeMount `json:"volumeMounts,omitempty"` // VolumeMounts is the volume mounts to use
+}
+
 var Launcher LauncherConfig // Launcher is the global launcher configuration
+
+var K8sCredentials K8sBucketCredentials // BucketCredentials is the global bucket credentials
 
 // LoadLauncherConfig loads the launcher configuration from the given file.
 // It returns an error if the configuration cannot be loaded.
@@ -61,6 +75,27 @@ func LoadLauncherConfig(configFile string) error {
 			return err
 		}
 	}
+
+	err := convertBucketCredentialsToKubernetesType()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// convertBucketCredentialsToKubernetesType converts the bucket credentials to Kubernetes types.
+func convertBucketCredentialsToKubernetesType() error {
+	jsonData, err := json.Marshal(Launcher.Data.ArtifactsBucket.Credentials)
+	if err != nil {
+		return fmt.Errorf("error marshalling credentials: %v", err)
+	}
+
+	err = json.Unmarshal(jsonData, &K8sCredentials)
+	if err != nil {
+		return fmt.Errorf("error unmarshalling credentials: %v", err)
+	}
+
 	return nil
 }
 
