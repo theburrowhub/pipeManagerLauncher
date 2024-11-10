@@ -1,4 +1,4 @@
-package pipelinecrd
+package pipelinecrd_TODELETE
 
 import (
 	"encoding/json"
