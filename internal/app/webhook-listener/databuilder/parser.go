@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
-	"github.com/sergiotejon/pipeManager/pkg/config"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/pkg/logging"
+	"github.com/sergiotejon/pipeManagerLauncher/pkg/config"
 )
 
 // PipelineData represents a pipeline to be executed

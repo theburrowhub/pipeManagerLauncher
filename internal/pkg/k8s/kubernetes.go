@@ -8,7 +8,7 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/pkg/logging"
 )
 
 // GetKubernetesConfig returns a Kubernetes client configuration for either in-cluster or local access

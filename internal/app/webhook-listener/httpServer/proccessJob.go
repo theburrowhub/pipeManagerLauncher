@@ -3,10 +3,10 @@ package httpServer
 import (
 	"encoding/json"
 
-	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/databuilder"
-	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/pipeline"
-	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
-	"github.com/sergiotejon/pipeManager/pkg/config"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/app/webhook-listener/databuilder"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/app/webhook-listener/pipeline"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/pkg/logging"
+	"github.com/sergiotejon/pipeManagerLauncher/pkg/config"
 )
 
 // processJob is the function that processes the incoming HTTP request

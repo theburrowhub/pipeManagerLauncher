@@ -7,8 +7,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
-	"github.com/sergiotejon/pipeManager/pkg/envvars"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/pkg/logging"
+	"github.com/sergiotejon/pipeManagerLauncher/pkg/envvars"
 )
 
 // FindPipelineByName finds the pipeline to launch based on the name

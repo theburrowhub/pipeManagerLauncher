@@ -12,8 +12,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
-	"github.com/sergiotejon/pipeManager/pkg/config"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/pkg/logging"
+	"github.com/sergiotejon/pipeManagerLauncher/pkg/config"
 )
 
 var (

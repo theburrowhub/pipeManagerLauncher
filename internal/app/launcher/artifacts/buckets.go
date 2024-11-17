@@ -10,7 +10,7 @@ import (
 	_ "gocloud.dev/blob/gcsblob"
 	_ "gocloud.dev/blob/s3blob"
 
-	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/pkg/logging"
 )
 
 // DownloadFromBucket downloads a file from the bucket

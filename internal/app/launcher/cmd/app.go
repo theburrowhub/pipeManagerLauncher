@@ -9,14 +9,14 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/sergiotejon/pipeManager/internal/app/launcher/convert"
-	"github.com/sergiotejon/pipeManager/internal/app/launcher/deploy"
-	"github.com/sergiotejon/pipeManager/internal/app/launcher/namespace"
-	"github.com/sergiotejon/pipeManager/internal/app/launcher/pipelineprocessor"
-	"github.com/sergiotejon/pipeManager/internal/app/launcher/repository"
-	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
-	"github.com/sergiotejon/pipeManager/pkg/config"
-	"github.com/sergiotejon/pipeManager/pkg/envvars"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/app/launcher/convert"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/app/launcher/deploy"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/app/launcher/namespace"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/app/launcher/pipelineprocessor"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/app/launcher/repository"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/pkg/logging"
+	"github.com/sergiotejon/pipeManagerLauncher/pkg/config"
+	"github.com/sergiotejon/pipeManagerLauncher/pkg/envvars"
 )
 
 const (

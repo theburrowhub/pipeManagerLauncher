@@ -8,8 +8,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/sergiotejon/pipeManager/internal/app/launcher/artifacts"
-	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/app/launcher/artifacts"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/pkg/logging"
 )
 
 var (

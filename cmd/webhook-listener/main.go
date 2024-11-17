@@ -8,10 +8,10 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/httpServer"
-	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
-	"github.com/sergiotejon/pipeManager/internal/pkg/version"
-	"github.com/sergiotejon/pipeManager/pkg/config"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/app/webhook-listener/httpServer"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/pkg/logging"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/pkg/version"
+	"github.com/sergiotejon/pipeManagerLauncher/pkg/config"
 )
 
 const (

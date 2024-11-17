@@ -3,7 +3,7 @@ package namespace
 import (
 	pipemanagerv1alpha1 "github.com/sergiotejon/pipeManagerController/api/v1alpha1"
 
-	"github.com/sergiotejon/pipeManager/pkg/config"
+	"github.com/sergiotejon/pipeManagerLauncher/pkg/config"
 )
 
 // getBucketCredentialsSecretFromConfig returns the names of the secrets that are used in the namespace for the artifacts bucket and the

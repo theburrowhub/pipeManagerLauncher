@@ -7,7 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/sergiotejon/pipeManager/internal/pkg/version"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/pkg/version"
 )
 
 // rootCmd is the root command for the CLI

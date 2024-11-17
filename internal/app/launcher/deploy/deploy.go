@@ -12,7 +12,7 @@ import (
 
 	pipemanagerv1alpha1 "github.com/sergiotejon/pipeManagerController/api/v1alpha1"
 
-	"github.com/sergiotejon/pipeManager/internal/pkg/k8s"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/pkg/k8s"
 )
 
 const (

@@ -6,7 +6,7 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/sergiotejon/pipeManager/internal/pkg/version"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/pkg/version"
 )
 
 // LauncherStruct defines the launcher configuration.

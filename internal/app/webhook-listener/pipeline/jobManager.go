@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/databuilder"
-	"github.com/sergiotejon/pipeManager/internal/pkg/version"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/app/webhook-listener/databuilder"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/pkg/version"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

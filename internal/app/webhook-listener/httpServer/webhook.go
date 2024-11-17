@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
+	"github.com/sergiotejon/pipeManagerLauncher/internal/pkg/logging"
 )
 
 // webhookHandler is the function that handles incoming webhook requests
