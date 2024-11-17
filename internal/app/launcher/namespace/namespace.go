@@ -3,9 +3,9 @@ package namespace
 import (
 	pipemanagerv1alpha1 "github.com/sergiotejon/pipeManagerController/api/v1alpha1"
 
-	"github.com/sergiotejon/pipeManager/internal/pkg/config"
 	"github.com/sergiotejon/pipeManager/internal/pkg/k8s"
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
+	"github.com/sergiotejon/pipeManager/pkg/config"
 )
 
 const pipeManagerSA = "pipe-manager-sa"

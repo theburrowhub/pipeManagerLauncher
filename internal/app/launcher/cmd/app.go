@@ -14,9 +14,9 @@ import (
 	"github.com/sergiotejon/pipeManager/internal/app/launcher/namespace"
 	"github.com/sergiotejon/pipeManager/internal/app/launcher/pipelineprocessor"
 	"github.com/sergiotejon/pipeManager/internal/app/launcher/repository"
-	"github.com/sergiotejon/pipeManager/internal/pkg/config"
-	"github.com/sergiotejon/pipeManager/internal/pkg/envvars"
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
+	"github.com/sergiotejon/pipeManager/pkg/config"
+	"github.com/sergiotejon/pipeManager/pkg/envvars"
 )
 
 const (

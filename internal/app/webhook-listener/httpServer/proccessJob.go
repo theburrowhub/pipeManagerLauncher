@@ -5,8 +5,8 @@ import (
 
 	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/databuilder"
 	"github.com/sergiotejon/pipeManager/internal/app/webhook-listener/pipeline"
-	"github.com/sergiotejon/pipeManager/internal/pkg/config"
 	"github.com/sergiotejon/pipeManager/internal/pkg/logging"
+	"github.com/sergiotejon/pipeManager/pkg/config"
 )
 
 // processJob is the function that processes the incoming HTTP request
