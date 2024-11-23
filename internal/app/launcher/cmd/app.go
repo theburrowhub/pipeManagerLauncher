@@ -33,6 +33,7 @@ const (
 const (
 	templateFolder = "/etc/pipe-manager/templates" // templateFolder is the folder where the templates are stored
 	repoDir        = "/tmp/repo"                   // repoDir is the directory where the repository is cloned
+	envvar_prefix  = "PIPELINE_"
 )
 
 var (
@@ -69,7 +70,7 @@ func setup() {
 		"logFile", config.Common.Data.Log.File)
 
 	// Get environment variables and log them
-	envvars.GetEnvVars()
+	envvars.GetEnvVars(envvar_prefix)
 	for key, value := range envvars.Variables {
 		logging.Logger.Debug("Environment variable", key, value)
 	}

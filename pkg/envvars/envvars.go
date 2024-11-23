@@ -5,13 +5,11 @@ import (
 	"strings"
 )
 
-const prefix = "PIPELINE_"
-
 var Variables map[string]string
 
 // GetEnvVars reads all environment variables with the prefix "PIPELINE_TRAINER_"
 // and returns them as a map[string]string
-func GetEnvVars() {
+func GetEnvVars(prefix string) {
 	envVars := make(map[string]string)
 
 	for _, env := range os.Environ() {
