@@ -139,6 +139,7 @@ func app() {
 
 		logging.Logger.Info("Launching pipeline", "name", name)
 		// TODO: Validate raw pipeline?. A validation is done when converting to PipelineSpec
+		// ... Controller webhook validation
 
 		// Convert pipeline to PipelineSpec
 		spec, err := convert.ConvertToPipelines(pipeline)
