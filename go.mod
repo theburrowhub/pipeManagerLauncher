@@ -6,7 +6,7 @@ require (
 	github.com/go-git/go-git/v5 v5.12.0
 	github.com/google/cel-go v0.21.0
 	github.com/google/uuid v1.6.0
-	github.com/sergiotejon/pipeManagerController v0.0.0-20241110091521-fd0022d9d9fa
+	github.com/sergiotejon/pipeManagerController v0.0.0-20241123152929-2ac68e29f255
 	github.com/spf13/cobra v1.8.1
 	gocloud.dev v0.40.0
 	gopkg.in/yaml.v3 v3.0.1

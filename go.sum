@@ -254,6 +254,8 @@ github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 h1:n661drycOFuPLCN
 github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3/go.mod h1:A0bzQcvG0E7Rwjx0REVgAGH58e96+X0MeOfepqsbeW4=
 github.com/sergiotejon/pipeManagerController v0.0.0-20241110091521-fd0022d9d9fa h1:BsP+YhZpVzmJLiexDcbk4HvWBYsPbOSQoUgqXFxrKkw=
 github.com/sergiotejon/pipeManagerController v0.0.0-20241110091521-fd0022d9d9fa/go.mod h1:JAdku4D61dre+jbsBcYhK3R/4OymdLb/ueiJFl2uh9E=
+github.com/sergiotejon/pipeManagerController v0.0.0-20241123152929-2ac68e29f255 h1:zVtNBu8qr8fZT0Ljb6PGJfdc97oziygPSLV1XQ8WDtM=
+github.com/sergiotejon/pipeManagerController v0.0.0-20241123152929-2ac68e29f255/go.mod h1:CjvZQsL5OvqL/eBWQ0/6badHm7vGXCaF/6DEVkxFx7I=
 github.com/sirupsen/logrus v1.7.0/go.mod h1:yWOB1SBYBC5VeMP7gHvWumXLIWorT60ONWic61uBYv0=
 github.com/skeema/knownhosts v1.2.2 h1:Iug2P4fLmDw9f41PB6thxUkNUkJzB5i+1/exaj40L3A=
 github.com/skeema/knownhosts v1.2.2/go.mod h1:xYbVRSPxqBZFrdmDyMmsOs+uX1UZC3nTN3ThzgDxUwo=
