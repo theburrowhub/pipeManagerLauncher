@@ -11,7 +11,7 @@ import (
 func getBucketCredentialsSecretFromConfig() []string {
 	var secretNames []string
 
-	bc := config.K8sCredentials
+	bc := config.Launcher.Data.ArtifactsBucket.Credentials
 
 	for _, env := range bc.Env {
 		if env.ValueFrom != nil && env.ValueFrom.SecretKeyRef != nil {

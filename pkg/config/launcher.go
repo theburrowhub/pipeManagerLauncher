@@ -1,7 +1,6 @@
 package config
 
 import (
-	"encoding/json"
 	"fmt"
 
 	corev1 "k8s.io/api/core/v1"
@@ -39,9 +38,9 @@ type BucketConfig struct {
 // Usually, the credentials are stored in a secret and mounted as a volume or as environment variables.
 // Mutually exclusive, but both can be used.
 type BucketCredentials struct {
-	Env          []interface{} `yaml:"env,omitempty"`          // Env is the environment variables to use
-	Volumes      []interface{} `yaml:"volumes,omitempty"`      // Volumes is the volumes to use
-	VolumeMounts []interface{} `yaml:"volumeMounts,omitempty"` // VolumeMounts is the volume mounts to use
+	Env          []corev1.EnvVar      `yaml:"env,omitempty"`          // Env is the environment variables to use
+	Volumes      []corev1.Volume      `yaml:"volumes,omitempty"`      // Volumes is the volumes to use
+	VolumeMounts []corev1.VolumeMount `yaml:"volumeMounts,omitempty"` // VolumeMounts is the volume mounts to use
 }
 
 // LauncherConfig defines the launcher configuration.
@@ -50,16 +49,7 @@ type LauncherConfig struct {
 	Data LauncherStruct `yaml:"launcher"`
 }
 
-// K8sBucketCredentials defines the bucket credentials using Kubernetes types.
-type K8sBucketCredentials struct {
-	Env          []corev1.EnvVar      `json:"env,omitempty"`          // Env is the environment variables to use
-	Volumes      []corev1.Volume      `json:"volumes,omitempty"`      // Volumes is the volumes to use
-	VolumeMounts []corev1.VolumeMount `json:"volumeMounts,omitempty"` // VolumeMounts is the volume mounts to use
-}
-
 var Launcher LauncherConfig // Launcher is the global launcher configuration
-
-var K8sCredentials K8sBucketCredentials // BucketCredentials is the global bucket credentials
 
 // LoadLauncherConfig loads the launcher configuration from the given file.
 // It returns an error if the configuration cannot be loaded.
@@ -74,26 +64,6 @@ func LoadLauncherConfig(configFile string) error {
 		if err != nil {
 			return err
 		}
-	}
-
-	err := convertBucketCredentialsToKubernetesType()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// convertBucketCredentialsToKubernetesType converts the bucket credentials to Kubernetes types.
-func convertBucketCredentialsToKubernetesType() error {
-	jsonData, err := json.Marshal(Launcher.Data.ArtifactsBucket.Credentials)
-	if err != nil {
-		return fmt.Errorf("error marshalling credentials: %v", err)
-	}
-
-	err = json.Unmarshal(jsonData, &K8sCredentials)
-	if err != nil {
-		return fmt.Errorf("error unmarshalling credentials: %v", err)
 	}
 
 	return nil
