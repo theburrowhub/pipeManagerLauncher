@@ -13,6 +13,7 @@ import (
 	pipemanagerv1alpha1 "github.com/sergiotejon/pipeManagerController/api/v1alpha1"
 
 	"github.com/sergiotejon/pipeManagerLauncher/internal/pkg/k8s"
+	"github.com/sergiotejon/pipeManagerLauncher/pkg/envvars"
 )
 
 const (
@@ -23,6 +24,14 @@ const (
 // Pipeline deploys a pipeline object to the Kubernetes cluster
 func Pipeline(name, namespace string, spec pipemanagerv1alpha1.PipelineSpec) (string, string, error) {
 	spec.Name = name
+
+	// Check if the params map is not nil and create it if it is
+	if spec.Params == nil {
+		spec.Params = make(map[string]string)
+	}
+	// Add the extra params to the params map
+	spec.Params["COMMIT"] = envvars.Variables["COMMIT"]
+	spec.Params["REPOSITORY"] = envvars.Variables["REPOSITORY"]
 
 	// Generate the pipeline object
 	pipeline := generatePipelineObject(name, namespace, spec)
