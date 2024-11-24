@@ -22,6 +22,7 @@ type LauncherStruct struct {
 	CloneDepth      int          `yaml:"cloneDepth"`      // CloneDepth is the depth to use when cloning the Git repository
 	RolesBinding    []string     `yaml:"rolesBinding"`    // RolesBinding is the list of roles to bind to the Service Account
 	ArtifactsBucket BucketConfig `yaml:"artifactsBucket"` // ArtifactsBucket is the bucket configuration for storing the artifacts
+	PipelineType    string       `yaml:"pipelineType"`    // PipelineType is the type of pipeline to use (e.g., "tekton")
 }
 
 // BucketConfig defines the bucket configuration.
