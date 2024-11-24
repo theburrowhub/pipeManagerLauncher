@@ -16,25 +16,24 @@ PROJECT_NAME=github.com/sergiotejon/pipeManager
 # Key
 SSH_PRIVATE_KEY?=$(HOME)/.ssh/id_rsa
 
-# TODO: add commitlint
+##@ General
 
 help: ## Display this help
-	@echo "Usage: make [target]"
 	@echo ""
-	@echo "Common targets:"
-	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
-	@echo ""
-	@echo "*** Run \033[36mmake setup\033[0m to set up local development environment. ***"
+	@echo "Example of building applcations and images:"
 	@echo ""
 	@echo "To build go applications:"
 	@for app in $(APPS); do \
-		echo "  \033[36mmake $$app\033[0m"; \
+		echo "  make $$app"; \
 	done
 	@echo ""
 	@echo "and docker images:"
 	@for image in $(IMAGES); do \
-		echo "  \033[36mmake $$image\033[0m"; \
+		echo "  make $$image"; \
 	done
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+
+##@ Setup development environment
 
 setup-cluster: ## Set up local development environment
 	@echo "Setting up local development environment..."
@@ -50,6 +49,14 @@ get-kubeconfig: ## Retrieve kubeconfig for local development environment
 	@echo "Kubeconfig retrieved"
 	@echo "Run 'source set-kubeconfig.sh' to set the kubeconfig environment variable for the current shell"
 
+create-git-secret: ## Create git secret in devel k8s cluster using local ssh key
+	@echo "Creating git secret..."
+	ssh-keyscan -t rsa github.com > /tmp/known_hosts
+	kubectl --kubeconfig ${KUBECONFIG} create secret generic git-credentials \
+		--namespace pipe-manager \
+		--from-file=id_rsa=${SSH_PRIVATE_KEY} \
+		--from-file=known_hosts=/tmp/known_hosts
+
 remove-cluster: ## Remove local development environment
 	@echo "Removing local development environment..."
 	k3d cluster delete ${K3S_CLUSTER_NAME}
@@ -63,11 +70,31 @@ shell: ## Open a shell in the devbox
 	fi
 	SSH_PRIVATE_KEY=${SSH_PRIVATE_KEY} devbox shell
 
+vendor: ## Install dependencies
+	@echo "Installing dependencies..."
+	go mod vendor
+
+##@ Build
+
 all: $(APPS) $(IMAGES) ## Build all go applications and docker images
 
 bin: $(APPS) ## Build all go applications
 
 images: $(IMAGES) ## Build all docker images
+
+clean: ## Clean up
+	@echo "Cleaning up"
+	rm -rf ${KUBECONFIG}
+	rm -rf set-kubeconfig.sh
+	rm -rf gke_gcloud_auth_plugin_cache
+	rm -rf bin/*
+	rm -rf dist
+	rm -rf vendor
+	for image in $(IMAGES); do \
+		docker rmi -f ${K3D_REGISTRY_NAME}:${K3D_REGISTRY_PORT}/$${image%.image}:$(shell cz version -p) || true; \
+	done
+
+##@ Deploy (Fix this to use remote helm chart)
 
 deploy: ## Deploy applications to devel k8s cluster
 	@echo "Deploying applications to devel k8s cluster..."
@@ -89,18 +116,17 @@ tunnel: ## Tunnel with ngrok to devel k8s cluster
 	@echo "Tunneling with ngrok to devel k8s cluster..."
 	ngrok http 8080
 
+##@ Release binaries and docker images
+
 release: ## Release applications to prod k8s cluster
 	@echo "TODO: Release applications and helm charts"
 	@echo goreleaser build --snapshot
 	@echo goreleaser release --snapshot
 
-create-git-secret: ## Create git secret in devel k8s cluster using local ssh key
-	@echo "Creating git secret..."
-	ssh-keyscan -t rsa github.com > /tmp/known_hosts
-	kubectl --kubeconfig ${KUBECONFIG} create secret generic git-credentials \
-		--namespace pipe-manager \
-		--from-file=id_rsa=${SSH_PRIVATE_KEY} \
-		--from-file=known_hosts=/tmp/known_hosts
+
+#
+# Internal targets
+#
 
 # Build go application
 $(APPS):
@@ -116,19 +142,3 @@ $(IMAGES):
 		--build-arg APP_VERSION=$(shell cz version -p) \
 		-t ${K3D_REGISTRY_NAME}:${K3D_REGISTRY_PORT}/$(basename $@):$(shell cz version -p) .
 	docker push ${K3D_REGISTRY_NAME}:${K3D_REGISTRY_PORT}/$(basename $@):$(shell cz version -p)
-
-vendor: ## Install dependencies
-	@echo "Installing dependencies..."
-	go mod vendor
-
-clean: ## Clean up
-	@echo "Cleaning up"
-	rm -rf ${KUBECONFIG}
-	rm -rf set-kubeconfig.sh
-	rm -rf gke_gcloud_auth_plugin_cache
-	rm -rf bin/*
-	rm -rf dist
-	rm -rf vendor
-	for image in $(IMAGES); do \
-		docker rmi -f ${K3D_REGISTRY_NAME}:${K3D_REGISTRY_PORT}/$${image%.image}:$(shell cz version -p) || true; \
-	done
