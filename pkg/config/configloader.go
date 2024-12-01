@@ -1,7 +1,9 @@
 package config
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"gopkg.in/yaml.v3"
 	"os"
 	"reflect"
@@ -15,16 +17,23 @@ func loadConfigFromFile(configFile string, config interface{}) error {
 		return errors.New("the configuration file is not set")
 	}
 
-	yamlFile, err := os.ReadFile(configFile)
+	data, err := os.ReadFile(configFile)
 	if err != nil {
 		return err
 	}
 
-	if err := yaml.Unmarshal(yamlFile, config); err != nil {
+	jsonData, err := convertToJson(data)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(jsonData, config)
+	if err != nil {
 		return err
 	}
 
 	return nil
+
 }
 
 // loadConfigFromEnv loads the configuration from the environment variables into the given configuration struct.
@@ -75,4 +84,38 @@ func setField(field reflect.Value, value string) {
 	default:
 		panic("unhandled default case")
 	}
+}
+
+func convertToJson(yamlData []byte) ([]byte, error) {
+	var data interface{}
+
+	err := yaml.Unmarshal(yamlData, &data)
+	if err != nil {
+		return nil, err
+	}
+
+	data = convertMapKeysToString(data)
+
+	jsonData, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+
+	return jsonData, nil
+}
+
+func convertMapKeysToString(i interface{}) interface{} {
+	switch x := i.(type) {
+	case map[interface{}]interface{}:
+		m := map[string]interface{}{}
+		for k, v := range x {
+			m[fmt.Sprintf("%v", k)] = convertMapKeysToString(v)
+		}
+		return m
+	case []interface{}:
+		for i, v := range x {
+			x[i] = convertMapKeysToString(v)
+		}
+	}
+	return i
 }
