@@ -61,3 +61,5 @@ func LoadWebhookConfig(configFile string) error {
 
 	return nil
 }
+
+// TODO: Normnalize config loader for webhook like other components (e.g., launcher, common)
