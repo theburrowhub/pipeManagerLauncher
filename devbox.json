@@ -4,16 +4,18 @@
     "helm-docs@1.14.2",
     "kubernetes-helm@3.16.1",
     "kubectl@1.30.0",
-    "k3d@5.7.3",
-    "ngrok@latest"
+    "ngrok@latest",
+    "k3d@5.7.4"
   ],
   "shell": {
     "init_hook": [
       "alias ls='ls --color=auto'",
       "echo 'Creating k3d cluster'",
       "k3d registry create registry -p 5111 2> /dev/null || true",
-      "k3d cluster create --registry-use k3d-registry:5111 -a 3 2> /dev/null || true",
+      "k3d cluster create --registry-use k3d-registry:5111 -a 3 --image 'rancher/k3s:v1.28.2-k3s1' 2> /dev/null || true",
       "k3d kubeconfig get k3s-default > kubeconfig && chmod 600 kubeconfig && export KUBECONFIG=$(pwd)/kubeconfig",
+      "echo Tekton installation",
+      "kubectl apply --filename https://storage.googleapis.com/tekton-releases/pipeline/latest/release.yaml 2> /dev/null",
       "echo 'Creating namespace pipe-manager'",
       "kubectl --kubeconfig $(pwd)/kubeconfig create namespace pipe-manager 2> /dev/null",
       "echo 'Creating secret git-credentials'",
