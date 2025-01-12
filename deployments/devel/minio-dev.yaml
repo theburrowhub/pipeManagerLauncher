@@ -1,0 +1,126 @@
+# Deploys a new Namespace for the MinIO Pod
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: minio-dev
+  labels:
+    name: minio-dev
+---
+## Deploys a new MinIO Pod into the metadata.namespace Kubernetes namespace
+##
+## The `spec.containers[0].args` contains the command run on the pod
+## The `/data` directory corresponds to the `spec.containers[0].volumeMounts[0].mountPath`
+## That mount path corresponds to a Kubernetes HostPath which binds `/data` to a local drive or volume on the worker node where the pod runs
+##
+#apiVersion: v1
+#kind: Pod
+#metadata:
+#  labels:
+#    app: minio
+#  name: minio
+#  namespace: minio-dev
+#spec:
+#  containers:
+#  - name: minio
+#    image: quay.io/minio/minio:latest
+#    command:
+#    - /bin/bash
+#    - -c
+#    args:
+#    - minio server /data --console-address :9090
+#    volumeMounts:
+#    - mountPath: /data
+#      name: localvolume # Corresponds to the `spec.volumes` Persistent Volume
+#    #nodeSelector:
+#    #  kubernetes.io/hostname: kubealpha.local # Specify a node label associated to the Worker Node on which you want to deploy the pod.
+#  volumes:
+#  - name: localvolume
+#    hostPath: # MinIO generally recommends using locally-attached volumes
+#      path: /tmp/minio/data # Specify a path to a local drive or volume on the Kubernetes worker node
+#      type: DirectoryOrCreate # The path to the last directory must exist
+
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: minio-dev
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+  namespace: minio-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      containers:
+        - name: minio
+          image: quay.io/minio/minio:latest
+          env:
+            - name: MINIO_ROOT_USER
+              value: "minioadmin"
+            - name: MINIO_ROOT_PASSWORD
+              value: "minioadmin"
+          command:
+          - /bin/bash
+          - -c
+          args:
+          - minio server /data --console-address :9090
+          ports:
+            - containerPort: 9000
+            - containerPort: 9090
+          volumeMounts:
+            - mountPath: /data
+              name: localvolume
+      volumes:
+        - name: localvolume
+          hostPath:
+            path: /tmp/minio/data
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio-service
+  namespace: minio-dev
+spec:
+  selector:
+    app: minio
+  ports:
+    - name: api
+      protocol: TCP
+      port: 9000
+      targetPort: 9000
+    - name: webui
+      protocol: TCP
+      port: 9090
+      targetPort: 9090
+  type: ClusterIP
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-bucket
+  namespace: minio-dev
+spec:
+  template:
+    spec:
+      containers:
+        - name: create-bucket
+          image: quay.io/minio/minio:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              mc alias set myminio http://minio-service.minio-dev.svc.cluster.local:9000 minioadmin minioadmin && \
+              mc mb myminio/mi-bucket && \
+              mc policy set public pipemanager/artifacts
+      restartPolicy: OnFailure
