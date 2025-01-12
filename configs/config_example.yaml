@@ -61,7 +61,7 @@ launcher:
   rolesBinding: []
 
   artifactsBucket:
-    url: "s3://pipemanager"
+    url: "s3://pipe-manager/artifacts"
     basePath: "pipe-manager"
     parameters:
       endpoint: "localhost:9000"
