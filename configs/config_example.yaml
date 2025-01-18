@@ -56,8 +56,6 @@ launcher:
   backoffLimit: 2
   cloneDepth: 1
 
-  pipelineType: "tekton"
-
   rolesBinding: []
 
   artifactsBucket:
